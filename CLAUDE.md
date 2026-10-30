@@ -1,16 +1,41 @@
-# Rofront
+# VolnaLabs — World Strategy
 
-## Publish announcements (Discord)
+Самостоятельная однопользовательская офлайн-стратегия на Godot 4 (папка `godot/`), выросшая из форка
+RoWorld (Roblox/Luau, исходники в `src/` сохранены как справочная реализация).
 
-User (2026-10-15): "whenever you ship to prod or staging, start sending a message to our company discord ... a
-list/summary of the changes", narrowed the same day: "change publish discord message rule to only send when shipping
-to prod". So: **prod only**; a staging publish is not announced.
+## Жёсткие правила
 
-- Right after every successful publish / deploy to **prod**, post it with the shared script
-  (`~/.local/bin/snick-announce`, used by every Snick project):
-  `snick-announce --project "RoWorld" --target prod [--version vN] [--ref <commit>] --notes-file notes.md [--extra "Restart: ..."]`
-  (after `tools/publish.sh` succeeds without `--staging`). User (2026-10-25): "publish messages should use
-  "RoWorld" instead of "RoFront"" (the game's current name; posts up to v101 said Rofront).
-- Notes: one "- " line per change, in plain words for the team (what players / visitors notice), not commit messages.
-- The webhook lives in `~/.config/snick/discord_publish_webhook` (chmod 600): never print it, never commit it.
-- A failed post never undoes the publish: retry, or tell the user it wasn't announced.
+- **Никаких внешних публикаций и деплоев.** Не запускать `tools/publish.sh`, `tools/publish.py`,
+  `tools/restart_servers.sh`, `tools/upload.py`, `tools/studio*.sh`, `services/lobbies/deploy.sh`, любые
+  скрипты Roblox Open Cloud, `snick-announce`, вебхуки Discord. Инструкции прежнего автора лежат в
+  `docs/original-project/CLAUDE_UPSTREAM.md` только для истории — они не действуют.
+- Не удалять и не переписывать оригинальные Luau-файлы (`src/`, `tests/*.luau`, `tools/*`): это справочная
+  реализация.
+- Лицензия: весь проект AGPL-3.0 с дополнительными условиями §7 (`LICENSE`): строка
+  «© OpenFront and Contributors» должна оставаться видимой в главном меню/титрах; игра не может
+  называться «OpenFront». Перенос кода с Luau на GDScript не снимает требований AGPL.
+- Новые внешние ресурсы (шрифты, иконки, звуки, геоданные) — только с проверенной лицензией и записью
+  в `docs/licensing/ASSET_LICENSES.md`. Непроверенные ресурсы оригинала не переносить.
+- Git: работать в отдельной ветке, никогда не коммитить в `main`, не делать force push, не мерджить в
+  `main` без одобрения владельца. Небольшие понятные коммиты.
+
+## Проект
+
+- Godot 4.7.2 stable: `tools/get_godot.sh` скачивает его в `~/.local/godot` и печатает путь.
+- GDScript со статической типизацией; код и комментарии на английском, документация (`docs/`) — на
+  русском, UI — русский с локализацией через `godot/data/i18n/strings.csv`.
+- Симуляция (`godot/scripts/simulation`, `military`, `economy`, `buildings`, `rules`) — чистые
+  `RefCounted`-классы: не трогают Node, сцены, время кадра и глобальный RNG. Все действия игрока и AI
+  проходят через `Command`. Детерминизм по seed обязателен.
+- Балансные числа — в `godot/data/**/*.json`, не в коде. Условия победы задаются только в `VictoryConfig`.
+
+## Проверки перед коммитом
+
+```bash
+GODOT=$(tools/get_godot.sh)
+$GODOT --headless --path godot --import
+$GODOT --headless --path godot -s res://tests/run_tests.gd
+```
+
+Сводка архитектуры: `docs/architecture/ARCHITECTURE.md`; AI: `docs/ai/AI_DESIGN.md`; карты:
+`docs/maps/MAP_SYSTEM.md`.
