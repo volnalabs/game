@@ -1,0 +1,35 @@
+{
+	"id": "avaris", "seed": 7202, "width": 2000, "height": 1000, "land_percent": 0.5, "roughness": 0.5,
+	"mountains": 0.65, "river_density": 1.0, "start_positions": 40, "inland_seas": 0,
+	"name": {"ru": "Аварис", "en": "Avaris"},
+	"description": {"ru": "Огромный суперконтинент с внутренними морями, горными хребтами, реками и пустынным сердцем. Место для больших империй и долгих сухопутных войн.", "en": "A vast supercontinent with inland seas, mountain ranges, rivers and a desert heart. Room for great empires and long land wars."},
+	"features": ["supercontinent", "inland_seas", "mountains", "rivers", "climate_zones"], "recommended_bots": [16, 40],
+	"climate": {"desert_bias": 0.08, "forest_bias": 0.04},
+	"spec": {
+		"blobs": [
+			{"x": 1.0, "y": 0.5, "rx": 0.62, "ry": 0.3, "rot": 0.05},
+			{"x": 0.55, "y": 0.4, "rx": 0.3, "ry": 0.24, "rot": -0.3},
+			{"x": 1.45, "y": 0.42, "rx": 0.3, "ry": 0.22, "rot": 0.25},
+			{"x": 0.75, "y": 0.72, "rx": 0.26, "ry": 0.16, "rot": 0.4},
+			{"x": 1.3, "y": 0.73, "rx": 0.28, "ry": 0.15, "rot": -0.2},
+			{"x": 1.0, "y": 0.22, "rx": 0.3, "ry": 0.12, "rot": 0.0},
+			{"x": 0.3, "y": 0.55, "rx": 0.14, "ry": 0.12, "rot": 0.6},
+			{"x": 1.72, "y": 0.6, "rx": 0.13, "ry": 0.13, "rot": -0.5},
+			{"x": 1.7, "y": 0.26, "rx": 0.1, "ry": 0.08, "rot": 0.3},
+			{"x": 1.0, "y": 0.86, "rx": 0.14, "ry": 0.06, "rot": 0.0}
+		],
+		"ridges": [
+			{"pts": [[0.45, 0.25], [0.6, 0.38], [0.66, 0.6], [0.6, 0.78]], "w": 1.0, "width": 0.03},
+			{"pts": [[1.2, 0.18], [1.32, 0.3], [1.5, 0.36], [1.68, 0.3]], "w": 1.0, "width": 0.028},
+			{"pts": [[0.95, 0.62], [1.1, 0.7], [1.3, 0.68]], "w": 0.9, "width": 0.025},
+			{"pts": [[0.85, 0.2], [1.0, 0.3]], "w": 0.8, "width": 0.02}
+		],
+		"seas": [
+			{"x": 0.92, "y": 0.45, "rx": 0.09, "ry": 0.06, "rot": 0.3},
+			{"x": 1.27, "y": 0.52, "rx": 0.07, "ry": 0.045, "rot": -0.4},
+			{"x": 0.5, "y": 0.58, "rx": 0.05, "ry": 0.035, "rot": 0.8}
+		],
+		"channels": [],
+		"random_islands": {"count": 10, "rmin": 0.012, "rmax": 0.03}
+	}
+}

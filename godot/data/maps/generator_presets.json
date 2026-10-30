@@ -1,0 +1,13 @@
+{
+	"_comment": "World generator presets (docs/maps/MAP_SYSTEM.md §3). Each preset fills GenParams defaults; 'layout' selects how land masses are placed.",
+	"sizes": {"S": [800, 400], "M": [1200, 600], "L": [1600, 800], "XL": [2000, 1000]},
+	"order": ["continents", "archipelago", "pangaea", "island_chains", "ring_world", "random"],
+	"presets": {
+		"continents":    {"layout": "continents", "continents": 4, "islands": 14, "land_percent": 0.36, "inland_seas": 1, "river_density": 0.5, "roughness": 0.55, "mountains": 0.55, "symmetry": "none", "start_positions": 24},
+		"archipelago":   {"layout": "archipelago", "continents": 1, "islands": 48, "land_percent": 0.27, "inland_seas": 0, "river_density": 0.3, "roughness": 0.6, "mountains": 0.4, "symmetry": "none", "start_positions": 24},
+		"pangaea":       {"layout": "pangaea", "continents": 1, "islands": 8, "land_percent": 0.45, "inland_seas": 2, "river_density": 0.6, "roughness": 0.5, "mountains": 0.65, "symmetry": "none", "start_positions": 30},
+		"island_chains": {"layout": "chains", "continents": 4, "islands": 40, "land_percent": 0.28, "inland_seas": 0, "river_density": 0.3, "roughness": 0.55, "mountains": 0.45, "symmetry": "none", "start_positions": 24},
+		"ring_world":    {"layout": "ring", "continents": 6, "islands": 10, "land_percent": 0.34, "inland_seas": 0, "river_density": 0.4, "roughness": 0.5, "mountains": 0.5, "symmetry": "none", "start_positions": 24},
+		"random":        {"layout": "random", "continents": 3, "islands": 20, "land_percent": 0.35, "inland_seas": 1, "river_density": 0.5, "roughness": 0.55, "mountains": 0.5, "symmetry": "none", "start_positions": 24}
+	}
+}

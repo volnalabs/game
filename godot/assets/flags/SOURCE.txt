@@ -1,0 +1,2 @@
+Copied from assets/flags/ (see assets/flags/SOURCE.txt for each file's Wikimedia Commons source;
+all public domain or CC0). Only the flags used by the exported maps are copied.

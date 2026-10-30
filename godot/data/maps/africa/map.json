@@ -1,0 +1,486 @@
+{
+ "id": "africa",
+ "category": "regional",
+ "name": {
+  "ru": "Африка",
+  "en": "Africa"
+ },
+ "description": {
+  "ru": "Монолитный континент с длинными сухопутными фронтами и Мадагаскаром.",
+  "en": "A solid continent with long land fronts and Madagascar."
+ },
+ "features": [
+  "land_war",
+  "large"
+ ],
+ "width": 1489,
+ "height": 1332,
+ "k_lin": 1.0,
+ "recommended_bots": [
+  15,
+  40
+ ],
+ "max_bots": 45,
+ "nations": [
+  {
+   "id": "africa_0",
+   "name": {
+    "ru": "Нигерия",
+    "en": "Nigeria"
+   },
+   "flag": "ng",
+   "x": 593,
+   "y": 514
+  },
+  {
+   "id": "africa_1",
+   "name": {
+    "ru": "Эфиопия",
+    "en": "Ethiopia"
+   },
+   "flag": "et",
+   "x": 1153,
+   "y": 539
+  },
+  {
+   "id": "africa_2",
+   "name": {
+    "ru": "Египет",
+    "en": "Egypt"
+   },
+   "flag": "eg",
+   "x": 982,
+   "y": 212
+  },
+  {
+   "id": "africa_3",
+   "name": {
+    "ru": "ДР Конго",
+    "en": "DR Congo"
+   },
+   "flag": "cd",
+   "x": 876,
+   "y": 717
+  },
+  {
+   "id": "africa_4",
+   "name": {
+    "ru": "ЮАР",
+    "en": "South Africa"
+   },
+   "flag": "za",
+   "x": 880,
+   "y": 1218
+  },
+  {
+   "id": "africa_5",
+   "name": {
+    "ru": "Танзания",
+    "en": "Tanzania"
+   },
+   "flag": "tz",
+   "x": 1080,
+   "y": 792
+  },
+  {
+   "id": "africa_6",
+   "name": {
+    "ru": "Кения",
+    "en": "Kenya"
+   },
+   "flag": "ke",
+   "x": 1132,
+   "y": 674
+  },
+  {
+   "id": "africa_7",
+   "name": {
+    "ru": "Уганда",
+    "en": "Uganda"
+   },
+   "flag": "ug",
+   "x": 1044,
+   "y": 648
+  },
+  {
+   "id": "africa_8",
+   "name": {
+    "ru": "Алжир",
+    "en": "Algeria"
+   },
+   "flag": "dz",
+   "x": 510,
+   "y": 190
+  },
+  {
+   "id": "africa_9",
+   "name": {
+    "ru": "Судан",
+    "en": "Sudan"
+   },
+   "flag": "sd",
+   "x": 979,
+   "y": 390
+  },
+  {
+   "id": "africa_10",
+   "name": {
+    "ru": "Марокко",
+    "en": "Morocco"
+   },
+   "flag": "ma",
+   "x": 333,
+   "y": 114
+  },
+  {
+   "id": "africa_11",
+   "name": {
+    "ru": "Ангола",
+    "en": "Angola"
+   },
+   "flag": "ao",
+   "x": 779,
+   "y": 903
+  },
+  {
+   "id": "africa_12",
+   "name": {
+    "ru": "Гана",
+    "en": "Ghana"
+   },
+   "flag": "gh",
+   "x": 442,
+   "y": 545
+  },
+  {
+   "id": "africa_13",
+   "name": {
+    "ru": "Мозамбик",
+    "en": "Mozambique"
+   },
+   "flag": "mz",
+   "x": 1131,
+   "y": 934
+  },
+  {
+   "id": "africa_14",
+   "name": {
+    "ru": "Мадагаскар",
+    "en": "Madagascar"
+   },
+   "flag": "mg",
+   "x": 1288,
+   "y": 1019
+  },
+  {
+   "id": "africa_15",
+   "name": {
+    "ru": "Камерун",
+    "en": "Cameroon"
+   },
+   "flag": "cm",
+   "x": 682,
+   "y": 601
+  },
+  {
+   "id": "africa_16",
+   "name": {
+    "ru": "Кот-д'Ивуар",
+    "en": "Ivory Coast"
+   },
+   "flag": "ci",
+   "x": 363,
+   "y": 546
+  },
+  {
+   "id": "africa_17",
+   "name": {
+    "ru": "Буркина-Фасо",
+    "en": "Burkina Faso"
+   },
+   "flag": "bf",
+   "x": 436,
+   "y": 455
+  },
+  {
+   "id": "africa_18",
+   "name": {
+    "ru": "Мали",
+    "en": "Mali"
+   },
+   "flag": "ml",
+   "x": 424,
+   "y": 347
+  },
+  {
+   "id": "africa_19",
+   "name": {
+    "ru": "Малави",
+    "en": "Malawi"
+   },
+   "flag": "mw",
+   "x": 1056,
+   "y": 924
+  },
+  {
+   "id": "africa_20",
+   "name": {
+    "ru": "Замбия",
+    "en": "Zambia"
+   },
+   "flag": "zm",
+   "x": 928,
+   "y": 947
+  },
+  {
+   "id": "africa_21",
+   "name": {
+    "ru": "Сенегал",
+    "en": "Senegal"
+   },
+   "flag": "sn",
+   "x": 198,
+   "y": 411
+  },
+  {
+   "id": "africa_22",
+   "name": {
+    "ru": "Чад",
+    "en": "Chad"
+   },
+   "flag": "td",
+   "x": 791,
+   "y": 411
+  },
+  {
+   "id": "africa_23",
+   "name": {
+    "ru": "Зимбабве",
+    "en": "Zimbabwe"
+   },
+   "flag": "zw",
+   "x": 991,
+   "y": 1024
+  },
+  {
+   "id": "africa_24",
+   "name": {
+    "ru": "Гвинея",
+    "en": "Guinea"
+   },
+   "flag": "gn",
+   "x": 283,
+   "y": 492
+  },
+  {
+   "id": "africa_25",
+   "name": {
+    "ru": "Руанда",
+    "en": "Rwanda"
+   },
+   "flag": "rw",
+   "x": 994,
+   "y": 718
+  },
+  {
+   "id": "africa_26",
+   "name": {
+    "ru": "Бенин",
+    "en": "Benin"
+   },
+   "flag": "bj",
+   "x": 502,
+   "y": 498
+  },
+  {
+   "id": "africa_27",
+   "name": {
+    "ru": "Тунис",
+    "en": "Tunisia"
+   },
+   "flag": "tn",
+   "x": 620,
+   "y": 77
+  },
+  {
+   "id": "africa_28",
+   "name": {
+    "ru": "Южный Судан",
+    "en": "South Sudan"
+   },
+   "flag": "ss",
+   "x": 999,
+   "y": 553
+  },
+  {
+   "id": "africa_29",
+   "name": {
+    "ru": "Сомали",
+    "en": "Somalia"
+   },
+   "flag": "so",
+   "x": 1261,
+   "y": 619
+  },
+  {
+   "id": "africa_30",
+   "name": {
+    "ru": "Сьерра-Леоне",
+    "en": "Sierra Leone"
+   },
+   "flag": "sl",
+   "x": 252,
+   "y": 528
+  },
+  {
+   "id": "africa_31",
+   "name": {
+    "ru": "Ливия",
+    "en": "Libya"
+   },
+   "flag": "ly",
+   "x": 780,
+   "y": 204
+  },
+  {
+   "id": "africa_32",
+   "name": {
+    "ru": "Эритрея",
+    "en": "Eritrea"
+   },
+   "flag": "er",
+   "x": 1139,
+   "y": 399
+  },
+  {
+   "id": "africa_33",
+   "name": {
+    "ru": "Конго",
+    "en": "Congo"
+   },
+   "flag": "cg",
+   "x": 742,
+   "y": 681
+  },
+  {
+   "id": "africa_34",
+   "name": {
+    "ru": "Либерия",
+    "en": "Liberia"
+   },
+   "flag": "lr",
+   "x": 293,
+   "y": 567
+  },
+  {
+   "id": "africa_35",
+   "name": {
+    "ru": "ЦАР",
+    "en": "Central African Republic"
+   },
+   "flag": "cf",
+   "x": 831,
+   "y": 558
+  },
+  {
+   "id": "africa_36",
+   "name": {
+    "ru": "Мавритания",
+    "en": "Mauritania"
+   },
+   "flag": "mr",
+   "x": 288,
+   "y": 331
+  },
+  {
+   "id": "africa_37",
+   "name": {
+    "ru": "Намибия",
+    "en": "Namibia"
+   },
+   "flag": "na",
+   "x": 764,
+   "y": 1054
+  },
+  {
+   "id": "africa_38",
+   "name": {
+    "ru": "Ботсвана",
+    "en": "Botswana"
+   },
+   "flag": "bw",
+   "x": 889,
+   "y": 1081
+  },
+  {
+   "id": "africa_39",
+   "name": {
+    "ru": "Габон",
+    "en": "Gabon"
+   },
+   "flag": "ga",
+   "x": 670,
+   "y": 691
+  },
+  {
+   "id": "africa_40",
+   "name": {
+    "ru": "Лесото",
+    "en": "Lesotho"
+   },
+   "flag": "ls",
+   "x": 961,
+   "y": 1214
+  },
+  {
+   "id": "africa_41",
+   "name": {
+    "ru": "Гвинея-Бисау",
+    "en": "Guinea-Bissau"
+   },
+   "flag": "gw",
+   "x": 203,
+   "y": 465
+  },
+  {
+   "id": "africa_42",
+   "name": {
+    "ru": "Экваториальная Гвинея",
+    "en": "Equatorial Guinea"
+   },
+   "flag": "gq",
+   "x": 632,
+   "y": 654
+  },
+  {
+   "id": "africa_43",
+   "name": {
+    "ru": "Эсватини",
+    "en": "Eswatini"
+   },
+   "flag": "sz",
+   "x": 1018,
+   "y": 1161
+  },
+  {
+   "id": "africa_44",
+   "name": {
+    "ru": "Джибути",
+    "en": "Djibouti"
+   },
+   "flag": "dj",
+   "x": 1214,
+   "y": 468
+  }
+ ],
+ "balance": {
+  "tribes_default": 60
+ },
+ "stats": {
+  "land_tiles": 963230,
+  "continents": 1,
+  "islands": 27
+ },
+ "source": "Natural Earth + NOAA ETOPO1 via tools/maps/make_maps.py (exported by tools/export_luau_maps.py)",
+ "license": "Public domain (map data)"
+}

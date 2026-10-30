@@ -1,0 +1,537 @@
+{
+ "id": "north_america",
+ "category": "regional",
+ "name": {
+  "ru": "Северная Америка",
+  "en": "North America"
+ },
+ "description": {
+  "ru": "Штаты и провинции США, Канады и Мексики, Карибские острова и арктический архипелаг.",
+  "en": "States and provinces of the USA, Canada and Mexico, the Caribbean and the Arctic archipelago."
+ },
+ "features": [
+  "large",
+  "arctic_islands",
+  "caribbean"
+ ],
+ "width": 1655,
+ "height": 1224,
+ "k_lin": 1.0,
+ "recommended_bots": [
+  15,
+  45
+ ],
+ "max_bots": 50,
+ "nations": [
+  {
+   "id": "north_america_0",
+   "name": {
+    "ru": "Гватемала",
+    "en": "Guatemala"
+   },
+   "flag": "gt",
+   "x": 1096,
+   "y": 1080
+  },
+  {
+   "id": "north_america_1",
+   "name": {
+    "ru": "Куба",
+    "en": "Cuba"
+   },
+   "flag": "cu",
+   "x": 1268,
+   "y": 965
+  },
+  {
+   "id": "north_america_2",
+   "name": {
+    "ru": "Доминиканская Республика",
+    "en": "Dominican Republic"
+   },
+   "flag": "do",
+   "x": 1369,
+   "y": 1006
+  },
+  {
+   "id": "north_america_3",
+   "name": {
+    "ru": "Никарагуа",
+    "en": "Nicaragua"
+   },
+   "flag": "ni",
+   "x": 1171,
+   "y": 1121
+  },
+  {
+   "id": "north_america_4",
+   "name": {
+    "ru": "Панама",
+    "en": "Panama"
+   },
+   "flag": "pa",
+   "x": 1236,
+   "y": 1193
+  },
+  {
+   "id": "north_america_5",
+   "name": {
+    "ru": "Аляска",
+    "en": "Alaska"
+   },
+   "flag": "us",
+   "x": 253,
+   "y": 173
+  },
+  {
+   "id": "north_america_6",
+   "name": {
+    "ru": "Нунавут",
+    "en": "Nunavut"
+   },
+   "flag": "ca",
+   "x": 1004,
+   "y": 191
+  },
+  {
+   "id": "north_america_7",
+   "name": {
+    "ru": "Ньюфаундленд и Лабрадор",
+    "en": "Newfoundland and Labrador"
+   },
+   "flag": "ca",
+   "x": 1568,
+   "y": 474
+  },
+  {
+   "id": "north_america_8",
+   "name": {
+    "ru": "Калифорния",
+    "en": "California"
+   },
+   "flag": "california",
+   "x": 695,
+   "y": 688
+  },
+  {
+   "id": "north_america_9",
+   "name": {
+    "ru": "Мичиган",
+    "en": "Michigan"
+   },
+   "flag": "us",
+   "x": 1172,
+   "y": 568
+  },
+  {
+   "id": "north_america_10",
+   "name": {
+    "ru": "Британская Колумбия",
+    "en": "British Columbia"
+   },
+   "flag": "ca",
+   "x": 625,
+   "y": 365
+  },
+  {
+   "id": "north_america_11",
+   "name": {
+    "ru": "Техас",
+    "en": "Texas"
+   },
+   "flag": "us",
+   "x": 982,
+   "y": 789
+  },
+  {
+   "id": "north_america_12",
+   "name": {
+    "ru": "Монтана",
+    "en": "Montana"
+   },
+   "flag": "us",
+   "x": 826,
+   "y": 504
+  },
+  {
+   "id": "north_america_13",
+   "name": {
+    "ru": "Квебек",
+    "en": "Quebec"
+   },
+   "flag": "ca",
+   "x": 1327,
+   "y": 409
+  },
+  {
+   "id": "north_america_14",
+   "name": {
+    "ru": "Юкон",
+    "en": "Yukon"
+   },
+   "flag": "ca",
+   "x": 472,
+   "y": 205
+  },
+  {
+   "id": "north_america_15",
+   "name": {
+    "ru": "Южная Нижняя Калифорния",
+    "en": "Baja California Sur"
+   },
+   "flag": "mx",
+   "x": 807,
+   "y": 898
+  },
+  {
+   "id": "north_america_16",
+   "name": {
+    "ru": "Грузия",
+    "en": "Georgia"
+   },
+   "flag": "us",
+   "x": 1194,
+   "y": 758
+  },
+  {
+   "id": "north_america_17",
+   "name": {
+    "ru": "Северо-Западные территории",
+    "en": "Northwest Territories"
+   },
+   "flag": "ca",
+   "x": 690,
+   "y": 196
+  },
+  {
+   "id": "north_america_18",
+   "name": {
+    "ru": "Небраска",
+    "en": "Nebraska"
+   },
+   "flag": "us",
+   "x": 969,
+   "y": 602
+  },
+  {
+   "id": "north_america_19",
+   "name": {
+    "ru": "Манитоба",
+    "en": "Manitoba"
+   },
+   "flag": "ca",
+   "x": 1000,
+   "y": 361
+  },
+  {
+   "id": "north_america_20",
+   "name": {
+    "ru": "Мичоакан",
+    "en": "Michoacán"
+   },
+   "flag": "mx",
+   "x": 938,
+   "y": 1003
+  },
+  {
+   "id": "north_america_21",
+   "name": {
+    "ru": "Нью-Гэмпшир",
+    "en": "New Hampshire"
+   },
+   "flag": "us",
+   "x": 1356,
+   "y": 565
+  },
+  {
+   "id": "north_america_22",
+   "name": {
+    "ru": "Вашингтон",
+    "en": "Washington"
+   },
+   "flag": "us",
+   "x": 684,
+   "y": 495
+  },
+  {
+   "id": "north_america_23",
+   "name": {
+    "ru": "Альберта",
+    "en": "Alberta"
+   },
+   "flag": "ca",
+   "x": 758,
+   "y": 354
+  },
+  {
+   "id": "north_america_24",
+   "name": {
+    "ru": "Онтарио",
+    "en": "Ontario"
+   },
+   "flag": "ca",
+   "x": 1174,
+   "y": 440
+  },
+  {
+   "id": "north_america_25",
+   "name": {
+    "ru": "Юта",
+    "en": "Utah"
+   },
+   "flag": "us",
+   "x": 806,
+   "y": 638
+  },
+  {
+   "id": "north_america_26",
+   "name": {
+    "ru": "Миннесота",
+    "en": "Minnesota"
+   },
+   "flag": "us",
+   "x": 1056,
+   "y": 520
+  },
+  {
+   "id": "north_america_27",
+   "name": {
+    "ru": "Нью-Мексико",
+    "en": "New Mexico"
+   },
+   "flag": "us",
+   "x": 882,
+   "y": 728
+  },
+  {
+   "id": "north_america_28",
+   "name": {
+    "ru": "Саскачеван",
+    "en": "Saskatchewan"
+   },
+   "flag": "ca",
+   "x": 886,
+   "y": 369
+  },
+  {
+   "id": "north_america_29",
+   "name": {
+    "ru": "Миссури",
+    "en": "Missouri"
+   },
+   "flag": "us",
+   "x": 1069,
+   "y": 656
+  },
+  {
+   "id": "north_america_30",
+   "name": {
+    "ru": "Виргиния",
+    "en": "Virginia"
+   },
+   "flag": "us",
+   "x": 1265,
+   "y": 670
+  },
+  {
+   "id": "north_america_31",
+   "name": {
+    "ru": "Новая Шотландия",
+    "en": "Nova Scotia"
+   },
+   "flag": "ca",
+   "x": 1478,
+   "y": 535
+  },
+  {
+   "id": "north_america_32",
+   "name": {
+    "ru": "Нижняя Калифорния",
+    "en": "Baja California"
+   },
+   "flag": "mx",
+   "x": 755,
+   "y": 803
+  },
+  {
+   "id": "north_america_33",
+   "name": {
+    "ru": "Юкатан",
+    "en": "Yucatán"
+   },
+   "flag": "mx",
+   "x": 1117,
+   "y": 978
+  },
+  {
+   "id": "north_america_34",
+   "name": {
+    "ru": "Нуэво-Леон",
+    "en": "Nuevo León"
+   },
+   "flag": "mx",
+   "x": 967,
+   "y": 888
+  },
+  {
+   "id": "north_america_35",
+   "name": {
+    "ru": "Чиуауа",
+    "en": "Chihuahua"
+   },
+   "flag": "mx",
+   "x": 879,
+   "y": 828
+  },
+  {
+   "id": "north_america_36",
+   "name": {
+    "ru": "Северная Дакота",
+    "en": "North Dakota"
+   },
+   "flag": "us",
+   "x": 961,
+   "y": 495
+  },
+  {
+   "id": "north_america_37",
+   "name": {
+    "ru": "Луизиана",
+    "en": "Louisiana"
+   },
+   "flag": "us",
+   "x": 1075,
+   "y": 800
+  },
+  {
+   "id": "north_america_38",
+   "name": {
+    "ru": "Флорида",
+    "en": "Florida"
+   },
+   "flag": "us",
+   "x": 1218,
+   "y": 843
+  },
+  {
+   "id": "north_america_39",
+   "name": {
+    "ru": "Кентукки",
+    "en": "Kentucky"
+   },
+   "flag": "us",
+   "x": 1164,
+   "y": 676
+  },
+  {
+   "id": "north_america_40",
+   "name": {
+    "ru": "Оахака",
+    "en": "Oaxaca"
+   },
+   "flag": "mx",
+   "x": 1017,
+   "y": 1045
+  },
+  {
+   "id": "north_america_41",
+   "name": {
+    "ru": "Аризона",
+    "en": "Arizona"
+   },
+   "flag": "us",
+   "x": 800,
+   "y": 732
+  },
+  {
+   "id": "north_america_42",
+   "name": {
+    "ru": "Оклахома",
+    "en": "Oklahoma"
+   },
+   "flag": "us",
+   "x": 1004,
+   "y": 711
+  },
+  {
+   "id": "north_america_43",
+   "name": {
+    "ru": "Колорадо",
+    "en": "Colorado"
+   },
+   "flag": "us",
+   "x": 888,
+   "y": 648
+  },
+  {
+   "id": "north_america_44",
+   "name": {
+    "ru": "Айдахо",
+    "en": "Idaho"
+   },
+   "flag": "us",
+   "x": 770,
+   "y": 561
+  },
+  {
+   "id": "north_america_45",
+   "name": {
+    "ru": "Вайоминг",
+    "en": "Wyoming"
+   },
+   "flag": "us",
+   "x": 861,
+   "y": 576
+  },
+  {
+   "id": "north_america_46",
+   "name": {
+    "ru": "Дуранго",
+    "en": "Durango"
+   },
+   "flag": "mx",
+   "x": 898,
+   "y": 907
+  },
+  {
+   "id": "north_america_47",
+   "name": {
+    "ru": "Арканзас",
+    "en": "Arkansas"
+   },
+   "flag": "us",
+   "x": 1073,
+   "y": 724
+  },
+  {
+   "id": "north_america_48",
+   "name": {
+    "ru": "Орегон",
+    "en": "Oregon"
+   },
+   "flag": "us",
+   "x": 684,
+   "y": 561
+  },
+  {
+   "id": "north_america_49",
+   "name": {
+    "ru": "Айова",
+    "en": "Iowa"
+   },
+   "flag": "us",
+   "x": 1056,
+   "y": 593
+  }
+ ],
+ "balance": {
+  "tribes_default": 60
+ },
+ "stats": {
+  "land_tiles": 738172,
+  "continents": 2,
+  "islands": 68
+ },
+ "source": "Natural Earth + NOAA ETOPO1 via tools/maps/make_maps.py (exported by tools/export_luau_maps.py)",
+ "license": "Public domain (map data)"
+}

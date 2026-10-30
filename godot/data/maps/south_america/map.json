@@ -1,0 +1,396 @@
+{
+ "id": "south_america",
+ "category": "regional",
+ "name": {
+  "ru": "Южная Америка",
+  "en": "South America"
+ },
+ "description": {
+  "ru": "Анды, Амазония и пампа: длинный узкий континент с горным хребтом вдоль запада.",
+  "en": "The Andes, Amazonia and the pampas: a long continent with a mountain wall in the west."
+ },
+ "features": [
+  "mountains",
+  "land_war"
+ ],
+ "width": 1165,
+ "height": 1420,
+ "k_lin": 1.0,
+ "recommended_bots": [
+  10,
+  30
+ ],
+ "max_bots": 36,
+ "nations": [
+  {
+   "id": "south_america_0",
+   "name": {
+    "ru": "Чили",
+    "en": "Chile"
+   },
+   "flag": "cl",
+   "x": 369,
+   "y": 1043
+  },
+  {
+   "id": "south_america_1",
+   "name": {
+    "ru": "Эквадор",
+    "en": "Ecuador"
+   },
+   "flag": "ec",
+   "x": 259,
+   "y": 305
+  },
+  {
+   "id": "south_america_2",
+   "name": {
+    "ru": "Парагвай",
+    "en": "Paraguay"
+   },
+   "flag": "py",
+   "x": 598,
+   "y": 713
+  },
+  {
+   "id": "south_america_3",
+   "name": {
+    "ru": "Уругвай",
+    "en": "Uruguay"
+   },
+   "flag": "uy",
+   "x": 677,
+   "y": 939
+  },
+  {
+   "id": "south_america_4",
+   "name": {
+    "ru": "Гайана",
+    "en": "Guyana"
+   },
+   "flag": "gy",
+   "x": 621,
+   "y": 177
+  },
+  {
+   "id": "south_america_5",
+   "name": {
+    "ru": "Суринам",
+    "en": "Suriname"
+   },
+   "flag": "sr",
+   "x": 678,
+   "y": 197
+  },
+  {
+   "id": "south_america_6",
+   "name": {
+    "ru": "Алагоас",
+    "en": "Alagoas"
+   },
+   "flag": "br",
+   "x": 1039,
+   "y": 475
+  },
+  {
+   "id": "south_america_7",
+   "name": {
+    "ru": "Огненная Земля",
+    "en": "Tierra del Fuego"
+   },
+   "flag": "ar",
+   "x": 459,
+   "y": 1367
+  },
+  {
+   "id": "south_america_8",
+   "name": {
+    "ru": "Рио-де-Жанейро",
+    "en": "Rio de Janeiro"
+   },
+   "flag": "br",
+   "x": 918,
+   "y": 728
+  },
+  {
+   "id": "south_america_9",
+   "name": {
+    "ru": "Гуахира",
+    "en": "La Guajira"
+   },
+   "flag": "co",
+   "x": 363,
+   "y": 51
+  },
+  {
+   "id": "south_america_10",
+   "name": {
+    "ru": "Апуримак",
+    "en": "Apurímac"
+   },
+   "flag": "pe",
+   "x": 357,
+   "y": 560
+  },
+  {
+   "id": "south_america_11",
+   "name": {
+    "ru": "Токантинс",
+    "en": "Tocantins"
+   },
+   "flag": "br",
+   "x": 822,
+   "y": 484
+  },
+  {
+   "id": "south_america_12",
+   "name": {
+    "ru": "Амазонас",
+    "en": "Amazonas"
+   },
+   "flag": "br",
+   "x": 530,
+   "y": 364
+  },
+  {
+   "id": "south_america_13",
+   "name": {
+    "ru": "Ла-Риоха",
+    "en": "La Rioja"
+   },
+   "flag": "ar",
+   "x": 459,
+   "y": 867
+  },
+  {
+   "id": "south_america_14",
+   "name": {
+    "ru": "Гуайния",
+    "en": "Guainía"
+   },
+   "flag": "co",
+   "x": 434,
+   "y": 225
+  },
+  {
+   "id": "south_america_15",
+   "name": {
+    "ru": "Парана",
+    "en": "Paraná"
+   },
+   "flag": "br",
+   "x": 764,
+   "y": 773
+  },
+  {
+   "id": "south_america_16",
+   "name": {
+    "ru": "Бени",
+    "en": "Beni"
+   },
+   "flag": "bo",
+   "x": 515,
+   "y": 560
+  },
+  {
+   "id": "south_america_17",
+   "name": {
+    "ru": "Мату-Гросу",
+    "en": "Mato Grosso"
+   },
+   "flag": "br",
+   "x": 678,
+   "y": 547
+  },
+  {
+   "id": "south_america_18",
+   "name": {
+    "ru": "Чубут",
+    "en": "Chubut"
+   },
+   "flag": "ar",
+   "x": 453,
+   "y": 1159
+  },
+  {
+   "id": "south_america_19",
+   "name": {
+    "ru": "Пара",
+    "en": "Pará"
+   },
+   "flag": "br",
+   "x": 739,
+   "y": 368
+  },
+  {
+   "id": "south_america_20",
+   "name": {
+    "ru": "Ла-Либертад",
+    "en": "La Libertad"
+   },
+   "flag": "pe",
+   "x": 257,
+   "y": 444
+  },
+  {
+   "id": "south_america_21",
+   "name": {
+    "ru": "Чоко",
+    "en": "Chocó"
+   },
+   "flag": "co",
+   "x": 287,
+   "y": 172
+  },
+  {
+   "id": "south_america_22",
+   "name": {
+    "ru": "Гуарико",
+    "en": "Guárico State"
+   },
+   "flag": "ve",
+   "x": 479,
+   "y": 105
+  },
+  {
+   "id": "south_america_23",
+   "name": {
+    "ru": "Потоси",
+    "en": "Potosí"
+   },
+   "flag": "bo",
+   "x": 474,
+   "y": 698
+  },
+  {
+   "id": "south_america_24",
+   "name": {
+    "ru": "Ла-Пампа",
+    "en": "La Pampa"
+   },
+   "flag": "ar",
+   "x": 491,
+   "y": 1027
+  },
+  {
+   "id": "south_america_25",
+   "name": {
+    "ru": "Мараньян",
+    "en": "Maranhão"
+   },
+   "flag": "br",
+   "x": 876,
+   "y": 380
+  },
+  {
+   "id": "south_america_26",
+   "name": {
+    "ru": "Гояс",
+    "en": "Goiás"
+   },
+   "flag": "br",
+   "x": 797,
+   "y": 597
+  },
+  {
+   "id": "south_america_27",
+   "name": {
+    "ru": "Акри",
+    "en": "Acre"
+   },
+   "flag": "br",
+   "x": 407,
+   "y": 458
+  },
+  {
+   "id": "south_america_28",
+   "name": {
+    "ru": "Баия",
+    "en": "Bahia"
+   },
+   "flag": "br",
+   "x": 943,
+   "y": 527
+  },
+  {
+   "id": "south_america_29",
+   "name": {
+    "ru": "Буэнос-Айрес",
+    "en": "Buenos Aires"
+   },
+   "flag": "ar",
+   "x": 599,
+   "y": 1013
+  },
+  {
+   "id": "south_america_30",
+   "name": {
+    "ru": "Санта-Фе",
+    "en": "Santa Fe"
+   },
+   "flag": "ar",
+   "x": 585,
+   "y": 895
+  },
+  {
+   "id": "south_america_31",
+   "name": {
+    "ru": "Сеара",
+    "en": "Ceará"
+   },
+   "flag": "br",
+   "x": 989,
+   "y": 387
+  },
+  {
+   "id": "south_america_32",
+   "name": {
+    "ru": "Лорето",
+    "en": "Loreto"
+   },
+   "flag": "pe",
+   "x": 340,
+   "y": 365
+  },
+  {
+   "id": "south_america_33",
+   "name": {
+    "ru": "Мату-Гросу-ду-Сул",
+    "en": "Mato Grosso do Sul"
+   },
+   "flag": "br",
+   "x": 703,
+   "y": 693
+  },
+  {
+   "id": "south_america_34",
+   "name": {
+    "ru": "Амапа",
+    "en": "Amapá"
+   },
+   "flag": "br",
+   "x": 757,
+   "y": 251
+  },
+  {
+   "id": "south_america_35",
+   "name": {
+    "ru": "Сальта",
+    "en": "Salta"
+   },
+   "flag": "ar",
+   "x": 517,
+   "y": 780
+  }
+ ],
+ "balance": {
+  "tribes_default": 60
+ },
+ "stats": {
+  "land_tiles": 587124,
+  "continents": 1,
+  "islands": 18
+ },
+ "source": "Natural Earth + NOAA ETOPO1 via tools/maps/make_maps.py (exported by tools/export_luau_maps.py)",
+ "license": "Public domain (map data)"
+}

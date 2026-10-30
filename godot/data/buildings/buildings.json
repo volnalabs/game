@@ -1,0 +1,14 @@
+{
+	"_comment": "Building kinds. cost: gold = min(cost_cap, cost_base * cost_growth^min(n, cost_growth_max_n)) for 'exp', or min(cost_cap, cost_base * (n + 1)) for 'linear'; n = levels already owned. Placement rules from RoWorld (src/shared/Core/SimStructures.luau).",
+	"min_distance": 15.0,
+	"search_radius": 15.0,
+	"port_search_manhattan": 20.0,
+	"kinds": [
+		{"id": "city", "cost_mode": "exp", "cost_base": 125000, "cost_growth": 2.0, "cost_growth_max_n": 4, "cost_cap": 1000000, "supplies": 0, "build_ticks": 50, "upgradable": true, "coastal": false, "icon": "city"},
+		{"id": "port", "cost_mode": "exp", "cost_base": 125000, "cost_growth": 2.0, "cost_growth_max_n": 4, "cost_cap": 1000000, "supplies": 0, "build_ticks": 50, "upgradable": true, "coastal": true, "icon": "port"},
+		{"id": "factory", "cost_mode": "exp", "cost_base": 125000, "cost_growth": 2.0, "cost_growth_max_n": 4, "cost_cap": 1000000, "supplies": 0, "build_ticks": 50, "upgradable": true, "coastal": false, "icon": "factory"},
+		{"id": "defense", "cost_mode": "linear", "cost_base": 50000, "cost_cap": 250000, "supplies": 300, "build_ticks": 50, "upgradable": false, "coastal": false, "icon": "defense", "radius": 30.0, "mag_mult": 5.0, "cost_mult": 3.0},
+		{"id": "sam", "cost_mode": "linear", "cost_base": 1500000, "cost_cap": 3000000, "supplies": 1500, "build_ticks": 300, "upgradable": true, "coastal": false, "icon": "sam", "radius": 70.0, "phase": "5b"},
+		{"id": "silo", "cost_mode": "linear", "cost_base": 1000000, "cost_cap": 1000000, "supplies": 2000, "build_ticks": 100, "upgradable": true, "coastal": false, "icon": "silo", "phase": "5b"}
+	]
+}

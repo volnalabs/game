@@ -1,0 +1,677 @@
+{
+ "id": "asia",
+ "category": "regional",
+ "name": {
+  "ru": "Азия",
+  "en": "Asia"
+ },
+ "description": {
+  "ru": "Огромный континент: Сибирь, Гималаи, Китай, Индия и острова Юго-Восточной Азии.",
+  "en": "A huge continent: Siberia, the Himalayas, China, India and the islands of South-East Asia."
+ },
+ "features": [
+  "large",
+  "mountains",
+  "islands"
+ ],
+ "width": 1536,
+ "height": 1350,
+ "k_lin": 1.0,
+ "recommended_bots": [
+  20,
+  55
+ ],
+ "max_bots": 64,
+ "nations": [
+  {
+   "id": "asia_0",
+   "name": {
+    "ru": "Пакистан",
+    "en": "Pakistan"
+   },
+   "flag": "pk",
+   "x": 535,
+   "y": 730
+  },
+  {
+   "id": "asia_1",
+   "name": {
+    "ru": "Бангладеш",
+    "en": "Bangladesh"
+   },
+   "flag": "bd",
+   "x": 794,
+   "y": 806
+  },
+  {
+   "id": "asia_2",
+   "name": {
+    "ru": "Япония",
+    "en": "Japan"
+   },
+   "flag": "jp",
+   "x": 1393,
+   "y": 627
+  },
+  {
+   "id": "asia_3",
+   "name": {
+    "ru": "Филиппины",
+    "en": "Philippines"
+   },
+   "flag": "ph",
+   "x": 1197,
+   "y": 1002
+  },
+  {
+   "id": "asia_4",
+   "name": {
+    "ru": "Вьетнам",
+    "en": "Vietnam"
+   },
+   "flag": "vn",
+   "x": 987,
+   "y": 844
+  },
+  {
+   "id": "asia_5",
+   "name": {
+    "ru": "Турция",
+    "en": "Türkiye"
+   },
+   "flag": "tr",
+   "x": 116,
+   "y": 579
+  },
+  {
+   "id": "asia_6",
+   "name": {
+    "ru": "Иран",
+    "en": "Iran"
+   },
+   "flag": "ir",
+   "x": 367,
+   "y": 687
+  },
+  {
+   "id": "asia_7",
+   "name": {
+    "ru": "Таиланд",
+    "en": "Thailand"
+   },
+   "flag": "th",
+   "x": 934,
+   "y": 938
+  },
+  {
+   "id": "asia_8",
+   "name": {
+    "ru": "Мьянма",
+    "en": "Myanmar"
+   },
+   "flag": "mm",
+   "x": 869,
+   "y": 846
+  },
+  {
+   "id": "asia_9",
+   "name": {
+    "ru": "Южная Корея",
+    "en": "South Korea"
+   },
+   "flag": "kr",
+   "x": 1267,
+   "y": 624
+  },
+  {
+   "id": "asia_10",
+   "name": {
+    "ru": "Ирак",
+    "en": "Iraq"
+   },
+   "flag": "iq",
+   "x": 224,
+   "y": 673
+  },
+  {
+   "id": "asia_11",
+   "name": {
+    "ru": "Афганистан",
+    "en": "Afghanistan"
+   },
+   "flag": "af",
+   "x": 509,
+   "y": 657
+  },
+  {
+   "id": "asia_12",
+   "name": {
+    "ru": "Саудовская Аравия",
+    "en": "Saudi Arabia"
+   },
+   "flag": "sa",
+   "x": 242,
+   "y": 812
+  },
+  {
+   "id": "asia_13",
+   "name": {
+    "ru": "Узбекистан",
+    "en": "Uzbekistan"
+   },
+   "flag": "uz",
+   "x": 479,
+   "y": 544
+  },
+  {
+   "id": "asia_14",
+   "name": {
+    "ru": "Малайзия",
+    "en": "Malaysia"
+   },
+   "flag": "my",
+   "x": 1091,
+   "y": 1132
+  },
+  {
+   "id": "asia_15",
+   "name": {
+    "ru": "Йемен",
+    "en": "Yemen"
+   },
+   "flag": "ye",
+   "x": 256,
+   "y": 940
+  },
+  {
+   "id": "asia_16",
+   "name": {
+    "ru": "Непал",
+    "en": "Nepal"
+   },
+   "flag": "np",
+   "x": 720,
+   "y": 745
+  },
+  {
+   "id": "asia_17",
+   "name": {
+    "ru": "КНДР",
+    "en": "North Korea"
+   },
+   "flag": "kp",
+   "x": 1246,
+   "y": 571
+  },
+  {
+   "id": "asia_18",
+   "name": {
+    "ru": "Тайвань",
+    "en": "Taiwan"
+   },
+   "flag": "tw",
+   "x": 1177,
+   "y": 815
+  },
+  {
+   "id": "asia_19",
+   "name": {
+    "ru": "Шри-Ланка",
+    "en": "Sri Lanka"
+   },
+   "flag": "lk",
+   "x": 684,
+   "y": 1056
+  },
+  {
+   "id": "asia_20",
+   "name": {
+    "ru": "Сирия",
+    "en": "Syria"
+   },
+   "flag": "sy",
+   "x": 163,
+   "y": 644
+  },
+  {
+   "id": "asia_21",
+   "name": {
+    "ru": "Камбоджа",
+    "en": "Cambodia"
+   },
+   "flag": "kh",
+   "x": 977,
+   "y": 980
+  },
+  {
+   "id": "asia_22",
+   "name": {
+    "ru": "Иордания",
+    "en": "Jordan"
+   },
+   "flag": "jo",
+   "x": 139,
+   "y": 707
+  },
+  {
+   "id": "asia_23",
+   "name": {
+    "ru": "Азербайджан",
+    "en": "Azerbaijan"
+   },
+   "flag": "az",
+   "x": 272,
+   "y": 563
+  },
+  {
+   "id": "asia_24",
+   "name": {
+    "ru": "ОАЭ",
+    "en": "United Arab Emirates"
+   },
+   "flag": "ae",
+   "x": 363,
+   "y": 818
+  },
+  {
+   "id": "asia_25",
+   "name": {
+    "ru": "Таджикистан",
+    "en": "Tajikistan"
+   },
+   "flag": "tj",
+   "x": 584,
+   "y": 597
+  },
+  {
+   "id": "asia_26",
+   "name": {
+    "ru": "Киргизия",
+    "en": "Kyrgyzstan"
+   },
+   "flag": "kg",
+   "x": 608,
+   "y": 544
+  },
+  {
+   "id": "asia_27",
+   "name": {
+    "ru": "Туркмения",
+    "en": "Turkmenistan"
+   },
+   "flag": "tm",
+   "x": 413,
+   "y": 572
+  },
+  {
+   "id": "asia_28",
+   "name": {
+    "ru": "Бутан",
+    "en": "Bhutan"
+   },
+   "flag": "bt",
+   "x": 799,
+   "y": 756
+  },
+  {
+   "id": "asia_29",
+   "name": {
+    "ru": "Красноярский край",
+    "en": "Krasnoyarsk Krai"
+   },
+   "flag": "ru",
+   "x": 862,
+   "y": 186
+  },
+  {
+   "id": "asia_30",
+   "name": {
+    "ru": "Якутия",
+    "en": "Sakha Republic"
+   },
+   "flag": "ru",
+   "x": 1302,
+   "y": 186
+  },
+  {
+   "id": "asia_31",
+   "name": {
+    "ru": "Папуа",
+    "en": "Papua"
+   },
+   "flag": "id",
+   "x": 1396,
+   "y": 1231
+  },
+  {
+   "id": "asia_32",
+   "name": {
+    "ru": "Уверхангай",
+    "en": "Övörkhangai"
+   },
+   "flag": "mn",
+   "x": 956,
+   "y": 483
+  },
+  {
+   "id": "asia_33",
+   "name": {
+    "ru": "Югра",
+    "en": "Khanty-Mansi Autonomous Okrug"
+   },
+   "flag": "ru",
+   "x": 569,
+   "y": 248
+  },
+  {
+   "id": "asia_34",
+   "name": {
+    "ru": "Алтай",
+    "en": "Altai Republic"
+   },
+   "flag": "ru",
+   "x": 761,
+   "y": 405
+  },
+  {
+   "id": "asia_35",
+   "name": {
+    "ru": "Забайкалье",
+    "en": "Zabaykalsky Krai"
+   },
+   "flag": "ru",
+   "x": 1125,
+   "y": 387
+  },
+  {
+   "id": "asia_36",
+   "name": {
+    "ru": "Восточные Малые Зондские о-ва",
+    "en": "East Nusa Tenggara"
+   },
+   "flag": "id",
+   "x": 1175,
+   "y": 1298
+  },
+  {
+   "id": "asia_37",
+   "name": {
+    "ru": "Шэньси",
+    "en": "Shaanxi"
+   },
+   "flag": "cn",
+   "x": 1024,
+   "y": 663
+  },
+  {
+   "id": "asia_38",
+   "name": {
+    "ru": "Челябинск",
+    "en": "Chelyabinsk"
+   },
+   "flag": "ru",
+   "x": 432,
+   "y": 358
+  },
+  {
+   "id": "asia_39",
+   "name": {
+    "ru": "Западная Суматра",
+    "en": "West Sumatra"
+   },
+   "flag": "id",
+   "x": 929,
+   "y": 1179
+  },
+  {
+   "id": "asia_40",
+   "name": {
+    "ru": "Махараштра",
+    "en": "Maharashtra"
+   },
+   "flag": "in",
+   "x": 620,
+   "y": 877
+  },
+  {
+   "id": "asia_41",
+   "name": {
+    "ru": "Иркутск",
+    "en": "Irkutsk"
+   },
+   "flag": "ru",
+   "x": 994,
+   "y": 317
+  },
+  {
+   "id": "asia_42",
+   "name": {
+    "ru": "Амур",
+    "en": "Amur"
+   },
+   "flag": "ru",
+   "x": 1269,
+   "y": 376
+  },
+  {
+   "id": "asia_43",
+   "name": {
+    "ru": "Цинхай",
+    "en": "Qinghai"
+   },
+   "flag": "cn",
+   "x": 875,
+   "y": 641
+  },
+  {
+   "id": "asia_44",
+   "name": {
+    "ru": "Западный Казахстан",
+    "en": "West Kazakhstan"
+   },
+   "flag": "kz",
+   "x": 313,
+   "y": 421
+  },
+  {
+   "id": "asia_45",
+   "name": {
+    "ru": "Синьцзян",
+    "en": "Xinjiang"
+   },
+   "flag": "cn",
+   "x": 742,
+   "y": 553
+  },
+  {
+   "id": "asia_46",
+   "name": {
+    "ru": "Центральная Ява",
+    "en": "Central Java"
+   },
+   "flag": "id",
+   "x": 1043,
+   "y": 1279
+  },
+  {
+   "id": "asia_47",
+   "name": {
+    "ru": "Павлодар",
+    "en": "Pavlodar"
+   },
+   "flag": "kz",
+   "x": 631,
+   "y": 386
+  },
+  {
+   "id": "asia_48",
+   "name": {
+    "ru": "Приморье",
+    "en": "Primorsky Krai"
+   },
+   "flag": "ru",
+   "x": 1346,
+   "y": 497
+  },
+  {
+   "id": "asia_49",
+   "name": {
+    "ru": "Внутренняя Монголия",
+    "en": "Inner Mongolia"
+   },
+   "flag": "cn",
+   "x": 1064,
+   "y": 546
+  },
+  {
+   "id": "asia_50",
+   "name": {
+    "ru": "Томск",
+    "en": "Tomsk"
+   },
+   "flag": "ru",
+   "x": 703,
+   "y": 293
+  },
+  {
+   "id": "asia_51",
+   "name": {
+    "ru": "Цзянсу",
+    "en": "Jiangsu"
+   },
+   "flag": "cn",
+   "x": 1166,
+   "y": 675
+  },
+  {
+   "id": "asia_52",
+   "name": {
+    "ru": "Хабаровский край",
+    "en": "Khabarovsk Krai"
+   },
+   "flag": "ru",
+   "x": 1357,
+   "y": 314
+  },
+  {
+   "id": "asia_53",
+   "name": {
+    "ru": "Хунань",
+    "en": "Hunan"
+   },
+   "flag": "cn",
+   "x": 1065,
+   "y": 754
+  },
+  {
+   "id": "asia_54",
+   "name": {
+    "ru": "Караганда",
+    "en": "Karaganda"
+   },
+   "flag": "kz",
+   "x": 555,
+   "y": 448
+  },
+  {
+   "id": "asia_55",
+   "name": {
+    "ru": "Центральный Сулавеси",
+    "en": "Central Sulawesi"
+   },
+   "flag": "id",
+   "x": 1169,
+   "y": 1189
+  },
+  {
+   "id": "asia_56",
+   "name": {
+    "ru": "Северный Казахстан",
+    "en": "North Kazakhstan"
+   },
+   "flag": "kz",
+   "x": 541,
+   "y": 353
+  },
+  {
+   "id": "asia_57",
+   "name": {
+    "ru": "Химачал-Прадеш",
+    "en": "Himachal Pradesh"
+   },
+   "flag": "in",
+   "x": 642,
+   "y": 694
+  },
+  {
+   "id": "asia_58",
+   "name": {
+    "ru": "Хэнтий",
+    "en": "Khentii"
+   },
+   "flag": "mn",
+   "x": 1051,
+   "y": 454
+  },
+  {
+   "id": "asia_59",
+   "name": {
+    "ru": "Завхан",
+    "en": "Zavkhan"
+   },
+   "flag": "mn",
+   "x": 874,
+   "y": 440
+  },
+  {
+   "id": "asia_60",
+   "name": {
+    "ru": "Актобе",
+    "en": "Aktobe"
+   },
+   "flag": "kz",
+   "x": 416,
+   "y": 449
+  },
+  {
+   "id": "asia_61",
+   "name": {
+    "ru": "Чхаттисгарх",
+    "en": "Chhattisgarh"
+   },
+   "flag": "in",
+   "x": 704,
+   "y": 842
+  },
+  {
+   "id": "asia_62",
+   "name": {
+    "ru": "Ачех",
+    "en": "Aceh"
+   },
+   "flag": "id",
+   "x": 884,
+   "y": 1103
+  },
+  {
+   "id": "asia_63",
+   "name": {
+    "ru": "Сычуань",
+    "en": "Sichuan"
+   },
+   "flag": "cn",
+   "x": 950,
+   "y": 711
+  }
+ ],
+ "balance": {
+  "tribes_default": 60
+ },
+ "stats": {
+  "land_tiles": 1202586,
+  "continents": 1,
+  "islands": 88
+ },
+ "source": "Natural Earth + NOAA ETOPO1 via tools/maps/make_maps.py (exported by tools/export_luau_maps.py)",
+ "license": "Public domain (map data)"
+}

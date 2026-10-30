@@ -1,0 +1,361 @@
+{
+	"balance": {
+		"tribes_default": 40
+	},
+	"category": "fictional",
+	"description": {
+		"en": "Five continents and scattered islands. A narrow isthmus, straits and isolated regions: some grow in peace, some fight for the passes from the first minute.",
+		"ru": "Пять материков и россыпь островов. Узкий перешеек, проливы и изолированные регионы: кто-то развивается в тишине, кто-то с первых минут дерётся за проходы."
+	},
+	"features": [
+		"continents",
+		"isthmus",
+		"straits",
+		"isolated_regions",
+		"islands"
+	],
+	"height": 900,
+	"id": "shattered_worlds",
+	"k_lin": 1.0,
+	"license": "AGPL-3.0",
+	"max_bots": 32,
+	"name": {
+		"en": "Shattered Worlds",
+		"ru": "Расколотые миры"
+	},
+	"nations": [
+		{
+			"flag": "",
+			"id": "shattered_worlds_0",
+			"name": {
+				"en": "Keora",
+				"ru": "Кеора"
+			},
+			"x": 245,
+			"y": 419
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_1",
+			"name": {
+				"en": "Ulholm",
+				"ru": "Улхольм"
+			},
+			"x": 209,
+			"y": 169
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_2",
+			"name": {
+				"en": "Orsk",
+				"ru": "Орск"
+			},
+			"x": 1291,
+			"y": 329
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_3",
+			"name": {
+				"en": "Fakoora",
+				"ru": "Факоора"
+			},
+			"x": 548,
+			"y": 306
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_4",
+			"name": {
+				"en": "Artovel",
+				"ru": "Артовель"
+			},
+			"x": 1290,
+			"y": 621
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_5",
+			"name": {
+				"en": "Noea",
+				"ru": "Ноея"
+			},
+			"x": 400,
+			"y": 482
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_6",
+			"name": {
+				"en": "Soala",
+				"ru": "Соала"
+			},
+			"x": 749,
+			"y": 415
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_7",
+			"name": {
+				"en": "Rael",
+				"ru": "Раел"
+			},
+			"x": 213,
+			"y": 330
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_8",
+			"name": {
+				"en": "Gleholm",
+				"ru": "Глехольм"
+			},
+			"x": 1294,
+			"y": 715
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_9",
+			"name": {
+				"en": "Kariea",
+				"ru": "Кариея"
+			},
+			"x": 271,
+			"y": 626
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_10",
+			"name": {
+				"en": "Taeta",
+				"ru": "Таета"
+			},
+			"x": 1254,
+			"y": 156
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_11",
+			"name": {
+				"en": "Misamar",
+				"ru": "Мисамар"
+			},
+			"x": 984,
+			"y": 421
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_12",
+			"name": {
+				"en": "Korvavel",
+				"ru": "Корвавель"
+			},
+			"x": 480,
+			"y": 700
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_13",
+			"name": {
+				"en": "Setagrad",
+				"ru": "Сетаград"
+			},
+			"x": 796,
+			"y": 312
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_14",
+			"name": {
+				"en": "Zagrad",
+				"ru": "Заград"
+			},
+			"x": 947,
+			"y": 288
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_15",
+			"name": {
+				"en": "Ostolia",
+				"ru": "Остолия"
+			},
+			"x": 399,
+			"y": 345
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_16",
+			"name": {
+				"en": "Faria",
+				"ru": "Фария"
+			},
+			"x": 377,
+			"y": 220
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_17",
+			"name": {
+				"en": "Laora",
+				"ru": "Лаора"
+			},
+			"x": 850,
+			"y": 443
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_18",
+			"name": {
+				"en": "Oror",
+				"ru": "Орор"
+			},
+			"x": 902,
+			"y": 541
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_19",
+			"name": {
+				"en": "Minein",
+				"ru": "Минеин"
+			},
+			"x": 1522,
+			"y": 262
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_20",
+			"name": {
+				"en": "Vinsael",
+				"ru": "Винсаел"
+			},
+			"x": 1385,
+			"y": 636
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_21",
+			"name": {
+				"en": "Ilvel",
+				"ru": "Илвель"
+			},
+			"x": 1468,
+			"y": 713
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_22",
+			"name": {
+				"en": "Osliora",
+				"ru": "Ослиора"
+			},
+			"x": 365,
+			"y": 615
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_23",
+			"name": {
+				"en": "Rirevel",
+				"ru": "Риревель"
+			},
+			"x": 779,
+			"y": 650
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_24",
+			"name": {
+				"en": "Selania",
+				"ru": "Селания"
+			},
+			"x": 1200,
+			"y": 703
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_25",
+			"name": {
+				"en": "Keholm",
+				"ru": "Кехольм"
+			},
+			"x": 930,
+			"y": 704
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_26",
+			"name": {
+				"en": "Rastan",
+				"ru": "Растан"
+			},
+			"x": 1411,
+			"y": 200
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_27",
+			"name": {
+				"en": "Vintoel",
+				"ru": "Винтоел"
+			},
+			"x": 291,
+			"y": 722
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_28",
+			"name": {
+				"en": "Osdor",
+				"ru": "Осдор"
+			},
+			"x": 1019,
+			"y": 581
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_29",
+			"name": {
+				"en": "Doror",
+				"ru": "Дорор"
+			},
+			"x": 1221,
+			"y": 247
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_30",
+			"name": {
+				"en": "Maren",
+				"ru": "Марен"
+			},
+			"x": 1443,
+			"y": 353
+		},
+		{
+			"flag": "",
+			"id": "shattered_worlds_31",
+			"name": {
+				"en": "Zakoen",
+				"ru": "Закоен"
+			},
+			"x": 314,
+			"y": 298
+		}
+	],
+	"recommended_bots": [
+		12.0,
+		32.0
+	],
+	"source": "VolnaLabs original (data/map_specs/shattered_worlds.json, baked by scripts/tools/bake_maps.gd)",
+	"stats": {
+		"continents": 5,
+		"fairness": 0.87875,
+		"islands": 13,
+		"land_tiles": 499787,
+		"ms": 3548
+	},
+	"width": 1800
+}

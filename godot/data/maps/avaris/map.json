@@ -1,0 +1,441 @@
+{
+	"balance": {
+		"tribes_default": 40
+	},
+	"category": "fictional",
+	"description": {
+		"en": "A vast supercontinent with inland seas, mountain ranges, rivers and a desert heart. Room for great empires and long land wars.",
+		"ru": "Огромный суперконтинент с внутренними морями, горными хребтами, реками и пустынным сердцем. Место для больших империй и долгих сухопутных войн."
+	},
+	"features": [
+		"supercontinent",
+		"inland_seas",
+		"mountains",
+		"rivers",
+		"climate_zones"
+	],
+	"height": 1000,
+	"id": "avaris",
+	"k_lin": 1.0,
+	"license": "AGPL-3.0",
+	"max_bots": 40,
+	"name": {
+		"en": "Avaris",
+		"ru": "Аварис"
+	},
+	"nations": [
+		{
+			"flag": "",
+			"id": "avaris_0",
+			"name": {
+				"en": "Talel",
+				"ru": "Талел"
+			},
+			"x": 582,
+			"y": 222
+		},
+		{
+			"flag": "",
+			"id": "avaris_1",
+			"name": {
+				"en": "Dortalia",
+				"ru": "Дорталия"
+			},
+			"x": 1186,
+			"y": 431
+		},
+		{
+			"flag": "",
+			"id": "avaris_2",
+			"name": {
+				"en": "Raviel",
+				"ru": "Равиел"
+			},
+			"x": 688,
+			"y": 796
+		},
+		{
+			"flag": "",
+			"id": "avaris_3",
+			"name": {
+				"en": "Miriholm",
+				"ru": "Мирихольм"
+			},
+			"x": 1719,
+			"y": 241
+		},
+		{
+			"flag": "",
+			"id": "avaris_4",
+			"name": {
+				"en": "Osala",
+				"ru": "Осала"
+			},
+			"x": 310,
+			"y": 507
+		},
+		{
+			"flag": "",
+			"id": "avaris_5",
+			"name": {
+				"en": "Tirostan",
+				"ru": "Тиростан"
+			},
+			"x": 1061,
+			"y": 314
+		},
+		{
+			"flag": "",
+			"id": "avaris_6",
+			"name": {
+				"en": "Glenia",
+				"ru": "Гления"
+			},
+			"x": 826,
+			"y": 529
+		},
+		{
+			"flag": "",
+			"id": "avaris_7",
+			"name": {
+				"en": "Ulin",
+				"ru": "Улин"
+			},
+			"x": 1591,
+			"y": 261
+		},
+		{
+			"flag": "",
+			"id": "avaris_8",
+			"name": {
+				"en": "Osdestan",
+				"ru": "Осдестан"
+			},
+			"x": 781,
+			"y": 200
+		},
+		{
+			"flag": "",
+			"id": "avaris_9",
+			"name": {
+				"en": "Alavel",
+				"ru": "Алавель"
+			},
+			"x": 1470,
+			"y": 495
+		},
+		{
+			"flag": "",
+			"id": "avaris_10",
+			"name": {
+				"en": "Vakois",
+				"ru": "Вакоис"
+			},
+			"x": 1408,
+			"y": 697
+		},
+		{
+			"flag": "",
+			"id": "avaris_11",
+			"name": {
+				"en": "Elea",
+				"ru": "Элея"
+			},
+			"x": 1014,
+			"y": 788
+		},
+		{
+			"flag": "",
+			"id": "avaris_12",
+			"name": {
+				"en": "Gleis",
+				"ru": "Глеис"
+			},
+			"x": 1051,
+			"y": 468
+		},
+		{
+			"flag": "",
+			"id": "avaris_13",
+			"name": {
+				"en": "Tisk",
+				"ru": "Тиск"
+			},
+			"x": 1309,
+			"y": 780
+		},
+		{
+			"flag": "",
+			"id": "avaris_14",
+			"name": {
+				"en": "Larean",
+				"ru": "Лареан"
+			},
+			"x": 1472,
+			"y": 273
+		},
+		{
+			"flag": "",
+			"id": "avaris_15",
+			"name": {
+				"en": "Damar",
+				"ru": "Дамар"
+			},
+			"x": 713,
+			"y": 391
+		},
+		{
+			"flag": "",
+			"id": "avaris_16",
+			"name": {
+				"en": "Soin",
+				"ru": "Соин"
+			},
+			"x": 1145,
+			"y": 147
+		},
+		{
+			"flag": "",
+			"id": "avaris_17",
+			"name": {
+				"en": "Lakoin",
+				"ru": "Лакоин"
+			},
+			"x": 807,
+			"y": 755
+		},
+		{
+			"flag": "",
+			"id": "avaris_18",
+			"name": {
+				"en": "Errisk",
+				"ru": "Ерриск"
+			},
+			"x": 930,
+			"y": 687
+		},
+		{
+			"flag": "",
+			"id": "avaris_19",
+			"name": {
+				"en": "Vavaor",
+				"ru": "Ваваор"
+			},
+			"x": 752,
+			"y": 639
+		},
+		{
+			"flag": "",
+			"id": "avaris_20",
+			"name": {
+				"en": "Gleroeta",
+				"ru": "Глероета"
+			},
+			"x": 405,
+			"y": 585
+		},
+		{
+			"flag": "",
+			"id": "avaris_21",
+			"name": {
+				"en": "Ririea",
+				"ru": "Ририея"
+			},
+			"x": 565,
+			"y": 468
+		},
+		{
+			"flag": "",
+			"id": "avaris_22",
+			"name": {
+				"en": "Taldor",
+				"ru": "Талдор"
+			},
+			"x": 461,
+			"y": 213
+		},
+		{
+			"flag": "",
+			"id": "avaris_23",
+			"name": {
+				"en": "Peor",
+				"ru": "Пеор"
+			},
+			"x": 1749,
+			"y": 489
+		},
+		{
+			"flag": "",
+			"id": "avaris_24",
+			"name": {
+				"en": "Ulnia",
+				"ru": "Улния"
+			},
+			"x": 399,
+			"y": 384
+		},
+		{
+			"flag": "",
+			"id": "avaris_25",
+			"name": {
+				"en": "Kask",
+				"ru": "Каск"
+			},
+			"x": 912,
+			"y": 307
+		},
+		{
+			"flag": "",
+			"id": "avaris_26",
+			"name": {
+				"en": "Tieta",
+				"ru": "Тиета"
+			},
+			"x": 1721,
+			"y": 668
+		},
+		{
+			"flag": "",
+			"id": "avaris_27",
+			"name": {
+				"en": "Kastan",
+				"ru": "Кастан"
+			},
+			"x": 1176,
+			"y": 743
+		},
+		{
+			"flag": "",
+			"id": "avaris_28",
+			"name": {
+				"en": "Korviel",
+				"ru": "Корвиел"
+			},
+			"x": 957,
+			"y": 571
+		},
+		{
+			"flag": "",
+			"id": "avaris_29",
+			"name": {
+				"en": "Ariel",
+				"ru": "Ариел"
+			},
+			"x": 1461,
+			"y": 826
+		},
+		{
+			"flag": "",
+			"id": "avaris_30",
+			"name": {
+				"en": "Heholm",
+				"ru": "Хехольм"
+			},
+			"x": 1364,
+			"y": 562
+		},
+		{
+			"flag": "",
+			"id": "avaris_31",
+			"name": {
+				"en": "Korlador",
+				"ru": "Корладор"
+			},
+			"x": 1329,
+			"y": 383
+		},
+		{
+			"flag": "",
+			"id": "avaris_32",
+			"name": {
+				"en": "Dalisk",
+				"ru": "Далиск"
+			},
+			"x": 255,
+			"y": 636
+		},
+		{
+			"flag": "",
+			"id": "avaris_33",
+			"name": {
+				"en": "Ilholm",
+				"ru": "Илхольм"
+			},
+			"x": 1605,
+			"y": 486
+		},
+		{
+			"flag": "",
+			"id": "avaris_34",
+			"name": {
+				"en": "Kain",
+				"ru": "Каин"
+			},
+			"x": 1234,
+			"y": 297
+		},
+		{
+			"flag": "",
+			"id": "avaris_35",
+			"name": {
+				"en": "Mivastan",
+				"ru": "Мивастан"
+			},
+			"x": 1547,
+			"y": 729
+		},
+		{
+			"flag": "",
+			"id": "avaris_36",
+			"name": {
+				"en": "Dorin",
+				"ru": "Дорин"
+			},
+			"x": 1108,
+			"y": 587
+		},
+		{
+			"flag": "",
+			"id": "avaris_37",
+			"name": {
+				"en": "Ristan",
+				"ru": "Ристан"
+			},
+			"x": 1573,
+			"y": 612
+		},
+		{
+			"flag": "",
+			"id": "avaris_38",
+			"name": {
+				"en": "Ornesk",
+				"ru": "Орнеск"
+			},
+			"x": 580,
+			"y": 718
+		},
+		{
+			"flag": "",
+			"id": "avaris_39",
+			"name": {
+				"en": "Erneora",
+				"ru": "Ернеора"
+			},
+			"x": 682,
+			"y": 517
+		}
+	],
+	"recommended_bots": [
+		16.0,
+		40.0
+	],
+	"source": "VolnaLabs original (data/map_specs/avaris.json, baked by scripts/tools/bake_maps.gd)",
+	"stats": {
+		"continents": 1,
+		"fairness": 0.8575,
+		"islands": 5,
+		"land_tiles": 999733,
+		"ms": 4909
+	},
+	"width": 2000
+}
