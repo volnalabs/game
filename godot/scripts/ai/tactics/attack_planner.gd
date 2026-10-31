@@ -11,6 +11,21 @@ static func tile_worth(tiles: int) -> float:
 	return 25.0 + 600.0 * pow(maxf(float(tiles), 1.0), -0.4)
 
 
+## Value of one troop spent: troops regrow (fastest around 40 % of the cap), land stays. A troop
+## costs the share of the planning horizon needed to regrow the `n` troops sent, so a state
+## with fast growth can afford bold attacks and an exhausted one cannot.
+const REGROW_HORIZON := 1500.0
+
+
+static func troop_cost(bot: StrategicAI, n: float) -> float:
+	var st := bot.sim.st
+	var r := bot.sim.rules
+	var cap := bot.cap()
+	var after := maxf(0.0, bot.troops() - n)
+	var g := maxf(r.troop_growth(st.o_kind[bot.id], (after + bot.troops()) * 0.5, cap), 1.0)
+	return clampf(n / g / REGROW_HORIZON, 0.2, 1.5)
+
+
 static func curve_for(bot: StrategicAI, target: int, n_max: float) -> Dictionary:
 	var nv: AIPerception.NeighborView = bot.perception.neighbors.get(target)
 	if nv == null:
@@ -33,7 +48,7 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 	var p := bot.perception
 	var pers := bot.pers
 	var worth := tile_worth(st.o_tiles[bot.id])
-	var troop_cost := 1.0 + (1.0 - bot.fill()) * 0.6
+	var troop_cost := AttackPlanner.troop_cost(bot, troops)
 	if target == 0:
 		if p.free_contact == 0:
 			return {"u": -1.0, "reason": "no_free_land", "troops": troops}
@@ -50,10 +65,18 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 		curve = curve_for(bot, target, troops)
 	var fc := BattleForecaster.sample(curve, troops)
 	var rel: Dictionary = bot.relation(target)
+	# Learned correction from earlier attacks on this target.
+	var eff: float = rel.get("eff", 1.0)
+	if eff < 0.999 or eff > 1.001:
+		fc["captured"] = float(fc["captured"]) * eff
+		fc["killed"] = float(fc["killed"]) * eff
+		if eff < 0.7:
+			fc["annex"] = false
 	var threat: float = bot.threats.get(target, 0.0)
 	var value_mult := clampf(nv.avg_value(), 0.3, 1.6)
 	var gain: float = float(fc["captured"]) * worth * value_mult * float(pers["expansion"])
-	var weaken: float = float(fc["killed"]) * (0.25 + 0.6 * minf(threat, 1.5))
+	# Killed enemies regrow too: worth a share of a troop, more when the target threatens us.
+	var weaken: float = float(fc["killed"]) * (0.1 + 0.25 * minf(threat, 1.6))
 	var annex_bonus := 0.0
 	if fc["annex"]:
 		annex_bonus = 0.25 * troops + float(nv.tiles) * 2.0
@@ -72,7 +95,9 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 	for o: int in p.neighbors:
 		if o != target:
 			danger += ThreatAssessment.danger_from(bot, o)
-	var exposure := maxf(0.0, danger - home) * 0.6 * float(bot.diff["exposure_weight"]) * (1.0 - float(pers["risk_tolerance"]))
+	# The target itself may strike back with what survives the attack.
+	danger += maxf(0.0, nv.est_troops - float(fc["killed"])) * 0.5
+	var exposure := maxf(0.0, danger - home) * 0.25 * float(bot.diff["exposure_weight"]) * (1.0 - float(pers["risk_tolerance"]))
 	var u: float = (gain + weaken + annex_bonus + opp + grudge + coalition) * float(pers["war_appetite"]) - losses - exposure
 	var grace := false
 	if target == sim.player_id and sim.elapsed_seconds() * 10.0 < float(bot.diff["player_grace_ticks"]) and float(rel["grudge"]) <= 0.0:

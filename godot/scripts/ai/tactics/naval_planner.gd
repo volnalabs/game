@@ -65,7 +65,7 @@ static func best_landing(bot: StrategicAI) -> Dictionary:
 					"def_tiles": float(st.o_tiles[o]), "def_kind": st.o_kind[o], "border": 6.0,
 					"mag": 90.0, "cost": 18.0, "steps": 8})
 				var f := BattleForecaster.sample(curve, send)
-				u = float(f["captured"]) * worth - send * (1.0 + (1.0 - bot.fill()) * 0.6) + float(f["killed"]) * 0.3
+				u = float(f["captured"]) * worth - send * AttackPlanner.troop_cost(bot, send) + float(f["killed"]) * 0.3
 				if o == bot.perception.leader:
 					u += float(bot.pers["coalition"]) * 0.2 * send
 				if dens > 200.0:

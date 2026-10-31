@@ -4,6 +4,8 @@ extends RefCounted
 ## Nations get the VolnaLabs strategic AI (or the legacy baseline for comparisons), tribes a simple
 ## filler AI. Personalities are spread deterministically from the match seed.
 
+const MAX_THINKS := 6
+
 var sim: Sim
 var brains: Array[AIBrain] = []
 var _by_id: Dictionary = {}
@@ -50,8 +52,21 @@ func setup() -> void:
 
 func tick() -> void:
 	var now := sim.st.tick
+	# Outcomes of finished attacks go to the bots that launched them (learning).
+	for e in sim.attacks.recently_ended:
+		var b: AIBrain = _by_id.get(int(e["attacker"]))
+		if b != null:
+			b.on_attack_ended(e)
+	sim.attacks.recently_ended.clear()
+	# At most MAX_THINKS strategic bots think per tick (deterministic load spreading: a bot that
+	# misses its turn thinks on the next tick). Tribes are cheap and always run.
+	var thinks := 0
 	for b in brains:
 		if now >= b.next_think and sim.st.o_alive[b.id] == 1:
+			if b is StrategicAI:
+				if thinks >= MAX_THINKS:
+					continue
+				thinks += 1
 			b.think()
 
 

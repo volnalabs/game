@@ -64,8 +64,42 @@ func fill() -> float:
 func relation(o: int) -> Dictionary:
 	if not relations.has(o):
 		relations[o] = {"grudge": 0.0, "attacks": 0, "last_attack": -100000, "tiles_prev": sim.st.o_tiles[o],
-			"tick_prev": sim.st.tick, "growth": 0.0}
+			"tick_prev": sim.st.tick, "growth": 0.0, "eff": 1.0, "expect": {}}
 	return relations[o]
+
+
+## Minimum army kept at home (share of the cap): a dense home army is what makes invaders pay.
+func home_floor() -> float:
+	return cap() * (0.24 + 0.3 * float(pers["reserve"]))
+
+
+## Remember what an attack was expected to take, to compare with what it really took.
+func expect(target: int, troops: float, captured: float) -> void:
+	if target <= 0:
+		return
+	var rel := relation(target)
+	rel["pending"] = [troops, captured, sim.st.tick]
+
+
+## Learning from outcomes: the ratio of real to forecast tiles per troop against this target
+## corrects every later forecast against it (fortifications, hidden reserves, bad estimates).
+func on_attack_ended(info: Dictionary) -> void:
+	var tg := int(info["target"])
+	if tg <= 0 or not relations.has(tg):
+		return
+	var rel: Dictionary = relations[tg]
+	var pend: Array = rel.get("pending", [])
+	if pend.is_empty():
+		return
+	var sent := maxf(float(info["initial"]), 1.0)
+	var forecast_per_troop := float(pend[1]) / maxf(float(pend[0]), 1.0)
+	var real_per_troop := float(info["taken"]) / sent
+	if forecast_per_troop <= 0.0:
+		return
+	var ratio := clampf(real_per_troop / forecast_per_troop, 0.05, 2.0)
+	rel["eff"] = lerpf(float(rel.get("eff", 1.0)), ratio, 0.6)
+	rel.erase("pending")
+	log.add(sim.st.tick, "learn", tg, {"u": ratio, "reason": "outcome %d tiles vs %.0f forecast" % [int(info["taken"]), float(pend[1]) * sent / maxf(float(pend[0]), 1.0)]})
 
 
 func note_attacked_by(o: int, their: float) -> void:
@@ -161,13 +195,13 @@ func _wars() -> int:
 
 
 func _available() -> float:
-	return maxf(0.0, troops() - maxf(DefensePlanner.reserve_needed(self), 0.1 * cap()))
+	return maxf(0.0, troops() - maxf(DefensePlanner.reserve_needed(self), home_floor()))
 
 
 ## Troops free for expansion: troop growth peaks around 40 % of the cap, so a sensible state keeps
 ## a growth reserve instead of draining its army into empty land.
 func _available_expand() -> float:
-	var keep := (0.22 + 0.35 * float(pers["reserve"])) * cap()
+	var keep := maxf((0.22 + 0.35 * float(pers["reserve"])) * cap(), home_floor())
 	return maxf(0.0, troops() - maxf(DefensePlanner.reserve_needed(self), keep))
 
 
@@ -185,7 +219,7 @@ func _act_on_state() -> void:
 		S_WAR:
 			_wage_war()
 		S_DEFEND:
-			_opportunistic(0.6)
+			_opportunistic(0.25)
 		S_DEVELOP, S_CONSOLIDATE:
 			_opportunistic(0.4)
 	# Naval: islands to settle or overseas opportunities.
@@ -240,6 +274,7 @@ func _wage_war() -> void:
 		set_state(S_DEVELOP, 0)
 		return
 	submit(Commands.attack_target(id, target, float(e2["troops"])))
+	expect(target, float(e2["troops"]), float(e2["captured"]))
 	log.add(st.tick, "attack", target, {"troops": e2["troops"], "u": e2["u"], "captured": e2["captured"],
 		"loss": e2["loss"], "reason": e2["reason"]})
 
@@ -256,6 +291,7 @@ func _opportunistic(bar: float) -> void:
 	if e.is_empty() or float(e["u"]) < bar * float(e["troops"]):
 		return
 	submit(Commands.attack_target(id, tgt, float(e["troops"])))
+	expect(tgt, float(e["troops"]), float(e["captured"]))
 	log.add(sim.st.tick, "attack", tgt, {"troops": e["troops"], "u": e["u"], "captured": e["captured"],
 		"reason": "opportunity:" + String(e["reason"])})
 	options.clear()
@@ -294,7 +330,9 @@ func to_dict() -> Dictionary:
 	d.merge({"state": state, "target": target, "state_since": state_since, "relations": relations,
 		"next_strategic": next_strategic, "next_econ": next_econ, "next_naval": next_naval,
 		"last_war_end": last_war_end, "state_ticks": state_ticks, "started": _started,
-		"has_coast": has_coast, "memory": perception.memory, "prng": perception.rng.get_state()})
+		"has_coast": has_coast, "memory": perception.memory, "prng": perception.rng.get_state(),
+		"options": options, "threats": threats, "war_plan": war_plan, "countered": countered, "noticed": _noticed,
+		"free_estimate": perception.free_estimate, "plan_note": plan_note})
 	return d
 
 
@@ -312,5 +350,12 @@ func from_dict(d: Dictionary) -> void:
 	_started = d.get("started", false)
 	has_coast = d.get("has_coast", true)
 	perception.memory = d.get("memory", {})
+	options = d.get("options", [])
+	threats = d.get("threats", {})
+	war_plan = d.get("war_plan", {})
+	countered = d.get("countered", {})
+	_noticed = d.get("noticed", {})
+	perception.free_estimate = d.get("free_estimate", 0)
+	plan_note = d.get("plan_note", "")
 	if d.has("prng"):
 		perception.rng.set_state(d["prng"])

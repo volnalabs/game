@@ -25,7 +25,6 @@ static func counter(bot: StrategicAI) -> bool:
 	var sorted := inc.duplicate()
 	sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["troops"]) > float(b["troops"]))
 	var precision: float = bot.diff["counter_precision"]
-	var r := bot.sim.rules
 	for e: Dictionary in sorted:
 		var attacker: int = e["attacker"]
 		var their: float = e["troops"]
@@ -38,20 +37,15 @@ static func counter(bot: StrategicAI) -> bool:
 		var own := bot.sim.attacks.find(bot.id, attacker)
 		if own != null and own.troops >= their:
 			continue
-		# A counter-attack cancels the invasion 1:1. Holding instead costs, per tile the invader
-		# takes, the tile's worth plus the troops stationed on it, while the invader pays its own
-		# per-tile loss. Counter only when that trade is better (precise bots judge it).
-		var density := mine / maxf(1.0, float(st.o_tiles[bot.id]) * r.k_area)
-		var att_loss := CombatMath.player_loss(r, 85.0, mine / maxf(their, 1.0), density, 0.463, 1.0)
-		var hold_cost := AttackPlanner.tile_worth(st.o_tiles[bot.id]) + floorf(density)
-		if att_loss > hold_cost * 1.1 and precision >= 0.9:
-			bot.log.add(st.tick, "hold", attacker, {"troops": their, "reason": "defend_at_home"})
-			bot.countered[aid] = st.tick
-			continue
+		# A counter-attack cancels the invasion 1:1 and saves the land it would take; AI simulation
+		# series showed that holding back (letting the invader pay per tile) loses more than it
+		# saves, so every bot counters — the difficulty only changes how precisely and how fast.
 		var need := their * 1.05 * precision - (own.troops if own != null else 0.0)
 		if bot.perception.neighbors.has(attacker) and (bot.perception.neighbors[attacker] as AIPerception.NeighborView).kind == Rules.KIND_TRIBE:
 			need *= 0.8
-		var send := minf(need, mine * 0.6)
+		# Never counter below a minimum home army, unless the invasion would wipe us out anyway.
+		var floor_keep := bot.home_floor() * 0.6 if their < mine * 1.5 else 0.0
+		var send := minf(need, maxf(0.0, mine - floor_keep))
 		if send < 100.0:
 			bot.log.add(st.tick, "refuse", attacker, {"reason": "cannot_counter", "troops": their})
 			continue
@@ -74,7 +68,9 @@ static func review_attacks(bot: StrategicAI) -> void:
 		if not bot.perception.neighbors.has(a.target):
 			continue
 		var e := AttackPlanner.evaluate(bot, a.target, a.troops)
-		# Gains so far per troop spent, and what the rest of the attack is expected to bring.
-		if float(e["u"]) < -0.3 * a.troops and float(e["captured"]) < a.troops / 400.0:
+		# Retreating costs 25 %: only when the attack has stalled (few tiles for what it spent) and
+		# the forecast for the rest is clearly bad.
+		var stalled := float(a.taken) < (a.initial - a.troops) / 600.0
+		if stalled and float(e["u"]) < -0.5 * a.troops and float(e["captured"]) < a.troops / 800.0:
 			bot.submit(Commands.retreat(bot.id, a.id))
 			bot.log.add(st.tick, "retreat", a.target, {"troops": a.troops, "u": e["u"], "reason": e["reason"]})

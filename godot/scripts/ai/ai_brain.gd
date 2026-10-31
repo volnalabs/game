@@ -23,6 +23,11 @@ func think() -> void:
 	pass
 
 
+## An attack this bot launched has ended (see AttackSystem.recently_ended).
+func on_attack_ended(_info: Dictionary) -> void:
+	pass
+
+
 ## Shown by the in-game AI debug panel.
 func debug_info() -> Dictionary:
 	return {"kind": kind_name, "difficulty": difficulty_id, "personality": personality_id}

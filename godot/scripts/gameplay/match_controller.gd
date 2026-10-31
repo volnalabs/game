@@ -5,6 +5,7 @@ extends Node
 
 const TICK := 0.1
 const MAX_STEPS_PER_FRAME := 4
+const FRAME_SIM_BUDGET_USEC := 12000
 
 var sim: Sim
 var renderer: MapRenderer
@@ -135,10 +136,14 @@ func _process(delta: float) -> void:
 		_acc += minf(delta, 0.25) * speed
 		var steps := 0
 		var t0 := Time.get_ticks_usec()
+		# Fixed 10 Hz steps; at high speed stop early when the frame's simulation budget is used
+		# (the match then runs slightly slower than requested instead of dropping frames).
 		while _acc >= TICK and steps < MAX_STEPS_PER_FRAME:
 			sim.step()
 			_acc -= TICK
 			steps += 1
+			if Time.get_ticks_usec() - t0 > FRAME_SIM_BUDGET_USEC:
+				break
 		if steps > 0:
 			step_ms = float(Time.get_ticks_usec() - t0) / 1000.0 / steps
 		if _acc > TICK * MAX_STEPS_PER_FRAME:

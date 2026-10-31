@@ -28,12 +28,14 @@ class Attack:
 	var killed: float = 0.0
 	var alive: bool = true
 	var last_tile: int = -1
+	## A naval landing: its own front grows from the beachhead (not merged with land attacks).
+	var landing: bool = false
 
 	func to_dict() -> Dictionary:
 		return {"id": id, "attacker": attacker, "target": target, "troops": troops, "initial": initial,
 			"q": q.to_dict(), "front": front, "head": head, "chew": chew, "retreat_at": retreat_at,
 			"frozen_from": frozen_from, "start_tick": start_tick, "taken": taken, "lost": lost,
-			"killed": killed, "last_tile": last_tile}
+			"killed": killed, "last_tile": last_tile, "landing": landing}
 
 	static func from_dict(d: Dictionary) -> Attack:
 		var a := Attack.new()
@@ -51,8 +53,19 @@ var rng: SimRng
 var events: SimEvents
 var structures: StructureSystem
 var attacks: Array[Attack] = []
+## Attacks that ended since the AI last looked (outcomes the bots learn from).
+var recently_ended: Array[Dictionary] = []
 var _pair: Dictionary = {}
 var next_id: int = 1
+## LCG state for front-priority jitter (cheaper than the RNG in the hottest loop; saved).
+var _lcg: int = 12345
+
+
+var _prio_base: int = 10
+var _prio_rand: int = 7
+## Per terrain byte (code | river bit): attack magnitude and tile cost, without / with a post.
+var _mag: PackedFloat32Array
+var _cost: PackedFloat32Array
 
 
 func _init(state: SimState, rules_: Rules, rng_: SimRng, ev: SimEvents) -> void:
@@ -60,6 +73,20 @@ func _init(state: SimState, rules_: Rules, rng_: SimRng, ev: SimEvents) -> void:
 	rules = rules_
 	rng = rng_
 	events = ev
+	_prio_base = int(rules.a["priority_base"])
+	_prio_rand = maxi(1, int(rules.a["priority_rand"]))
+	_mag = PackedFloat32Array()
+	_mag.resize(64)
+	_cost = PackedFloat32Array()
+	_cost.resize(64)
+	for b in 32:
+		var code := b & MapData.CODE_MASK
+		if code >= rules.t_mag.size():
+			code = Rules.T_PLAINS
+		for d in 2:
+			var mc := CombatMath.tile_mag_cost(rules, code, (b & MapData.RIVER_BIT) != 0, d == 1)
+			_mag[b * 2 + d] = mc.x
+			_cost[b * 2 + d] = mc.y
 
 
 static func pair_key(attacker: int, target: int) -> int:
@@ -105,7 +132,8 @@ func troops_in_attacks(id: int) -> float:
 
 ## Starts (or reinforces) an attack of `troops` already taken from the attacker's army.
 ## Returns the attack, or null when the troops were refunded (no front, nothing left).
-func start(attacker: int, target: int, troops: float) -> Attack:
+## `beach` >= 0: a naval landing whose front starts at that tile.
+func start(attacker: int, target: int, troops: float, beach: int = -1) -> Attack:
 	if troops < 1.0:
 		return null
 	# A counter-attack cancels the enemy's attack troops 1:1.
@@ -122,6 +150,8 @@ func start(attacker: int, target: int, troops: float) -> Attack:
 				end_attack(opp, false)
 			if troops < 1.0:
 				return null
+	if beach >= 0:
+		return _start_landing(attacker, target, troops, beach)
 	var existing := find(attacker, target)
 	if existing != null and existing.alive:
 		existing.troops += troops
@@ -150,6 +180,28 @@ func start(attacker: int, target: int, troops: float) -> Attack:
 	return a
 
 
+func _start_landing(attacker: int, target: int, troops: float, beach: int) -> Attack:
+	var a := Attack.new()
+	a.id = next_id
+	next_id += 1
+	a.attacker = attacker
+	a.target = target
+	a.troops = troops
+	a.initial = troops
+	a.start_tick = st.tick
+	a.landing = true
+	_add_neighbors(a, beach)
+	if a.q.is_empty():
+		st.add_troops(attacker, troops)
+		return null
+	attacks.append(a)
+	st.stat_attack(attacker)
+	if target != 0:
+		st.mark_attacked(target)
+	events.emit(SimEvents.ATTACK_STARTED, {"id": a.id, "attacker": attacker, "target": target, "troops": troops, "landing": true})
+	return a
+
+
 func retreat(attacker: int, aid: int) -> bool:
 	var a := get_by_id(aid)
 	if a == null or a.attacker != attacker or a.retreat_at > 0:
@@ -171,6 +223,10 @@ func end_attack(a: Attack, refund: bool, keep: float = 1.0) -> void:
 	var key := pair_key(a.attacker, a.target)
 	if _pair.get(key) == a:
 		_pair.erase(key)
+	recently_ended.append({"id": a.id, "attacker": a.attacker, "target": a.target, "taken": a.taken,
+		"initial": a.initial, "lost": a.lost, "killed": a.killed})
+	if recently_ended.size() > 512:
+		recently_ended = recently_ended.slice(256)
 	events.emit(SimEvents.ATTACK_ENDED, {"id": a.id, "attacker": a.attacker, "target": a.target,
 		"taken": a.taken, "lost": a.lost, "killed": a.killed, "left": a.troops if refund else 0.0})
 
@@ -230,7 +286,8 @@ func _push(a: Attack, u: int) -> void:
 	if u + W < st.N and owner[u + W] == a.attacker:
 		nb += 1
 	var pm: float = rules.t_prio[st.map.terrain[u] & MapData.CODE_MASK]
-	var r: int = int(rules.a["priority_base"]) + rng.below(int(rules.a["priority_rand"]))
+	_lcg = (_lcg * 1103515245 + 12345) & 0x7fffffff
+	var r: int = _prio_base + (_lcg >> 8) % _prio_rand
 	var key := float(st.tick) + float(r) * (1.0 - 0.5 * nb + pm * 0.5)
 	a.q.push(key, u)
 	if st.front_mark[u] != a.id:
@@ -288,6 +345,11 @@ func _process(a: Attack) -> void:
 			mag_k = rules.a["tribe_defender_loss_mult"]
 		st.mark_attacked(tg)
 	var posts := PackedInt32Array() if neutral else structures.defense_posts_of(tg)
+	var nl_per: float = rules.a["tribe_neutral_loss_per_mag"] if akind == Rules.KIND_TRIBE else rules.a["neutral_loss_per_mag"]
+	var nc_scale: float = rules.a["neutral_cost_scale"]
+	var nc_min: float = rules.a["neutral_min_cost"]
+	var nc_max: float = rules.a["neutral_max_cost"]
+	var loss_dens: float = rules.a["attacker_loss_per_density"]
 	var post_r2 := rules.defense_radius() * rules.defense_radius()
 	var owner := st.owner
 	var terrain := st.map.terrain
@@ -318,8 +380,7 @@ func _process(a: Attack) -> void:
 			_add_neighbors(a, t)
 			a.head = t
 			a.chew = 0.0
-		var tb := terrain[t]
-		var defended := false
+		var defended := 0
 		if posts.size() > 0:
 			var tx := t % W
 			var ty := t / W
@@ -327,21 +388,23 @@ func _process(a: Attack) -> void:
 				var dx := (p % W) - tx
 				var dy := (p / W) - ty
 				if dx * dx + dy * dy <= post_r2:
-					defended = true
+					defended = 1
 					break
-		var mc := CombatMath.tile_mag_cost(rules, tb & MapData.CODE_MASK, (tb & MapData.RIVER_BIT) != 0, defended)
+		var ti := (terrain[t] & 31) * 2 + defended
+		var mag := _mag[ti]
+		var tc := _cost[ti]
 		var loss: float
 		var tf: float
 		var dloss := 0.0
 		if neutral:
-			loss = CombatMath.neutral_loss(rules, mc.x, akind)
-			tf = CombatMath.neutral_tile_fraction(rules, mc.y, a.troops, border1)
+			loss = mag * nl_per
+			tf = maxf(clampf(nc_scale * tc / maxf(a.troops, 1.0), nc_min, nc_max) / (border1 * 2.0), 1e-6)
 		else:
 			var dtroops := st.o_troops[tg]
 			dloss = dtroops / maxf(float(st.o_tiles[tg]) * k_area, 1.0)
 			var ratio := dtroops / a.troops
-			loss = CombatMath.player_loss(rules, mc.x, ratio, dloss, bonus.x, mag_k)
-			tf = CombatMath.player_tile_fraction(mc.y, ratio, bonus.y)
+			loss = mag * mag_k * clampf(ratio, 0.6, 2.0) * (bonus.x + loss_dens * dloss)
+			tf = maxf(clampf(ratio, 0.82, 7.5) * clampf(ratio / 20.0, 1.0, 50.0) * tc * bonus.y, 1e-6)
 		var dfloor := floorf(dloss)
 		var need := k_area - a.chew
 		var can := ceilf(budget / tf)
@@ -427,14 +490,16 @@ func to_dict() -> Dictionary:
 	for a in attacks:
 		if a.alive:
 			arr.append(a.to_dict())
-	return {"next_id": next_id, "attacks": arr}
+	return {"next_id": next_id, "attacks": arr, "lcg": _lcg}
 
 
 func from_dict(d: Dictionary) -> void:
 	next_id = d["next_id"]
+	_lcg = d.get("lcg", 12345)
 	attacks.clear()
 	_pair.clear()
 	for ad: Dictionary in d["attacks"]:
 		var a := Attack.from_dict(ad)
 		attacks.append(a)
-		_pair[pair_key(a.attacker, a.target)] = a
+		if not a.landing:
+			_pair[pair_key(a.attacker, a.target)] = a

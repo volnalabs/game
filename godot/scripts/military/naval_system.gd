@@ -165,7 +165,7 @@ func _land(b: Boat) -> void:
 		return
 	st.set_owner(t, who)
 	events.emit(SimEvents.BOAT_LANDED, {"id": b.id, "owner": who, "target_owner": prev, "tile": t, "troops": b.troops})
-	attacks.start(who, prev, b.troops)
+	attacks.start(who, prev, b.troops, t)
 
 
 func remove_owner(who: int) -> void:
