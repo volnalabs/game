@@ -59,13 +59,14 @@ func _draw() -> void:
 	if radius > 0.0:
 		draw_circle(sp, radius, Color(ZoneLayer.kind_color(sim.rules, kind), 0.08))
 		draw_arc(sp, radius, 0.0, TAU, 96, Color(ZoneLayer.kind_color(sim.rules, kind), 0.5), lw * 0.8)
-	var r := clampf(13.0 / z, 0.9, 13.0)
+	var spx := StructureLayer.symbol_px_for(z)
+	var r := spx * 0.5 / z
 	var pulse := 0.85 + 0.15 * sin(Time.get_ticks_msec() / 160.0)
-	draw_circle(sp, r * 1.15, Color(c, 0.18 * pulse))
-	var tex := Icons.tex(StructureLayer.icon_id(sim.rules, kind), maxi(16, int(r * z * 2.0)))
+	draw_circle(sp, r * 1.25, Color(c, 0.2 * pulse))
+	var lod := StructureLayer.lod_for(spx)
+	var tex := Symbols.tex_px(StructureLayer.icon_id(sim.rules, kind), maxi(12, int(spx)), "map_" + lod)
 	if tex != null:
-		var ir := r * 0.85
-		draw_texture_rect(tex, Rect2(sp - Vector2(ir, ir) + Vector2(0, ir * 0.08), Vector2(ir, ir) * 2.0), false, Color(0.08, 0.07, 0.06, 0.5))
-		draw_texture_rect(tex, Rect2(sp - Vector2(ir, ir), Vector2(ir, ir) * 2.0), false, Color("#f2efe8").lerp(c, 0.45))
+		draw_texture_rect(tex, Rect2(sp - Vector2(r, r) + Vector2(0, r * 0.1), Vector2(r, r) * 2.0), false, Color(0.06, 0.05, 0.04, 0.35))
+		draw_texture_rect(tex, Rect2(sp - Vector2(r, r), Vector2(r, r) * 2.0), false, Color("#f4f1ea").lerp(c, 0.35))
 	if int(preview["upgrade"]) >= 0:
 		draw_arc(sp, r * 1.6, 0.0, TAU, 32, Color(UITheme.ACCENT, pulse), lw * 1.5)

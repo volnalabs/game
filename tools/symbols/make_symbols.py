@@ -10,6 +10,10 @@ Dark "detail" shapes are soft cut-like accents. Each symbol has three levels of 
   near — full + small extra details (zoomed-in map, large previews).
 The same symbol is used on the map, in the build menu, quick build, inspector, tooltips and the
 encyclopedia (scripts/ui/symbols.gd via Icons).
+Map variants (Phase 2A.3) separate the layers the map needs to stay readable on any territory colour:
+  map_<lod> — the silhouette in white with a thin dark contour baked in (shape slightly smaller so
+              the contour fits the 24-unit box),
+  det_<lod> — the detail shapes alone in white (tinted in game with a dark shade of the owner colour).
 Usage (repo root): python3 tools/symbols/make_symbols.py
 """
 import json
@@ -45,11 +49,11 @@ def path(d):
 S = {}
 
 # --- buildings -----------------------------------------------------------------------------------
-# City: a block of three towers of different heights on a common ground line.
+# City: a skyline of three separate towers of different heights.
 S["b_city"] = (
-    [rect(2.5, 11, 5.5, 10, 2.2), rect(9.2, 4, 5.6, 17, 2.4), rect(16, 8, 5.5, 13, 2.2), rect(1.5, 19.5, 21, 2.5, 1.2)],
-    [rect(10.5, 7, 3, 2), rect(10.5, 11, 3, 2), rect(10.5, 15, 3, 2), rect(3.5, 14, 3, 2), rect(17.5, 11, 3, 2)],
-    [rect(17.5, 15, 3, 2), rect(3.5, 17.5, 3, 1.5)])
+    [rect(2, 10, 5.5, 12, 1.5), rect(9.2, 2.5, 5.6, 19.5, 1.5), rect(16.5, 7, 5.5, 15, 1.5)],
+    [rect(10.5, 6, 3, 2), rect(10.5, 10, 3, 2), rect(10.5, 14, 3, 2), rect(3.2, 13, 3, 2), rect(17.7, 10, 3, 2)],
+    [rect(17.7, 14, 3, 2), rect(3.2, 17, 3, 2), rect(10.5, 18, 3, 2)])
 # Port: a pier over water with a dockside crane and a container.
 S["b_port"] = (
     [rect(1, 14, 22, 3), rect(15, 3, 3, 11), rect(6, 3, 15, 2.6), rect(3, 9, 7, 5), rect(3, 17, 2.5, 5), rect(18.5, 17, 2.5, 5)],
@@ -60,16 +64,16 @@ S["b_factory"] = (
     [poly((1, 21), (1, 11), (6, 14), (6, 11), (11, 14), (11, 11), (16, 14), (16, 21)), rect(17.5, 3, 4, 18)],
     [rect(3, 16, 2.5, 2.5), rect(7.5, 16, 2.5, 2.5), rect(12, 16, 2.5, 2.5)],
     [rect(17.5, 6, 4, 1.6)])
-# Defence post: a crenellated fort wall with a gate.
+# Defence post: a shield with a crenellated band.
 S["b_defense"] = (
-    [rect(3, 10, 18, 11), rect(3, 6, 4, 4), rect(10, 6, 4, 4), rect(17, 6, 4, 4)],
-    [path("M9.5 21 V16.5 A2.5 2.5 0 0 1 14.5 16.5 V21 Z")],
-    [rect(5, 12, 2, 2), rect(17, 12, 2, 2)])
-# Research centre: a laboratory flask standing on a building base.
+    [path("M12 1.5 L21 4.8 V11.5 C21 17 17.2 20.8 12 22.6 C6.8 20.8 3 17 3 11.5 V4.8 Z")],
+    [rect(7, 7, 2.4, 3), rect(10.8, 7, 2.4, 3), rect(14.6, 7, 2.4, 3), path("M7 11.5 H17 V13 C17 16 14.8 18.2 12 19.2 C9.2 18.2 7 16 7 13 Z")],
+    [])
+# Research centre: a large round-bottomed laboratory flask.
 S["b_research_center"] = (
-    [rect(3, 18, 18, 4, 1.5), circle(12, 12, 5.6), rect(10, 2.5, 4, 7, 1.2), rect(8.8, 2, 6.4, 2, 1)],
-    [path("M7 12.6 A5 5 0 0 0 17 12.6 Z")],
-    [circle(10.2, 9.6, 0.9)])
+    [circle(12, 15.2, 7.2), rect(9.8, 2.5, 4.4, 8, 1.2), rect(8.4, 1.6, 7.2, 2.4, 1)],
+    [path("M5.6 15.8 A6.4 6.4 0 0 0 18.4 15.8 Z")],
+    [circle(9.4, 12.6, 1)])
 # Radar: a tilted dish on a mast with a tripod base.
 S["b_radar"] = (
     [path("M2 7 A9.5 9.5 0 0 0 15 20 Z"), poly((8.6, 13.4), (17.6, 4.4), (19.4, 6.2), (10.4, 15.2)), circle(18.8, 4.6, 2.2),
@@ -89,32 +93,33 @@ S["b_military_academy"] = (
      rect(1, 19, 22, 3)],
     [poly((12, 4.2), (12.7, 5.9), (14.4, 5.9), (13, 6.9), (13.6, 8.5), (12, 7.5), (10.4, 8.5), (11, 6.9), (9.6, 5.9), (11.3, 5.9))],
     [])
-# Logistics hub: a pyramid of three cargo crates.
+# Logistics hub: a supply truck (cargo box, cab, two wheels).
 S["b_logistics_hub"] = (
-    [rect(1.8, 13, 9.2, 9, 1.6), rect(13, 13, 9.2, 9, 1.6), rect(7.4, 3, 9.2, 9, 1.6)],
-    [rect(5.4, 13, 1.6, 9), rect(16.9, 13, 1.6, 9), rect(11.2, 3, 1.6, 9)],
-    [rect(1.5, 16.7, 9.5, 1.4), rect(13, 16.7, 9.5, 1.4), rect(7.25, 6.7, 9.5, 1.4)])
-# Command centre: a headquarters block with a tall mast and a pennant.
+    [rect(1, 5.5, 14, 11.5, 1.2), poly((15.8, 8.5), (19.6, 8.5), (22.6, 12.6), (22.6, 17), (15.8, 17)), rect(1, 15.5, 21.6, 2.6, 1),
+     circle(6, 19.4, 2.7), circle(18.4, 19.4, 2.7)],
+    [poly((17, 9.8), (19, 9.8), (21, 12.6), (17, 12.6)), circle(6, 19.4, 1), circle(18.4, 19.4, 1), rect(3, 8, 10, 1.5)],
+    [rect(3, 11, 10, 1.5)])
+# Command centre: a tall staff with a large swallow-tailed command flag on a small base.
 S["b_command_center"] = (
-    [rect(2, 13, 20, 9, 2), rect(10.7, 2, 2.6, 11, 1.2), poly((13.3, 2.2), (20.5, 4.3), (13.3, 6.4)), rect(7, 10, 10, 3.5, 1.4)],
-    [rect(4.5, 16, 3, 3), rect(16.5, 16, 3, 3), rect(10.5, 16, 3, 6)],
+    [rect(5, 1.5, 2.4, 20.5, 1), poly((7.4, 2), (21.5, 2), (17.5, 6.5), (21.5, 11), (7.4, 11)), rect(2, 19, 11, 3, 1.2)],
+    [circle(12.5, 6.5, 1.6)],
     [])
 # Bunker: a low armoured dome flush with the ground, with a firing slit.
 S["b_bunker"] = (
     [path("M2 19 A10 8.5 0 0 1 22 19 Z"), rect(1, 18.5, 22, 3.5, 1.5)],
     [rect(6.5, 13.5, 11, 2.2)],
     [rect(11, 7.6, 2, 2)])
-# Power plant: a cooling tower and a lightning bolt.
+# Power plant: a bold lightning bolt.
 S["b_power_plant"] = (
-    [path("M4 22 C6.5 16 7.5 11 5.5 3 H18.5 C16.5 11 17.5 16 20 22 Z")],
-    [poly((13.2, 6), (8.5, 13.5), (11.6, 13.5), (10.4, 19.5), (15.6, 11.4), (12.4, 11.4))],
+    [poly((14.5, 1), (3.5, 13.8), (10.6, 13.8), (7.6, 23), (20.5, 9.2), (13.4, 9.2), (17.4, 1))],
+    [],
     [])
-# Naval base: a warship on the water.
+# Naval base: an anchor (the warship itself is shown by the ships on the water).
 S["b_naval_base"] = (
-    [poly((1, 13), (23, 13), (19.5, 18), (4.5, 18)), rect(8, 8, 7, 5), rect(10.8, 3, 1.8, 5), rect(15, 10, 5, 1.8),
-     rect(1, 20, 22, 2)],
-    [rect(9.5, 9.5, 1.6, 1.6), rect(12, 9.5, 1.6, 1.6)],
-    [rect(5, 14.6, 2, 1.4), rect(17, 14.6, 2, 1.4)])
+    [circle(12, 4.6, 2.9), rect(10.8, 6, 2.4, 15.5, 1), rect(6, 8.6, 12, 2.4, 1.2),
+     path("M2 12.5 L6.2 11.5 C6.6 16.6 9 19.3 12 19.8 C15 19.3 17.4 16.6 17.8 11.5 L22 12.5 C21.4 19.2 17.2 23 12 23 C6.8 23 2.6 19.2 2 12.5 Z")],
+    [circle(12, 4.6, 1.2)],
+    [])
 # SAM: a launcher vehicle with two missiles raised.
 S["b_sam"] = (
     [rect(2, 15, 20, 4.5), poly((5, 15), (13.5, 4.5), (15.8, 6.3), (8.2, 15)), poly((10, 15), (18.5, 4.5), (20.8, 6.3), (13.2, 15))],
@@ -166,11 +171,40 @@ def svg(parts_white, parts_dark, soft=1.6):
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">%s</svg>' % inner
 
 
+OUTLINE = "#1c1a17"
+MAP_SCALE = 0.8
+
+
+def _group(parts, fill, stroke_w, scale, opacity=1.0):
+    g = 'transform="translate(12 12) scale(%g) translate(-12 -12)"' % scale
+    op = ' opacity="%g"' % opacity if opacity < 1.0 else ""
+    return '<g %s%s fill="%s" stroke="%s" stroke-width="%g" stroke-linejoin="round" stroke-linecap="round">%s</g>' % (
+        g, op, fill, fill, stroke_w, "".join(parts))
+
+
+def map_svg(parts_white, soft, contour):
+    # Contour first (same shapes, wider stroke, dark), the white silhouette on top.
+    inner = _group(parts_white, OUTLINE, soft + 2.0 * contour, MAP_SCALE, 0.92) + _group(parts_white, "#ffffff", soft, MAP_SCALE)
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">%s</svg>' % inner
+
+
+def detail_svg(parts_dark):
+    inner = _group(parts_dark, "#ffffff", 0.7, MAP_SCALE)
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">%s</svg>' % inner
+
+
 def main():
     out = {"_comment": __doc__.strip().splitlines()[0] + " Generated by tools/symbols/make_symbols.py.",
            "_license": "AGPL-3.0 (VolnaLabs own work)", "symbols": {}}
     for sid, (body, detail, near) in S.items():
-        out["symbols"][sid] = {"far": svg(body, [], 2.4), "full": svg(body, detail), "near": svg(body, detail + near)}
+        e = {"far": svg(body, [], 2.4), "full": svg(body, detail), "near": svg(body, detail + near)}
+        if sid.startswith("b_"):
+            e["map_far"] = map_svg(body, 1.0, 1.7)
+            e["map_full"] = map_svg(body, 0.9, 1.3)
+            e["map_near"] = map_svg(body, 0.9, 1.1)
+            e["det_full"] = detail_svg(detail)
+            e["det_near"] = detail_svg(detail + near)
+        out["symbols"][sid] = e
     with open(OUT, "w") as f:
         json.dump(out, f, indent="\t")
         f.write("\n")
