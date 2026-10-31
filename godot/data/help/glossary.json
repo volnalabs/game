@@ -311,8 +311,8 @@
 				"en": "Landing"
 			},
 			"what": {
-				"ru": "Транспорт с войсками плывёт к чужому берегу и начинает атаку оттуда. Нужно своё побережье на той же воде.",
-				"en": "A transport with troops sails to a foreign coast and attacks from there. Needs your own coast on the same water."
+				"ru": "Транспорт с войсками плывёт к берегу, связанному с выбранной целью (даже в глубине чужой страны), высаживается и наступает к цели. Нужно своё побережье на той же воде.",
+				"en": "A transport sails to a beach connected to the chosen target (even deep inland), lands and advances towards it. Needs your own coast on the same water."
 			},
 			"spend": {
 				"ru": "Снаряжение и выбранная доля армии.",

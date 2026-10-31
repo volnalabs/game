@@ -196,6 +196,8 @@ func apply_command(c: Dictionary) -> String:
 			return "" if attacks.retreat(who, int(c.get("attack", -1))) else "no_attack"
 		Commands.RESEARCH:
 			return research.start(who, String(c.get("tech", "")))
+		Commands.CANCEL_BOAT:
+			return naval.cancel(who, int(c.get("boat", -1)))
 	return "unknown"
 
 
@@ -370,4 +372,9 @@ func state_hash() -> int:
 		if a.alive:
 			atk.append([a.id, a.attacker, a.target, a.troops])
 	parts.append(atk)
+	var bts := []
+	for b in naval.boats:
+		if b.alive:
+			bts.append([b.id, b.owner, b.troops, snappedf(b.progress, 0.001), b.target_tile, b.goal_tile, b.returning])
+	parts.append(bts)
 	return hash(parts)

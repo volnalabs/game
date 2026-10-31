@@ -8,7 +8,10 @@ extends Node2D
 ##   hovering an arrow is answered by pick_arrow() (who, from where, where, troops, kind, state);
 ## - capture sparks where an attack takes tiles, loss floaters (attacker and defender losses per
 ##   second for attacks involving the player or the selected state);
-## - transports at sea with their route, landing markers;
+## - transports at sea (ShipPainter): heading smoothed along the route, gentle bobbing, wake by speed;
+##   the player's routes as a dotted sea leg, a beach mark and a dashed overland leg to the goal;
+##   transports heading for the player's land show their route in red; the prepared landing order
+##   (naval_plan) previews exactly the same legs; landing markers;
 ## - markers for destroyed / captured buildings and retreats, rings for spawns, eliminations,
 ##   completed buildings.
 ## Counts are capped so effects never cost more than the map itself.
@@ -38,6 +41,12 @@ var _font: Font
 ## Equipped capture effect of the player ({} = default): {"color", "rainbow", "style"}.
 var player_capture: Dictionary = {}
 var _boat_prev: Dictionary = {}
+## Prepared sea landing (LandingPlanner result + "tile") shown as a preview; {} = none.
+var naval_plan: Dictionary = {}
+## The player's selected transport (boat id), -1 = none.
+var selected_boat: int = -1
+## Boat id -> drawn ship state {"pos", "rot", "len"} (for picking).
+var ships: Dictionary = {}
 ## Arrows drawn this frame: attack id -> {"pts": PackedVector2Array (tiles), "w": half-width (tiles)}.
 var arrows: Dictionary = {}
 ## Attack whose arrow is under the cursor (drawn slightly brighter and wider), -1 = none.
@@ -183,26 +192,7 @@ func _draw() -> void:
 			draw_arc(s["pos"], sz * 1.4, 0.0, TAU, 16, Color(s["c"], 1.0 - k), maxf(0.15, 1.2 / z))
 		else:
 			draw_rect(Rect2(s["pos"] - Vector2(sz, sz) * 0.5, Vector2(sz, sz)), Color(s["c"], 1.0 - k))
-	for b in sim.naval.boats:
-		if not b.alive:
-			continue
-		var p := b.position()
-		if not p.is_finite() or not view.has_point(p):
-			continue
-		var c: Color = sim.st.o_color[b.owner]
-		var s := clampf(6.0 / z, 0.8, 8.0)
-		var prev: Vector2 = _boat_prev.get(b.id, p)
-		var dir: Vector2 = _boat_dir.get(b.id, Vector2.RIGHT)
-		if p.distance_squared_to(prev) > 0.0001:
-			dir = (p - prev).normalized()
-			_boat_dir[b.id] = dir
-		_boat_prev[b.id] = p
-		var n := dir.orthogonal()
-		var pts := PackedVector2Array([p + dir * s * 1.4, p - dir * s + n * s * 0.8, p - dir * s - n * s * 0.8])
-		draw_colored_polygon(pts, c)
-		draw_polyline(PackedVector2Array([pts[0], pts[1], pts[2], pts[0]]), Color(0, 0, 0, 0.8), maxf(0.15, 1.0 / z))
-		if (b.owner == sim.player_id or sim.st.owner[b.target_tile] == sim.player_id) and b.path.size() > 1:
-			draw_line(p, b.path[b.path.size() - 1], Color(c, 0.35), maxf(0.2, 1.2 / z))
+	_draw_naval(z, view)
 	if sim.phase == Sim.Phase.SPAWN:
 		if not spawn_pending.is_empty():
 			_draw_spawn(spawn_pending, z, true)
@@ -397,6 +387,131 @@ func pick_arrow(screen_pos: Vector2) -> int:
 		if d <= lim and d < bd:
 			bd = d
 			best = aid
+	return best
+
+
+## Ship length on screen in pixels for a zoom (never a dot, never huge).
+static func ship_px(z: float) -> float:
+	return clampf(20.0 + (z - 1.0) * 5.0, 18.0, 60.0)
+
+
+func _draw_naval(z: float, view: Rect2) -> void:
+	var pid := sim.player_id
+	var now := Time.get_ticks_msec() / 1000.0
+	var dt := get_process_delta_time()
+	# Routes under the ships.
+	for b in sim.naval.boats:
+		if not b.alive:
+			continue
+		var mine := b.owner == pid
+		var incoming := not mine and pid > 0 and (sim.st.owner[b.target_tile] == pid or (b.goal_tile >= 0 and sim.st.owner[b.goal_tile] == pid))
+		if mine or incoming or b.id == selected_boat:
+			var col := Color("#f2efe8") if mine else UITheme.BAD
+			var rest := PackedVector2Array([b.position()])
+			var d := b.progress
+			for i in b.seg_len.size():
+				if d < b.seg_len[i]:
+					rest.append_array(b.path.slice(i + 1))
+					break
+				d -= b.seg_len[i]
+			_route(rest, b.land_path if not b.returning else PackedVector2Array(), col, z, 0.7 if mine else 0.55, b.returning,
+				UITheme.ACCENT if mine else UITheme.BAD)
+	if not naval_plan.is_empty():
+		_draw_plan(naval_plan, z, now)
+	ships.clear()
+	var spx := ship_px(z)
+	var length := spx / z
+	for b in sim.naval.boats:
+		if not b.alive:
+			continue
+		var p := b.position()
+		if not p.is_finite() or not view.has_point(p):
+			continue
+		# Heading eases towards the route direction (smooth turns at waypoints).
+		var want := b.heading().angle()
+		var rot: float = _boat_dir.get(b.id, want)
+		rot = lerp_angle(rot, want, 1.0 - exp(-dt * 5.0))
+		_boat_dir[b.id] = rot
+		var bob := sin(now * 1.7 + b.id * 1.3) * 0.035
+		var wake := clampf(b.progress / 6.0, 0.25, 1.0) * clampf((b.length - b.progress) / 4.0, 0.3, 1.0)
+		ShipPainter.draw_ship(self, p, rot + bob, length * (1.0 + 0.015 * sin(now * 2.3 + b.id)), sim.st.o_color[b.owner], 1.0,
+			spx, wake, now + b.id, b.id == selected_boat)
+		ships[b.id] = {"pos": p, "rot": rot, "len": length, "owner": b.owner}
+	for id: int in _boat_dir.keys():
+		if not ships.has(id) and NavalOrders.boat_by_id(sim, id) == null:
+			_boat_dir.erase(id)
+
+
+## Sea leg (dotted), beach mark, overland leg (dashed) and goal mark.
+func _route(sea: PackedVector2Array, land: PackedVector2Array, col: Color, z: float, alpha: float, returning: bool,
+		land_col: Color = UITheme.ACCENT) -> void:
+	var dot := maxf(0.15, 2.2 / z)
+	var gap := maxf(0.6, 9.0 / z)
+	for i in range(1, sea.size()):
+		var a := sea[i - 1]
+		var b := sea[i]
+		var seg := a.distance_to(b)
+		var k := 0.0
+		while k < seg:
+			draw_circle(a.lerp(b, k / maxf(seg, 0.0001)), dot, Color(col, alpha))
+			k += gap
+	if sea.size() == 0:
+		return
+	var end := sea[sea.size() - 1]
+	if returning:
+		draw_arc(end, maxf(0.5, 6.0 / z), 0.0, TAU, 20, Color(col, alpha), maxf(0.12, 1.6 / z))
+		return
+	if land.size() > 0:
+		# The overland leg starts on the beach next to the water end of the route.
+		var pts := PackedVector2Array([end])
+		pts.append_array(land)
+		for i in range(1, pts.size()):
+			draw_dashed_line(pts[i - 1], pts[i], Color(0.08, 0.07, 0.06, 0.45 * alpha), maxf(0.25, 4.2 / z), maxf(0.6, 8.0 / z))
+			draw_dashed_line(pts[i - 1], pts[i], Color(land_col, alpha), maxf(0.15, 2.6 / z), maxf(0.6, 8.0 / z))
+		var goal := pts[pts.size() - 1]
+		var r := maxf(0.6, 8.0 / z)
+		var gw := maxf(0.15, 2.2 / z)
+		draw_arc(goal, r, 0.0, TAU, 28, Color(land_col, alpha), gw)
+		draw_line(goal - Vector2(r * 1.5, 0), goal - Vector2(r * 0.5, 0), Color(land_col, alpha), gw)
+		draw_line(goal + Vector2(r * 0.5, 0), goal + Vector2(r * 1.5, 0), Color(land_col, alpha), gw)
+		draw_line(goal - Vector2(0, r * 1.5), goal - Vector2(0, r * 0.5), Color(land_col, alpha), gw)
+		draw_line(goal + Vector2(0, r * 0.5), goal + Vector2(0, r * 1.5), Color(land_col, alpha), gw)
+	_landing_mark(land[0] if land.size() > 0 else end, col, z)
+
+
+## Preview of a prepared landing: the same legs, slightly pulsing; a cross when impossible.
+func _draw_plan(p: Dictionary, z: float, now: float) -> void:
+	var t: int = p.get("tile", -1)
+	if t < 0:
+		return
+	if not p.get("ok", false):
+		var c := _c(t)
+		var k := maxf(0.6, 7.0 / z)
+		draw_line(c - Vector2(k, k), c + Vector2(k, k), UITheme.BAD, maxf(0.2, 2.4 / z))
+		draw_line(c - Vector2(k, -k), c + Vector2(k, -k), UITheme.BAD, maxf(0.2, 2.4 / z))
+		return
+	var pulse := 0.75 + 0.25 * sin(now * 4.0)
+	_route(p["path"], p["land_path"], Color("#f2efe8"), z, pulse, false)
+	var src: int = p.get("source", -1)
+	if src >= 0:
+		draw_circle(_c(src), maxf(0.4, 4.0 / z), Color("#f2efe8", 0.9))
+
+
+## The player's transport under a screen position, or -1.
+func pick_boat(screen_pos: Vector2, who: int) -> int:
+	if cam == null:
+		return -1
+	var p := cam.get_canvas_transform().affine_inverse() * screen_pos
+	var best := -1
+	var bd := INF
+	for id: int in ships:
+		var sh: Dictionary = ships[id]
+		if int(sh["owner"]) != who:
+			continue
+		var d := (sh["pos"] as Vector2).distance_to(p)
+		if d <= float(sh["len"]) * 0.7 + 4.0 / cam.zoom.x and d < bd:
+			bd = d
+			best = id
 	return best
 
 

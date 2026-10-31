@@ -9,6 +9,7 @@ const BOAT := "boat"
 const BUILD := "build"
 const RETREAT := "retreat"
 const RESEARCH := "research"
+const CANCEL_BOAT := "cancel_boat"
 
 
 ## Start (or switch to) researching `tech`.
@@ -36,6 +37,11 @@ static func boat(owner: int, tile: int, troops: float) -> Dictionary:
 
 static func boat_ratio(owner: int, tile: int, ratio: float) -> Dictionary:
 	return {"type": BOAT, "owner": owner, "tile": tile, "ratio": ratio}
+
+
+## Turn a transport round: its troops come back when it reaches the departure coast.
+static func cancel_boat(owner: int, boat_id: int) -> Dictionary:
+	return {"type": CANCEL_BOAT, "owner": owner, "boat": boat_id}
 
 
 static func build(owner: int, kind: int, tile: int) -> Dictionary:

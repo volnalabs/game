@@ -85,7 +85,13 @@
 		"landing_search_radius": 6.0,
 		"blocked_landing_keep": 0.5,
 		"own_landing_keep": 0.75,
-		"nav_cell": 8
+		"nav_cell": 8,
+		"landing_search_tiles": 60000,
+		"landing_beach_spread": 40,
+		"landing_candidates": 8,
+		"landing_land_weight": 3.0,
+		"landing_unsafe_penalty": 120.0,
+		"landing_goal_bias": 0.35
 	},
 	"victory_defaults": {
 		"domination_share": 0.7,

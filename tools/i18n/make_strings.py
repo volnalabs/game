@@ -201,7 +201,7 @@ S = [
 ("LOG_STRUCT_LOST","Потеряна постройка: %s","Building lost: %s"),("LOG_STRUCT_TAKEN","Захвачена постройка: %s","Building captured: %s"),
 ("REJECT_NOT_PLAYING","Партия ещё не началась","The match has not started"),("REJECT_DEAD","Государство уничтожено","State eliminated"),
 ("REJECT_NOT_LAND","Это не суша","Not land"),("REJECT_OWN_LAND","Это ваша земля","That is your land"),("REJECT_DEAD_TARGET","Цель уже уничтожена","Target already eliminated"),
-("REJECT_NO_TROOPS","Недостаточно войск","Not enough troops"),("REJECT_NO_BORDER","Нет общей границы — щёлкните по побережью для десанта","No shared border — click a coast to land troops"),
+("REJECT_NO_TROOPS","Недостаточно войск","Not enough troops"),("REJECT_NO_BORDER","Нет общей границы — щёлкните по их земле для подготовки морского десанта","No shared border — click a coast to land troops"),
 ("REJECT_NOT_SPAWN_PHASE","Выбор старта уже завершён","The start choice is over"),("REJECT_ALREADY_SPAWNED","Старт уже выбран","Start already chosen"),
 ("REJECT_BAD_TILE","Здесь начать нельзя — выберите свободную сушу","You cannot start here — choose free land"),
 ("REJECT_NO_GOLD","Недостаточно золота","Not enough gold"),("REJECT_NO_SUPPLIES","Недостаточно снаряжения","Not enough supplies"),
@@ -234,6 +234,22 @@ S = [
 ("ARROW_STATE_ADVANCE","Наступает","Advancing"),("ARROW_STATE_RETREAT","Отступает","Retreating"),
 ("ARROW_NEUTRAL","ничейные земли","unclaimed land"),("ARROW_FROM","Атакует","Attacker"),("ARROW_TO","Цель","Target"),
 ("ARROW_TROOPS","Войска","Troops"),("ARROW_STATE","Состояние","State"),
+# Phase 2A.3-D naval landings
+("NAVAL_SEND","Отправить десант","Send landing"),("NAVAL_SEND_HINT","Транспорт поплывёт по показанному маршруту, высадится и начнёт наступление к цели.","The transport sails the route shown, lands and advances towards the target."),
+("NAVAL_CANCEL_HINT","Отменить подготовку десанта","Cancel the prepared landing"),("NAVAL_TITLE","Морской десант: %s","Sea landing: %s"),
+("NAVAL_LINE","Отправите ≈ %s · море %d кл. · по суше %d кл. · ~%d с","Sends ≈ %s · sea %d tiles · overland %d tiles · ~%d s"),
+("NAVAL_NO_LAND_PATH","Цель не связана по суше ни с одним берегом этой страны","The target is not connected overland to any of its coasts"),
+("NAVAL_NO_LANDING","Нет подходящего места для высадки","No suitable place to land"),
+("NAVAL_NO_COAST","Нет своего побережья на воде, омывающей эту страну","You have no coast on the water around this state"),
+("NAVAL_NO_ROUTE","Морской путь к их берегу не найден","No sea route to their coast"),
+("BOAT_TITLE","Транспорт","Transport"),("BOAT_RETURNING","Транспорт возвращается","Transport returning"),
+("BOAT_SEL_LINE","%s войск → %s · ~%d с","%s troops → %s · ~%d s"),("BOAT_RECALL","Вернуть","Recall"),
+("BOAT_RECALL_HINT","Транспорт развернётся; войска вернутся в армию, когда он дойдёт до берега отправления.","The transport turns round; troops rejoin the army when it reaches its home coast."),
+("BOAT_CLOSE_HINT","Снять выбор с транспорта","Deselect the transport"),("LOG_BOAT_RECALLED","Транспорт возвращается","Transport recalled"),
+("LOG_BOAT_RETURNED","Транспорт вернулся: войска в армии","Transport back home: troops rejoined"),
+("LOG_BOAT_REROUTED","Место высадки потеряно — транспорт идёт к другому берегу","Landing site lost — the transport heads for another beach"),
+("LOG_BOAT_NO_LANDING","Высадиться негде — войска вернулись в армию","Nowhere to land — troops rejoined the army"),
+("ARROW_KIND_SEA","Морской переход","Sea crossing"),
 ]
 w = csv.writer(open(sys.argv[1], "w", newline=""), lineterminator="\n")
 w.writerow(["keys", "ru", "en"])

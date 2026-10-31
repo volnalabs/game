@@ -116,6 +116,10 @@ func mode() -> String:
 		return "spawn"
 	if ctl.get("build_open") == true:
 		return "build"
+	if ctl.get("naval_plan") is Dictionary and not (ctl.get("naval_plan") as Dictionary).is_empty():
+		return "naval"
+	if ctl.get("selected_boat") != null and int(ctl.get("selected_boat")) >= 0:
+		return "boat"
 	var o := int(ctl.get("selected_owner")) if ctl.get("selected_owner") != null else 0
 	if o > 0 and o != sim.player_id and sim.phase == Sim.Phase.PLAYING and sim.is_player_alive():
 		return "attack"
@@ -127,7 +131,7 @@ func refresh() -> void:
 		return
 	var vs := get_viewport_rect().size
 	var m := mode()
-	command.set_mode("build" if m == "build" else ("attack" if m == "attack" else "normal"))
+	command.set_mode(m if m in HudCommandBar.MODES else "normal")
 	command.visible = not ui_hidden and m != "spawn" and sim.player_id > 0
 	top.refresh()
 	command.refresh()

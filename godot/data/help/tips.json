@@ -92,8 +92,8 @@
 				"en": "Naval landing"
 			},
 			"text": {
-				"ru": "Щелчок по чужому берегу без общей границы отправляет транспорт. Нужны снаряжение и своё побережье на той же воде.",
-				"en": "A click on a foreign coast you do not border sends a transport. It needs supplies and your own coast on the same water."
+				"ru": "Щелчок по чужой земле без общей границы готовит морской десант: маршрут, высадка и наступление показаны на карте. Повторный щелчок или Enter — отправить, Esc — отменить.",
+				"en": "A click on foreign land you do not border prepares a sea landing: route, beach and advance are shown on the map. Click again or press Enter to send, Esc to cancel."
 			},
 			"article": "army_naval"
 		}

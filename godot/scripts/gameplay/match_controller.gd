@@ -44,6 +44,10 @@ var spawn_info_hover: Dictionary = {}
 var _advisor: SpawnAdvisor
 ## Building under the cursor and the selected building (structure ids, -1 = none).
 var hover_arrow: int = -1
+## Sea landing being prepared (LandingPlanner result + "tile"), {} = none.
+var naval_plan: Dictionary = {}
+## The player's transport selected on the map (boat id), -1 = none.
+var selected_boat: int = -1
 var hover_structure: int = -1
 var selected_structure: int = -1
 ## Reward bookkeeping: paid once at the end (or as abandoned when leaving early).
@@ -246,7 +250,16 @@ func _handle_events() -> void:
 					effects.ring(int(e["tile"]), UITheme.BAD if lost else UITheme.GOOD, 8.0)
 			SimEvents.COMMAND_REJECTED:
 				if int(e["owner"]) == pid:
-					hud.toast(tr("REJECT_" + String(e["reason"]).to_upper()))
+					hud.toast(NavalOrders.reason_text(String(e["reason"])))
+			SimEvents.BOAT_RETURNED:
+				if int(e["owner"]) == pid:
+					hud.log_line(tr("LOG_BOAT_RETURNED"), UITheme.TEXT_DIM)
+			SimEvents.BOAT_REROUTED:
+				if int(e["owner"]) == pid:
+					hud.log_line(tr("LOG_BOAT_REROUTED"), UITheme.WARN)
+			SimEvents.BOAT_FAILED:
+				if int(e["owner"]) == pid and e.has("troops"):
+					hud.log_line(tr("LOG_BOAT_NO_LANDING"), UITheme.WARN)
 			SimEvents.RESEARCH_DONE:
 				if int(e["owner"]) == pid:
 					var tname := MetaData.text(ResearchSystem.tech(String(e["tech"])).get("name", {}))
@@ -350,8 +363,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
 			# A click on a building (outside build mode) selects the building.
 			var sid := structures.pick(mb.position) if build_kind < 0 and sim.phase == Sim.Phase.PLAYING else -1
+			var bid := effects.pick_boat(mb.position, sim.player_id) if sid < 0 and build_kind < 0 and naval_plan.is_empty() else -1
 			if sid >= 0:
 				select_structure(sid)
+			elif bid >= 0:
+				select_boat(bid)
 			else:
 				_left_click(tile_at_screen(mb.position))
 		elif mb.button_index == MOUSE_BUTTON_RIGHT:
@@ -362,6 +378,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					cancel_build()
 				elif build_open:
 					close_build_mode()
+				elif not naval_plan.is_empty():
+					cancel_naval()
+				elif selected_boat >= 0:
+					select_boat(-1)
 				else:
 					var t := tile_at_screen(mb.position)
 					select_owner(sim.st.owner[t] if t >= 0 else 0)
@@ -371,9 +391,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_ENTER, KEY_KP_ENTER:
 				if spawn_pending >= 0:
 					confirm_spawn()
+				elif not naval_plan.is_empty():
+					confirm_naval()
 			KEY_ESCAPE:
 				if spawn_pending >= 0:
 					cancel_spawn()
+				elif not naval_plan.is_empty():
+					cancel_naval()
+				elif selected_boat >= 0:
+					select_boat(-1)
 				elif selected_structure >= 0:
 					select_structure(-1)
 				elif hud.ui_hidden:
@@ -463,14 +489,16 @@ func _left_click(t: int) -> void:
 	if o == pid:
 		select_owner(pid)
 		return
+	# A second click on the prepared landing's goal confirms it.
+	if not naval_plan.is_empty() and sim.map.dist2(t, int(naval_plan["tile"])) <= 9:
+		confirm_naval()
+		return
 	if borders(pid, o):
+		cancel_naval()
 		sim.submit(Commands.attack_tile(pid, t, ratio))
-	elif sim.map.coastal[t] == 1:
-		sim.submit(Commands.boat_ratio(pid, t, ratio))
-		hud.tip("landing")
-		hud.log_line(tr("LOG_BOAT_SENT") % (tr("FREE_LAND") if o == 0 else st.o_name[o]), UITheme.ACCENT)
 	else:
-		hud.toast(tr("REJECT_NO_BORDER"))
+		# Not reachable over land: prepare a sea landing towards exactly this tile.
+		preview_naval(t)
 
 
 func borders(a: int, b: int) -> bool:
@@ -701,24 +729,70 @@ func attack_owner(id: int) -> void:
 	hud.toast(tr("REJECT_NO_BORDER"))
 
 
-## Naval landing on state `id`'s coast nearest to our own coast.
+## "Landing" against state `id`: prepares a sea landing towards its most important place.
 func landing_on(id: int) -> void:
-	var st := sim.st
-	var pid := sim.player_id
-	var c := st.centroid(pid)
-	var best := -1
-	var bd := INF
-	for t in sim.map.coast_tiles:
-		if st.owner[t] == id:
-			var d := Vector2(t % st.W, t / st.W).distance_squared_to(c)
-			if d < bd:
-				bd = d
-				best = t
-	if best < 0:
-		hud.toast(tr("REJECT_NOT_COAST"))
+	if id <= 0:
 		return
-	sim.submit(Commands.boat_ratio(pid, best, ratio))
-	hud.log_line(tr("LOG_BOAT_SENT") % st.o_name[id], UITheme.ACCENT)
+	preview_naval(NavalOrders.default_goal(sim, id))
+
+
+## Plans a sea landing towards tile `t` (same planner as the simulation) and shows the preview:
+## route, beach, overland direction, troops, time — or why it is impossible.
+func preview_naval(t: int) -> void:
+	var p := LandingPlanner.plan(sim.naval, sim.player_id, t)
+	p["tile"] = t
+	naval_plan = p
+	selected_boat = -1
+	effects.naval_plan = p
+	if not p["ok"]:
+		hud.toast(NavalOrders.reason_text(String(p["reason"])), UITheme.BAD, "ui_warning")
+	else:
+		hud.tip("landing")
+	hud.refresh()
+
+
+func cancel_naval() -> void:
+	if naval_plan.is_empty():
+		return
+	naval_plan = {}
+	effects.naval_plan = {}
+	hud.refresh()
+
+
+## Sends the prepared landing with the current attack share.
+func confirm_naval() -> void:
+	if naval_plan.is_empty():
+		return
+	var pid := sim.player_id
+	var send := floorf(sim.st.o_troops[pid] * ratio)
+	var reason := NavalOrders.blocker(sim, pid, naval_plan, send)
+	if reason != "":
+		hud.toast(reason, UITheme.BAD, "ui_warning")
+		return
+	var t: int = naval_plan["tile"]
+	var go: int = naval_plan["goal_owner"]
+	sim.submit(Commands.boat_ratio(pid, t, ratio))
+	hud.log_line(tr("LOG_BOAT_SENT") % (tr("FREE_LAND") if go == 0 else sim.st.o_name[go]), UITheme.ACCENT)
+	cancel_naval()
+
+
+func select_boat(id: int) -> void:
+	selected_boat = id
+	effects.selected_boat = id
+	if id >= 0:
+		cancel_naval()
+		select_structure(-1)
+		if selected_owner > 0 and selected_owner != sim.player_id:
+			selected_owner = 0
+			hud.show_owner(0)
+	hud.refresh()
+
+
+func recall_boat() -> void:
+	if selected_boat >= 0:
+		sim.submit(Commands.cancel_boat(sim.player_id, selected_boat))
+		hud.log_line(tr("LOG_BOAT_RECALLED"), UITheme.ACCENT)
+		hud.refresh()
 
 
 ## Encyclopedia as an overlay on top of the match (the match pauses while it is open).

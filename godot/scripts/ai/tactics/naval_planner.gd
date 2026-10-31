@@ -3,6 +3,10 @@ extends RefCounted
 ## Naval landings: samples coastal tiles of the water bodies the bot touches, scores free islands
 ## and enemy shores with the same forecast as land attacks (plus travel distance), and launches a
 ## transport when the best landing is worth it. Matters most on archipelago maps.
+## Every candidate is checked with LandingPlanner (the simulation's own planner), so no transport is
+## sent on an impossible expedition. Against an overseas state the bot also weighs an inland goal —
+## its most valuable tile (a city first): worth more, but discounted by the overland distance, the
+## sailing time and a beach inside the defender's post or radar zone.
 
 
 ## Water bodies where the bot owns coast. A state that owns a whole island has no land border at
@@ -97,8 +101,43 @@ static func act(bot: StrategicAI) -> bool:
 	var best := best_landing(bot)
 	if best.is_empty():
 		return false
+	best = refine(bot, best)
+	if best.is_empty():
+		return false
 	launch(bot, best)
 	return true
+
+
+## Validates the chosen landing with the simulation's planner and, against a state, compares it
+## with an inland goal. Returns {} when no landing is possible.
+static func refine(bot: StrategicAI, best: Dictionary) -> Dictionary:
+	var nv := bot.sim.naval
+	var direct := LandingPlanner.plan(nv, bot.id, int(best["tile"]))
+	if not direct["ok"]:
+		return {}
+	var o := int(best["owner"])
+	if o <= 0:
+		return best
+	var goal := LandingPlanner.key_tile(nv, o)
+	if goal < 0 or goal == int(best["tile"]):
+		return best
+	var inland := LandingPlanner.plan(nv, bot.id, goal)
+	if not inland["ok"]:
+		return best
+	var land_len := float(inland["land_len"])
+	var has_city := not bot.sim.structures.of_owner(o, Rules.B_CITY).is_empty()
+	var u := float(best["u"]) * (1.6 if has_city else 1.15)
+	u /= 1.0 + land_len / 60.0
+	u /= 1.0 + float(inland["eta_ticks"]) / 900.0
+	if inland["unsafe"]:
+		u *= 0.6
+	if u > float(best["u"]):
+		var out := best.duplicate()
+		out["tile"] = goal
+		out["u"] = u
+		out["reason"] = "inland_goal"
+		return out
+	return best
 
 
 static func launch(bot: StrategicAI, best: Dictionary) -> void:

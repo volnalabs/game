@@ -3,9 +3,12 @@ extends PanelContainer
 ## The bottom bar shows only what the current situation needs:
 ##   normal — attack strength, "Build", and "Retreat" while attacks are running;
 ##   build  — building categories and tiles, one detail block for the chosen building, zones, close;
-##   attack — a foreign state is selected: target, strength, troops sent, attack / landing / cancel.
+##   attack — a foreign state is selected: target, strength, troops sent, attack / landing / cancel;
+##   naval  — a sea landing is being prepared: target, route (sea + overland), time, troops,
+##            send / cancel (or why it is impossible);
+##   boat   — one of the player's transports is selected: troops, destination, time left, recall.
 
-const MODES := ["normal", "build", "attack"]
+const MODES := ["normal", "build", "attack", "naval", "boat"]
 
 var hud: GameHUD
 var mode: String = ""
@@ -29,6 +32,16 @@ var _target_line: Label
 var _attack_btn: Button
 var _landing_btn: Button
 var _attack_ratio: Array[Button] = []
+# naval order
+var _nv_flag: TextureRect
+var _nv_name: Label
+var _nv_line: Label
+var _nv_send: Button
+var _nv_ratio: Array[Button] = []
+# selected transport
+var _bt_line: Label
+var _bt_title: Label
+var _bt_recall: Button
 
 
 func _init(h: GameHUD) -> void:
@@ -39,6 +52,8 @@ func _init(h: GameHUD) -> void:
 	_boxes["normal"] = _build_normal()
 	_boxes["build"] = _build_build()
 	_boxes["attack"] = _build_attack()
+	_boxes["naval"] = _build_naval()
+	_boxes["boat"] = _build_boat()
 	for m: String in MODES:
 		v.add_child(_boxes[m])
 	set_mode("normal")
@@ -159,6 +174,67 @@ func _build_attack() -> Control:
 	return row
 
 
+func _build_naval() -> Control:
+	var row := UITheme.hbox(14)
+	var ic := Icons.rect("g_landing", 26, UITheme.TEXT)
+	ic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(ic)
+	_nv_flag = UITheme.flag_rect(null, 30, 20)
+	_nv_flag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(_nv_flag)
+	var tv := UITheme.vbox(0)
+	_nv_name = UITheme.label("", UITheme.T_BODY_L, UITheme.TEXT)
+	_nv_name.add_theme_font_override("font", UITheme.font_medium)
+	tv.add_child(_nv_name)
+	_nv_line = UITheme.label("", 12, UITheme.TEXT_DIM)
+	_nv_line.add_theme_font_override("font", UITheme.font_numbers)
+	tv.add_child(_nv_line)
+	tv.custom_minimum_size.x = 250
+	row.add_child(tv)
+	var av := UITheme.vbox(0)
+	av.add_child(UITheme.label(tr("HUD_ATTACK_SHARE"), 12, UITheme.TEXT_DIM))
+	av.add_child(_ratio_strip(_nv_ratio))
+	row.add_child(av)
+	_nv_send = UITheme.accent_button(tr("NAVAL_SEND"), func() -> void: hud.ctl.confirm_naval(), 0, "g_landing")
+	_nv_send.custom_minimum_size.y = 40
+	_nv_send.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(_nv_send, {"title": tr("NAVAL_SEND"), "text": tr("NAVAL_SEND_HINT"), "hotkey": "Enter"})
+	row.add_child(_nv_send)
+	var cancel := UITheme.ghost_button(tr("CANCEL"), func() -> void: hud.ctl.cancel_naval(), "ui_close")
+	cancel.focus_mode = Control.FOCUS_NONE
+	cancel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(cancel, {"title": tr("CANCEL"), "text": tr("NAVAL_CANCEL_HINT"), "hotkey": "Esc"})
+	row.add_child(cancel)
+	return row
+
+
+func _build_boat() -> Control:
+	var row := UITheme.hbox(14)
+	var ic := Icons.rect("g_landing", 26, UITheme.TEXT)
+	ic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(ic)
+	var tv := UITheme.vbox(0)
+	_bt_title = UITheme.label(tr("BOAT_TITLE"), UITheme.T_BODY_L, UITheme.TEXT)
+	_bt_title.add_theme_font_override("font", UITheme.font_medium)
+	tv.add_child(_bt_title)
+	_bt_line = UITheme.label("", 12, UITheme.TEXT_DIM)
+	_bt_line.add_theme_font_override("font", UITheme.font_numbers)
+	tv.add_child(_bt_line)
+	tv.custom_minimum_size.x = 280
+	row.add_child(tv)
+	_bt_recall = UITheme.button(tr("BOAT_RECALL"), func() -> void: hud.ctl.recall_boat(), 0, "ui_back")
+	_bt_recall.custom_minimum_size.y = 40
+	_bt_recall.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(_bt_recall, {"title": tr("BOAT_RECALL"), "text": tr("BOAT_RECALL_HINT")})
+	row.add_child(_bt_recall)
+	var close := UITheme.ghost_button(tr("BAR_CLOSE"), func() -> void: hud.ctl.select_boat(-1), "ui_close")
+	close.focus_mode = Control.FOCUS_NONE
+	close.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(close, {"title": tr("BAR_CLOSE"), "text": tr("BOAT_CLOSE_HINT"), "hotkey": "Esc"})
+	row.add_child(close)
+	return row
+
+
 func set_mode(m: String) -> void:
 	if m == mode:
 		return
@@ -197,7 +273,51 @@ func refresh() -> void:
 			_attack_btn.visible = borders
 			_attack_btn.disabled = sim.phase != Sim.Phase.PLAYING or not sim.is_player_alive()
 			_landing_btn.visible = not borders
+		"naval":
+			_refresh_naval()
+		"boat":
+			_refresh_boat()
 	reset_size()
+
+
+func _refresh_naval() -> void:
+	var sim := hud.sim
+	var st := sim.st
+	var pid := sim.player_id
+	var plan: Dictionary = hud.ctl.naval_plan
+	if plan.is_empty():
+		return
+	for i in _nv_ratio.size():
+		_nv_ratio[i].button_pressed = is_equal_approx(GameHUD.RATIOS[i], hud.ctl.ratio)
+	var go: int = plan.get("goal_owner", 0)
+	_nv_flag.texture = hud.flag_of(go) if go > 0 else null
+	_nv_flag.visible = go > 0
+	_nv_name.text = tr("NAVAL_TITLE") % (st.o_name[go] if go > 0 else tr("FREE_LAND"))
+	var send := floorf(st.o_troops[pid] * hud.ctl.ratio)
+	if plan["ok"]:
+		_nv_line.text = tr("NAVAL_LINE") % [UITheme.num(send), roundi(float(plan["sea_len"])), int(plan["land_len"]),
+			ceili(float(plan["eta_ticks"]) / 10.0)]
+		_nv_line.add_theme_color_override("font_color", UITheme.TEXT_DIM)
+	else:
+		_nv_line.text = NavalOrders.reason_text(String(plan["reason"]))
+		_nv_line.add_theme_color_override("font_color", UITheme.BAD)
+	var reason := NavalOrders.blocker(sim, pid, plan, send)
+	_nv_send.disabled = reason != ""
+	_nv_send.set_meta("reason", reason)
+
+
+func _refresh_boat() -> void:
+	var sim := hud.sim
+	var st := sim.st
+	var b := NavalOrders.boat_by_id(sim, int(hud.ctl.selected_boat))
+	if b == null:
+		hud.ctl.select_boat(-1)
+		return
+	var go := st.owner[b.goal_tile] if b.goal_tile >= 0 else st.owner[b.target_tile]
+	_bt_title.text = tr("BOAT_RETURNING") if b.returning else tr("BOAT_TITLE")
+	var left := ceili(maxf(0.0, b.length - b.progress) / maxf(0.01, float(sim.rules.n["boat_speed_tiles_per_tick"]) / sim.rules.k_lin) / 10.0)
+	_bt_line.text = tr("BOAT_SEL_LINE") % [UITheme.num(b.troops), st.o_name[go] if go > 0 else tr("FREE_LAND"), left]
+	_bt_recall.disabled = b.returning
 
 
 func _refresh_build() -> void:

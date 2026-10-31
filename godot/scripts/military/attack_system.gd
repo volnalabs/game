@@ -30,12 +30,14 @@ class Attack:
 	var last_tile: int = -1
 	## A naval landing: its own front grows from the beachhead (not merged with land attacks).
 	var landing: bool = false
+	## Tile the attack pushes towards (an inland goal of a naval landing), -1 = none.
+	var goal: int = -1
 
 	func to_dict() -> Dictionary:
 		return {"id": id, "attacker": attacker, "target": target, "troops": troops, "initial": initial,
 			"q": q.to_dict(), "front": front, "head": head, "chew": chew, "retreat_at": retreat_at,
 			"frozen_from": frozen_from, "start_tick": start_tick, "taken": taken, "lost": lost,
-			"killed": killed, "last_tile": last_tile, "landing": landing}
+			"killed": killed, "last_tile": last_tile, "landing": landing, "goal": goal}
 
 	static func from_dict(d: Dictionary) -> Attack:
 		var a := Attack.new()
@@ -63,6 +65,7 @@ var _lcg: int = 12345
 
 
 var _prio_base: int = 10
+var _goal_bias: float = 0.35
 var _prio_rand: int = 7
 ## Per terrain byte (code | river bit): attack magnitude and tile cost, without / with a post.
 var _mag: PackedFloat32Array
@@ -76,6 +79,7 @@ func _init(state: SimState, rules_: Rules, rng_: SimRng, ev: SimEvents) -> void:
 	events = ev
 	_prio_base = int(rules.a["priority_base"])
 	_prio_rand = maxi(1, int(rules.a["priority_rand"]))
+	_goal_bias = float(rules.n.get("landing_goal_bias", 0.35))
 	_mag = PackedFloat32Array()
 	_mag.resize(64)
 	_cost = PackedFloat32Array()
@@ -290,6 +294,9 @@ func _push(a: Attack, u: int) -> void:
 	_lcg = (_lcg * 1103515245 + 12345) & 0x7fffffff
 	var r: int = _prio_base + (_lcg >> 8) % _prio_rand
 	var key := float(st.tick) + float(r) * (1.0 - 0.5 * nb + pm * 0.5)
+	if a.goal >= 0:
+		# A landing heads for its goal: tiles closer to it are taken first.
+		key += sqrt(float(st.map.dist2(u, a.goal))) * _goal_bias
 	a.q.push(key, u)
 	if st.front_mark[u] != a.id:
 		st.set_front_mark(u, a.id)
