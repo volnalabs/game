@@ -223,6 +223,11 @@ S = [
 ("HUD_ACTIONS","Действия","Actions"),("ACTION_HOME","К своей стране (Home)","Your state (Home)"),("ACTION_RETREAT_ALL","Отступить всеми атаками","Retreat all attacks"),("ACTION_HIDE_UI","Скрыть интерфейс (Tab / Esc — вернуть)","Hide the interface (Tab / Esc to restore)"),
 ("PAUSE_SETTINGS","Настройки","Settings"),("MENU_CONTINUE","Продолжить","Continue"),("MENU_SEC_PLAY","Игра","Play"),
 ("MENU_SEC_PROGRESS","Прогресс","Progress"),("MENU_SEC_GAME","Прочее","More"),("MENU_LAST_MATCH","Последняя партия","Last match"),("END_RESULTS","Итоги и награды","Results and rewards"),
+# Phase 2A.3-B main menu
+("MENU_NEW_GAME_LONG","Новая партия","New match"),("MENU_CONTINUE_CAPTION","Продолжить партию","Continue your match"),
+("MENU_CONTINUE_META","%s · %d мин · %s клеток","%s · %d min · %s tiles"),
+("MENU_PROGRESS_SHORT","Прогресс","Progress"),("MENU_SKILLS_SHORT","Навыки","Skills"),("MENU_CASES_SHORT","Кейсы","Cases"),
+("MENU_INVENTORY_SHORT","Инвентарь","Inventory"),("MENU_ACHIEVEMENTS_SHORT","Награды","Awards"),
 ]
 w = csv.writer(open(sys.argv[1], "w", newline=""), lineterminator="\n")
 w.writerow(["keys", "ru", "en"])

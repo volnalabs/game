@@ -706,3 +706,11 @@ MENU_SEC_PROGRESS,Прогресс,Progress
 MENU_SEC_GAME,Прочее,More
 MENU_LAST_MATCH,Последняя партия,Last match
 END_RESULTS,Итоги и награды,Results and rewards
+MENU_NEW_GAME_LONG,Новая партия,New match
+MENU_CONTINUE_CAPTION,Продолжить партию,Continue your match
+MENU_CONTINUE_META,%s · %d мин · %s клеток,%s · %d min · %s tiles
+MENU_PROGRESS_SHORT,Прогресс,Progress
+MENU_SKILLS_SHORT,Навыки,Skills
+MENU_CASES_SHORT,Кейсы,Cases
+MENU_INVENTORY_SHORT,Инвентарь,Inventory
+MENU_ACHIEVEMENTS_SHORT,Награды,Awards
