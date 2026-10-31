@@ -43,6 +43,7 @@ var spawn_info_pending: Dictionary = {}
 var spawn_info_hover: Dictionary = {}
 var _advisor: SpawnAdvisor
 ## Building under the cursor and the selected building (structure ids, -1 = none).
+var hover_arrow: int = -1
 var hover_structure: int = -1
 var selected_structure: int = -1
 ## Reward bookkeeping: paid once at the end (or as abandoned when leaving early).
@@ -615,18 +616,28 @@ func upgrade_structure(sid: int) -> void:
 ## Hint card for the building under the cursor (name, purpose, main effect, key figures).
 func _update_structure_hover() -> void:
 	var sid := -1
-	if build_kind < 0 and not menu_open and sim.phase == Sim.Phase.PLAYING and not hud.ui_hidden:
+	var aid := -1
+	var allowed := build_kind < 0 and not menu_open and sim.phase == Sim.Phase.PLAYING and not hud.ui_hidden
+	if allowed:
 		sid = structures.pick(_mouse_screen)
-	if sid == hover_structure:
+		if sid < 0:
+			aid = effects.pick_arrow(_mouse_screen)
+	if sid == hover_structure and aid == hover_arrow:
 		return
 	hover_structure = sid
+	hover_arrow = aid
 	structures.hovered = sid
-	if sid < 0:
+	effects.hovered_arrow = aid
+	if sid >= 0:
+		var s: StructureSystem.Structure = sim.structures.structs[sid]
+		var r := structures.plate_radius() * cam.zoom.x
+		Hints.show_at(Rect2(_mouse_screen - Vector2(r, r), Vector2(r, r) * 2.0), BuildingInfo.structure_brief(sim, s))
+	elif aid >= 0:
+		var info := effects.arrow_info(aid)
+		if not info.is_empty():
+			Hints.show_at(Rect2(_mouse_screen - Vector2(8, 8), Vector2(16, 16)), info)
+	else:
 		Hints.hide()
-		return
-	var s: StructureSystem.Structure = sim.structures.structs[sid]
-	var r := structures.plate_radius() * cam.zoom.x
-	Hints.show_at(Rect2(_mouse_screen - Vector2(r, r), Vector2(r, r) * 2.0), BuildingInfo.structure_brief(sim, s))
 
 
 func toggle_zones() -> void:

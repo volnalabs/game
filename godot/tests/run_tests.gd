@@ -32,7 +32,8 @@ func _run() -> void:
 		if filter != "" and not path.contains(filter.get_slice(":", 0)):
 			continue
 		var script: GDScript = load(path)
-		if script == null:
+		# A script with a parse error still loads but cannot be instantiated: fail, do not hang.
+		if script == null or not script.can_instantiate():
 			print("LOAD FAIL ", path)
 			failed += 1
 			continue

@@ -714,3 +714,13 @@ MENU_SKILLS_SHORT,Навыки,Skills
 MENU_CASES_SHORT,Кейсы,Cases
 MENU_INVENTORY_SHORT,Инвентарь,Inventory
 MENU_ACHIEVEMENTS_SHORT,Награды,Awards
+ARROW_TITLE,%s → %s,%s → %s
+ARROW_KIND_LAND,Наземная атака,Land attack
+ARROW_KIND_LANDING,Десант: высадка с моря и наступление вглубь,"Landing: ashore from the sea, then inland"
+ARROW_STATE_ADVANCE,Наступает,Advancing
+ARROW_STATE_RETREAT,Отступает,Retreating
+ARROW_NEUTRAL,ничейные земли,unclaimed land
+ARROW_FROM,Атакует,Attacker
+ARROW_TO,Цель,Target
+ARROW_TROOPS,Войска,Troops
+ARROW_STATE,Состояние,State
