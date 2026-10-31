@@ -44,6 +44,14 @@ static func act(bot: StrategicAI) -> void:
 				u += aware * (2.0 if poor else 0.0)
 			"logistics":
 				u += aware * (0.8 if bot.has_coast else 0.0) * float(bot.pers.get("naval", 1.0))
+			"weapons":
+				# Weapons come after the basics: for a warlike state at war, or in answer to rivals' weapons.
+				u += aware * (1.0 if at_war else 0.0) * (float(bot.pers.get("war_appetite", 1.0)) - 0.6)
+		if tid == "air_defence":
+			for o: int in bot.perception.neighbors:
+				if st.bowned(o, Rules.B_SILO) > 0:
+					u += aware * 2.0
+					break
 		# Early on everyone wants income first.
 		if br == "economy" and sim.elapsed_seconds() < 600.0:
 			u += 1.5

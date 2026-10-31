@@ -69,8 +69,8 @@ static func act(bot: StrategicAI) -> void:
 		var k: int = o["kind"]
 		if not sim.structures.unlocked(id, k):
 			continue
-		# Phase 2 buildings are surplus spending: only with money to spare.
-		if k >= Rules.B_RESEARCH and gold < 2.5 * sim.structures.cost(id, k):
+		# Phase 2 buildings (and the SAM / silo) are surplus spending: only with money to spare.
+		if (k >= Rules.B_RESEARCH or k == Rules.B_SAM or k == Rules.B_SILO) and gold < 2.5 * sim.structures.cost(id, k):
 			continue
 		var c := sim.structures.cost(id, k)
 		var ratio: float = float(o["value"]) / maxf(c, 1.0)
@@ -135,6 +135,15 @@ static func _phase2_options(bot: StrategicAI, options: Array, top: int, top_t: f
 	# Airbase for an attacking state; naval base for a seafaring one.
 	if st.bowned(id, Rules.B_AIRBASE) < 2:
 		options.append({"kind": Rules.B_AIRBASE, "value": bot.troops() * 0.1 * 3.0 * war})
+	# Air defence against neighbours with missile silos; a silo for a warlike, wealthy state.
+	var silo_threat := 0
+	for o: int in bot.perception.neighbors:
+		if st.bowned(o, Rules.B_SILO) > 0 or int(sim.weapons.nukes_launched.get(o, 0)) > 0:
+			silo_threat += 1
+	if silo_threat > 0 and st.bowned(id, Rules.B_SAM) < 1 + silo_threat:
+		options.append({"kind": Rules.B_SAM, "value": 180000.0 * float(bot.pers["defense"]) * minf(float(silo_threat), 3.0)})
+	if top > 0 and st.bowned(id, Rules.B_SILO) < 2 and war >= 1.0:
+		options.append({"kind": Rules.B_SILO, "value": 120000.0 * war * minf(top_t, 2.0)})
 	if bot.has_coast and st.bowned(id, Rules.B_NAVAL_BASE) < 2:
 		options.append({"kind": Rules.B_NAVAL_BASE, "value": 70000.0 * float(bot.pers.get("naval", 1.0))})
 	for i in range(n0, options.size()):

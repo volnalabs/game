@@ -4,9 +4,9 @@ extends RefCounted
 ## and enemy shores with the same forecast as land attacks (plus travel distance), and launches a
 ## transport when the best landing is worth it. Matters most on archipelago maps.
 ## Every candidate is checked with LandingPlanner (the simulation's own planner), so no transport is
-## sent on an impossible expedition. Against an overseas state the bot also weighs an inland goal —
-## its most valuable tile (a city first): worth more, but discounted by the overland distance, the
-## sailing time and a beach inside the defender's post or radar zone.
+## sent on an impossible expedition. Against an overseas state the bot may aim at an inland city
+## instead of the beach — only when it lies close to a safe coast (≤ 30 tiles overland) and is worth
+## clearly more after the overland distance and sailing time.
 
 
 ## Water bodies where the bot owns coast. A state that owns a whole island has no land border at
@@ -125,13 +125,13 @@ static func refine(bot: StrategicAI, best: Dictionary) -> Dictionary:
 	if not inland["ok"]:
 		return best
 	var land_len := float(inland["land_len"])
-	var has_city := not bot.sim.structures.of_owner(o, Rules.B_CITY).is_empty()
-	var u := float(best["u"]) * (1.6 if has_city else 1.15)
-	u /= 1.0 + land_len / 60.0
-	u /= 1.0 + float(inland["eta_ticks"]) / 900.0
-	if inland["unsafe"]:
-		u *= 0.6
-	if u > float(best["u"]):
+	# Only a city close to the coast is worth aiming past the beach (measured in AI series: a
+	# generous inland valuation sent landings too deep and cost the bots land overall).
+	if bot.sim.structures.of_owner(o, Rules.B_CITY).is_empty() or land_len > 30.0 or inland["unsafe"]:
+		return best
+	var u := float(best["u"]) * 1.6 / (1.0 + land_len / 40.0)
+	u /= 1.0 + float(inland["eta_ticks"]) / 1200.0
+	if u > float(best["u"]) * 1.1:
 		var out := best.duplicate()
 		out["tile"] = goal
 		out["u"] = u

@@ -38,6 +38,7 @@ var bodies_tick: int = -100000
 var next_strategic: int = 0
 var next_econ: int = 0
 var next_naval: int = 0
+var next_weapon: int = 0
 var last_war_end: int = -100000
 var state_ticks: Dictionary = {}
 var _noticed: Dictionary = {}
@@ -149,6 +150,8 @@ func think() -> void:
 	DefensePlanner.counter(self)
 	DefensePlanner.review_attacks(self)
 	_act_on_state()
+	if state == S_WAR or state == S_DEFEND or not sim.attacks.incoming(id).is_empty():
+		WeaponPlanner.act(self)
 	if now >= next_econ:
 		next_econ = now + int(diff["econ_interval"])
 		ResearchPlanner.act(self)
@@ -240,6 +243,8 @@ func _act_on_state() -> void:
 		var land_u := 0.0
 		if not options.is_empty() and float(options[0]["u"]) > 0.0:
 			land_u = float(options[0]["u"])
+		if not landing.is_empty() and float(landing["u"]) > land_u * 0.7:
+			landing = NavalPlanner.refine(self, landing)
 		if not landing.is_empty() and float(landing["u"]) > land_u * 0.7:
 			NavalPlanner.launch(self, landing)
 			last_offense = now
@@ -362,7 +367,7 @@ func stats() -> Dictionary:
 func to_dict() -> Dictionary:
 	var d := super()
 	d.merge({"state": state, "target": target, "state_since": state_since, "relations": relations,
-		"next_strategic": next_strategic, "next_econ": next_econ, "next_naval": next_naval,
+		"next_strategic": next_strategic, "next_econ": next_econ, "next_naval": next_naval, "next_weapon": next_weapon,
 		"last_war_end": last_war_end, "state_ticks": state_ticks, "started": _started,
 		"has_coast": has_coast, "memory": perception.memory, "prng": perception.rng.get_state(),
 		"options": options, "threats": threats, "war_plan": war_plan, "countered": countered, "noticed": _noticed,
@@ -379,6 +384,7 @@ func from_dict(d: Dictionary) -> void:
 	next_strategic = d.get("next_strategic", 0)
 	next_econ = d.get("next_econ", 0)
 	next_naval = d.get("next_naval", 0)
+	next_weapon = d.get("next_weapon", 0)
 	last_war_end = d.get("last_war_end", -100000)
 	state_ticks = d.get("state_ticks", {})
 	_started = d.get("started", false)

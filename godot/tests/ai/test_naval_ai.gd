@@ -53,7 +53,8 @@ func test_refine_prefers_a_valuable_inland_goal() -> void:
 		sim.st.o_spawned[o] = 1
 	sim.st.add_gold(b, 1e7)
 	sim.st.add_supplies(b, 1e5)
-	var city := m.tile_at(110, 40)
+	# A city 10 tiles from the coast (worth aiming past the beach)...
+	var city := m.tile_at(94, 40)
 	var r := sim.structures.try_build(b, Rules.B_CITY, city)
 	check(r["ok"], "enemy city inland")
 	var bot: StrategicAI = null
@@ -69,6 +70,11 @@ func test_refine_prefers_a_valuable_inland_goal() -> void:
 	check(not out.is_empty(), "a landing remains possible")
 	check_eq(int(out["tile"]), int(LandingPlanner.key_tile(sim.naval, b)), "the bot aims at the enemy city")
 	check(LandingPlanner.plan(sim.naval, a, int(out["tile"]))["ok"], "the chosen goal is reachable")
+	# ...but not one deep inland: the landing stays on the beach.
+	sim.structures.destroy(sim.structures.structs[int(r["id"])])
+	var far := sim.structures.try_build(b, Rules.B_CITY, m.tile_at(130, 40))
+	check(far["ok"], "a deep inland city")
+	check_eq(int(NavalPlanner.refine(bot, best)["tile"]), coast, "too deep: the bot lands on the beach")
 	# An impossible landing is dropped instead of being sent.
 	var lake := {"tile": m.tile_at(80, 40), "owner": 0, "u": 10.0, "troops": 100.0, "reason": "free_shore"}
 	check(NavalPlanner.refine(bot, lake).is_empty(), "a landing on water is never sent")
