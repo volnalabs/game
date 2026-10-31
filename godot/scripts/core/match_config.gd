@@ -26,13 +26,15 @@ var match_id: String = ""
 var fair_mode: bool = false
 ## Perk ids of the player's loadout (from the profile; ignored in Fair mode).
 var player_perks: Array = []
+## Team play (Phase 2F): 0 = free for all; 2..4 = that many teams (the player on team 1).
+var teams: int = 0
 
 
 func to_dict() -> Dictionary:
 	return {"map_id": map_id, "generator": generator, "seed": seed, "bots": bots, "difficulty": difficulty,
 		"tribes": tribes, "personality_mix": personality_mix, "player_nation": player_nation,
 		"has_player": has_player, "player_name": player_name, "victory": victory.to_dict(),
-		"ai_kind": ai_kind, "bot_overrides": bot_overrides, "match_id": match_id, "fair_mode": fair_mode, "player_perks": player_perks}
+		"ai_kind": ai_kind, "bot_overrides": bot_overrides, "match_id": match_id, "fair_mode": fair_mode, "player_perks": player_perks, "teams": teams}
 
 
 static func from_dict(d: Dictionary) -> MatchConfig:
@@ -53,4 +55,5 @@ static func from_dict(d: Dictionary) -> MatchConfig:
 	c.match_id = d.get("match_id", "")
 	c.fair_mode = bool(d.get("fair_mode", false))
 	c.player_perks = d.get("player_perks", [])
+	c.teams = int(d.get("teams", 0))
 	return c

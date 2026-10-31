@@ -86,6 +86,8 @@ var retreat_delay_ticks: int
 var e: Dictionary
 var n: Dictionary
 var victory_defaults: Dictionary
+## Diplomacy numbers (default_rules.json "diplomacy"; convoy_speed already in this map's tiles).
+var dip: Dictionary
 
 # Buildings.
 var b_kinds: Array = []
@@ -161,6 +163,8 @@ func _load(k: float) -> void:
 	e = raw["economy"]
 	n = raw["naval"]
 	victory_defaults = raw["victory_defaults"]
+	dip = raw.get("diplomacy", {}).duplicate()
+	dip["convoy_speed"] = float(dip.get("convoy_speed", 4.0)) / k_lin
 	b_kinds = buildings_raw["kinds"]
 	b_min_dist = float(buildings_raw["min_distance"]) / k_lin
 	b_search_radius = float(buildings_raw["search_radius"]) / k_lin

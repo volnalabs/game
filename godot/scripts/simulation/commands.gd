@@ -11,6 +11,10 @@ const RETREAT := "retreat"
 const RESEARCH := "research"
 const CANCEL_BOAT := "cancel_boat"
 const LAUNCH := "launch"
+const DIPLO := "diplo"
+const SEND := "send"
+const HELP := "help"
+const HELP_ANSWER := "help_answer"
 
 
 ## Start (or switch to) researching `tech`.
@@ -38,6 +42,25 @@ static func boat(owner: int, tile: int, troops: float) -> Dictionary:
 
 static func boat_ratio(owner: int, tile: int, ratio: float) -> Dictionary:
 	return {"type": BOAT, "owner": owner, "tile": tile, "ratio": ratio}
+
+
+## Diplomacy: action "request" (kind "alliance" / "nap"), "reply" (accept), "break", "extend".
+static func diplo(owner: int, action: String, other: int, kind: String = "", accept: bool = false) -> Dictionary:
+	return {"type": DIPLO, "owner": owner, "action": action, "other": other, "kind": kind, "accept": accept}
+
+
+## Send troops or gold to an ally by convoy.
+static func send(owner: int, to: int, kind: String, amount: float) -> Dictionary:
+	return {"type": SEND, "owner": owner, "to": to, "kind": kind, "amount": amount}
+
+
+## Ask an ally for help against an enemy / answer such a request.
+static func help(owner: int, ally: int, enemy: int) -> Dictionary:
+	return {"type": HELP, "owner": owner, "ally": ally, "enemy": enemy}
+
+
+static func help_answer(owner: int, asker: int, accept: bool, troops: float) -> Dictionary:
+	return {"type": HELP_ANSWER, "owner": owner, "asker": asker, "accept": accept, "troops": troops}
 
 
 ## Launch weapon `weapon` (id from weapons.json) at tile `tile`.

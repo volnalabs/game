@@ -10,8 +10,8 @@ extends RefCounted
 ## Air defence: each working SAM of the state that owns the target tile engages munitions inside its
 ## range (×radar_range_mult when the SAM is inside its owner's radar zone), one interceptor per
 ## charge, paying shot_supplies; at most max_per_munition interceptors chase one munition. An
-## interceptor reaches its munition after distance / interceptor_speed ticks and hits with the
-## weapon's intercept chance (+radar_hit_bonus); a munition that lands first wins the race.
+## interceptor flies to the earliest point of the munition's path it can reach in time (inside the
+## SAM's range, before impact) and hits with the weapon's intercept chance (+radar_hit_bonus).
 ## Impact (the same functions build the targeting preview):
 ##   blast   — every army with land under the disc loses min(troops × kill_frac, tiles × kill_per_tile);
 ##             buildings in the disc lose struct_levels levels;
@@ -105,6 +105,7 @@ var events: SimEvents
 var structures: StructureSystem
 var research: ResearchSystem
 var attacks: AttackSystem
+var diplomacy: DiplomacySystem
 var munitions: Array[Munition] = []
 var interceptors: Array[Interceptor] = []
 ## Structure id -> [charges, next refill tick] for launchers and SAMs (missing = full).
@@ -222,6 +223,8 @@ func check(who: int, w: int, target: int) -> Dictionary:
 		return {"ok": false, "reason": "not_land"}
 	if st.owner[target] == who:
 		return {"ok": false, "reason": "own_land"}
+	if diplomacy != null and diplomacy.block_reason(who, st.owner[target]) != "":
+		return {"ok": false, "reason": diplomacy.block_reason(who, st.owner[target])}
 	var ls := launchers_for(who, w, target)
 	if ls.is_empty():
 		return {"ok": false, "reason": "no_launcher"}
@@ -406,15 +409,24 @@ func _air_defence() -> void:
 		var r := sam_range(s)
 		var radar := structures.in_zone(s.owner, Rules.B_RADAR, s.tile)
 		for m in cands:
-			# A SAM defends its owner's land: munitions aimed at it.
-			if m.chased >= max_chase or m.owner == s.owner or st.owner[m.to_tile] != s.owner:
+			# A SAM defends its owner's and its allies' land: munitions aimed at it.
+			var tgt := st.owner[m.to_tile]
+			if m.chased >= max_chase or m.owner == s.owner or tgt <= 0:
 				continue
-			var mp := m.position(now)
-			var d := sp.distance_to(mp)
-			if d > r:
+			if tgt != s.owner and (diplomacy == null or not diplomacy.allied(s.owner, tgt) or diplomacy.allied(s.owner, m.owner)):
 				continue
-			var hit := now + maxi(1, ceili(d / speed))
-			if hit >= m.impact_tick():
+			# Lead the target: the earliest moment its path comes within the interceptor's reach,
+			# inside the SAM's range and before it lands.
+			if sp.distance_to(m.position(now)) > r + speed * float(m.impact_tick() - now):
+				continue
+			var hit := -1
+			for k in range(1, m.impact_tick() - now):
+				var q := m.position(now + k)
+				var dq := sp.distance_to(q)
+				if dq <= r and dq <= speed * float(k):
+					hit = now + k
+					break
+			if hit < 0:
 				continue
 			_use_charge(s, per, reload)
 			st.add_supplies(s.owner, -shot_sup)
@@ -611,14 +623,23 @@ func intercept_risk(who: int, w: int, target: int) -> Dictionary:
 	var reload := int(rules.w_sam.get("reload_ticks", 90))
 	var shots: Array[float] = []
 	var n := 0
-	for s in structures.of_owner(to, Rules.B_SAM):
+	# The target's SAMs and those of its allies (unless they are allied with the attacker too).
+	var defenders: Array[int] = [to]
+	if diplomacy != null:
+		for a in diplomacy.allies_of(to):
+			if a != who and not diplomacy.allied(a, who):
+				defenders.append(a)
+	var sams: Array[StructureSystem.Structure] = []
+	for o in defenders:
+		sams.append_array(structures.of_owner(o, Rules.B_SAM))
+	for s in sams:
 		if s.counted() <= 0:
 			continue
 		var r := sam_range(s)
 		if float(st.map.dist2(s.tile, target)) > r * r:
 			continue
 		n += 1
-		var radar := structures.in_zone(to, Rules.B_RADAR, s.tile)
+		var radar := structures.in_zone(s.owner, Rules.B_RADAR, s.tile)
 		var p := hit_chance(w, warhead, radar)
 		for i in charges(s, per, reload):
 			shots.append(p)
@@ -704,6 +725,9 @@ func _nuclear_burst(m: Munition, inner: float, outer: float) -> void:
 			st.mark_attacked(o)
 	for sid: int in n["structures"]:
 		structures.destroy(structures.structs[sid])
+	if diplomacy != null:
+		for o: int in lost:
+			diplomacy.on_nuked(m.owner, o, int(lost[o]))
 	for t in (n["lost_tiles"] as PackedInt32Array):
 		if st.owner[t] != 0:
 			var o := st.owner[t]

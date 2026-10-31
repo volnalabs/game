@@ -56,6 +56,7 @@ var events: SimEvents
 var structures: StructureSystem
 var attacks: Array[Attack] = []
 var mods: Modifiers
+var diplomacy: DiplomacySystem
 ## Attacks that ended since the AI last looked (outcomes the bots learn from).
 var recently_ended: Array[Dictionary] = []
 var _pair: Dictionary = {}
@@ -372,6 +373,9 @@ func _process(a: Attack) -> void:
 	if mods != null:
 		loss_k = mods.mult("attack_loss_mult", at) * (mods.mult("defense_loss_mult", tg) if not neutral else 1.0)
 		speed_k = (mods.mult("defense_speed_mult", tg) if not neutral else 1.0) / mods.mult("attack_speed_mult", at)
+	# A traitor (who broke a pact recently) is cheaper to attack.
+	if not neutral and diplomacy != null and diplomacy.is_traitor(tg):
+		loss_k *= float(rules.dip.get("traitor_loss_mult", 0.5))
 	var nl_per: float = rules.a["tribe_neutral_loss_per_mag"] if akind == Rules.KIND_TRIBE else rules.a["neutral_loss_per_mag"]
 	var nc_scale: float = rules.a["neutral_cost_scale"]
 	var nc_min: float = rules.a["neutral_min_cost"]

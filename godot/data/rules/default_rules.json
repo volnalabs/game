@@ -93,6 +93,22 @@
 		"landing_unsafe_penalty": 120.0,
 		"landing_goal_bias": 0.35
 	},
+	"diplomacy": {
+		"_comment": "Phase 2F. Ticks at 10 per second; distances in full-size tiles. From RoWorld's Rules.luau (alliance request 20 s, cooldown 30 s, alliance 5 min, renewal window 30 s, traitor 30 s, hostility 60 s) plus VolnaLabs' pacts, convoys and help requests.",
+		"request_ticks": 200,
+		"request_cooldown_ticks": 300,
+		"alliance_ticks": 3000,
+		"extend_window_ticks": 300,
+		"nap_ticks": 2400,
+		"traitor_ticks": 300,
+		"traitor_loss_mult": 0.5,
+		"hostile_ticks": 600,
+		"convoy_speed": 4.0,
+		"convoy_min_ticks": 20,
+		"help_ticks": 300,
+		"nuke_break_tiles": 100,
+		"max_allies": 3
+	},
 	"victory_defaults": {
 		"domination_share": 0.7,
 		"eliminate_all": true,

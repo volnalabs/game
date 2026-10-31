@@ -106,6 +106,7 @@ func _wordmark() -> Control:
 	h.add_child(mark)
 	var v := UITheme.vbox(0)
 	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UITheme._fonts()
 	var logo := RichTextLabel.new()
 	logo.bbcode_enabled = true
 	logo.fit_content = true

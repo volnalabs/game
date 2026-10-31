@@ -92,6 +92,7 @@ func _init(state: SimState, rules_: Rules, ev: SimEvents, atk: AttackSystem) -> 
 
 var mods: Modifiers
 var structures: StructureSystem
+var diplomacy: DiplomacySystem
 
 
 func max_boats(who: int = 0) -> int:
@@ -132,6 +133,8 @@ func launch(who: int, target: int, troops: float) -> String:
 		return "not_land"
 	if st.owner[target] == who:
 		return "own_land"
+	if diplomacy != null and diplomacy.block_reason(who, st.owner[target]) != "":
+		return diplomacy.block_reason(who, st.owner[target])
 	if st.o_boats[who] >= max_boats(who):
 		return "too_many_boats"
 	var sup: float = rules.n["boat_supplies"]
@@ -232,6 +235,8 @@ func _landing_valid(b: Boat) -> bool:
 	if b.goal_tile < 0:
 		return st.owner[t] != b.owner
 	var go := st.owner[b.goal_tile]
+	if diplomacy != null and diplomacy.block_reason(b.owner, go) != "":
+		return false
 	return go != b.owner and st.owner[t] == go and (go == 0 or st.is_alive(go))
 
 

@@ -24,6 +24,7 @@ var ai: AIDirector
 var mods: Modifiers
 var research: ResearchSystem
 var weapons: WeaponSystem
+var diplomacy: DiplomacySystem
 
 var phase: int = Phase.SPAWN
 var player_id: int = 0
@@ -58,10 +59,16 @@ func _init(cfg: MatchConfig, map_def: MapDefinition, map_data: MapData) -> void:
 	naval = NavalSystem.new(st, rules, events, attacks)
 	naval.mods = mods
 	naval.structures = structures
+	diplomacy = DiplomacySystem.new(st, rules, events, attacks)
+	attacks.diplomacy = diplomacy
+	naval.diplomacy = diplomacy
 	weapons = WeaponSystem.new(st, rules, rng, events, structures, research, attacks)
+	weapons.diplomacy = diplomacy
 	spawn = SpawnSystem.new(st, rules, rng)
 	victory = Victory.new(st, cfg.victory, rules.tick_rate)
 	_create_owners()
+	_assign_teams()
+	victory.diplomacy = diplomacy
 	ai = AIDirector.new(self)
 	ai.setup()
 	_assign_perks()
@@ -72,6 +79,23 @@ func _init(cfg: MatchConfig, map_def: MapDefinition, map_data: MapData) -> void:
 # ---------------------------------------------------------------------------------------------
 # Setup
 # ---------------------------------------------------------------------------------------------
+
+## Team play: the player on team 1, the nations dealt round the teams in id order; tribes on none.
+func _assign_teams() -> void:
+	var n := clampi(config.teams, 0, 4)
+	if n < 2:
+		return
+	var assignment := {}
+	var k := 0
+	if player_id > 0:
+		assignment[player_id] = 1
+		k = 1
+	for o in range(1, st.owner_count + 1):
+		if o == player_id or st.o_kind[o] == Rules.KIND_TRIBE:
+			continue
+		assignment[o] = k % n + 1
+		k += 1
+	diplomacy.set_teams(assignment)
 
 ## Perks: the player's loadout from the profile and each bot's personality perks; nobody has any in
 ## Fair mode. Tribes never have perks.
@@ -200,6 +224,25 @@ func apply_command(c: Dictionary) -> String:
 			return research.start(who, String(c.get("tech", "")))
 		Commands.CANCEL_BOAT:
 			return naval.cancel(who, int(c.get("boat", -1)))
+		Commands.DIPLO:
+			var other := int(c.get("other", -1))
+			match String(c.get("action", "")):
+				"request":
+					return diplomacy.request(who, other, String(c.get("kind", "")))
+				"reply":
+					return diplomacy.reply(who, other, bool(c.get("accept", false)))
+				"break":
+					return diplomacy.break_pact(who, other)
+				"extend":
+					var r := diplomacy.extend(who, other)
+					return "" if r in ["asked", "renewed"] else r
+			return "unknown"
+		Commands.SEND:
+			return diplomacy.send(who, int(c.get("to", -1)), String(c.get("kind", "troops")), float(c.get("amount", 0.0)))
+		Commands.HELP:
+			return diplomacy.ask_help(who, int(c.get("ally", -1)), int(c.get("enemy", -1)))
+		Commands.HELP_ANSWER:
+			return diplomacy.answer_help(who, int(c.get("asker", -1)), bool(c.get("accept", false)), float(c.get("troops", 0.0)))
 		Commands.LAUNCH:
 			return weapons.launch(who, rules.weapon_index(String(c.get("weapon", ""))), int(c.get("tile", -1)))
 	return "unknown"
@@ -225,6 +268,9 @@ func _cmd_attack(who: int, c: Dictionary) -> String:
 		return "own_land"
 	if target != 0 and not st.is_alive(target):
 		return "dead_target"
+	var blocked := diplomacy.block_reason(who, target)
+	if blocked != "":
+		return blocked
 	var troops := _troops_of(who, c)
 	if troops < 1.0:
 		return "no_troops"
@@ -284,6 +330,7 @@ func step() -> void:
 	_lap("naval", t0)
 	weapons.tick()
 	_lap("weapons", t0)
+	diplomacy.tick()
 	_process_eliminations()
 	if st.tick % 10 == 0:
 		_check_end()
@@ -311,6 +358,7 @@ func _process_eliminations() -> void:
 		st.kill(id, killer)
 		attacks.end_all_of(id)
 		naval.remove_owner(id)
+		diplomacy.remove_owner(id)
 		if killer > 0 and st.is_alive(killer):
 			st.add_gold(killer, gold * float(rules.e["conquest_gold_share"]))
 		st.add_gold(id, -gold)
@@ -345,6 +393,7 @@ func to_dict() -> Dictionary:
 		"state": st.to_dict(), "attacks": attacks.to_dict(), "structures": structures.to_dict(),
 		"naval": naval.to_dict(), "spawn_starts": spawn.starts, "victory_start": victory.start_tick,
 		"commands": _commands, "ai": ai.to_dict(), "research": research.to_dict(), "weapons": weapons.to_dict(),
+		"diplomacy": diplomacy.to_dict(),
 	}
 
 
@@ -366,6 +415,7 @@ func from_dict(d: Dictionary) -> void:
 	ai.from_dict(d["ai"])
 	research.from_dict(d.get("research", {}))
 	weapons.from_dict(d.get("weapons", {}))
+	diplomacy.from_dict(d.get("diplomacy", {}))
 	structures.invalidate_caches()
 	mods.mark_all()
 	mods.update()
@@ -390,4 +440,8 @@ func state_hash() -> int:
 			ms.append([m.id, m.owner, m.weapon, m.to_tile, m.launch_tick, m.chased])
 	parts.append(ms)
 	parts.append(weapons.fallout.size())
+	var dk: Array = diplomacy.pacts.keys()
+	dk.sort()
+	parts.append(dk)
+	parts.append(diplomacy.convoys.size())
 	return hash(parts)
