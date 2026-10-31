@@ -1,23 +1,32 @@
 class_name HudLeaderboard
 extends PanelContainer
-## Compact, collapsible leaderboard (top 8 + the player); rows select and focus a state.
+## Compact leaderboard: top 5 + the player (expandable to top 10); rows select and focus a state.
 
 var hud: GameHUD
 var _rows: VBoxContainer
 var _collapsed: bool = false
+var _expanded: bool = false
 var _toggle: Button
 
 
 func _init(h: GameHUD) -> void:
 	hud = h
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 10))
-	custom_minimum_size.x = 300
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 10))
+	custom_minimum_size.x = 260
 	var v := UITheme.vbox(6)
 	add_child(v)
 	var head := UITheme.hbox(6)
 	head.add_child(UITheme.section(tr("HUD_LEADERBOARD"), "ui_trophy"))
 	head.add_child(UITheme.spacer())
-	_toggle = UITheme.icon_button("ui_up", tr("COLLAPSE"), func() -> void: _set_collapsed(not _collapsed), 26)
+	var more := UITheme.ghost_button(tr("HUD_LB_MORE"), func() -> void:
+		_expanded = not _expanded
+		refresh())
+	more.focus_mode = Control.FOCUS_NONE
+	more.add_theme_font_size_override("font_size", UITheme.T_CAPTION)
+	Hints.attach(more, {"title": tr("HUD_LEADERBOARD"), "text": tr("HUD_LB_HINT")})
+	head.add_child(more)
+	_toggle = UITheme.icon_button("ui_up", "", func() -> void: _set_collapsed(not _collapsed), 26)
+	Hints.attach(_toggle, {"title": tr("COLLAPSE"), "text": tr("HUD_LB_COLLAPSE_HINT")})
 	head.add_child(_toggle)
 	v.add_child(head)
 	_rows = UITheme.vbox(2)
@@ -44,7 +53,7 @@ func refresh() -> void:
 		if st.o_alive[o] == 1 and st.o_tiles[o] > 0:
 			list.append(o)
 	list.sort_custom(func(a: int, b: int) -> bool: return st.o_tiles[a] > st.o_tiles[b])
-	var shown := list.slice(0, 8)
+	var shown := list.slice(0, 10 if _expanded else 5)
 	if sim.player_id > 0 and st.o_alive[sim.player_id] == 1 and not shown.has(sim.player_id):
 		shown.append(sim.player_id)
 	for o: int in shown:
@@ -68,6 +77,9 @@ func refresh() -> void:
 		nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		h.add_child(nm)
 		h.add_child(UITheme.label("%.1f%%" % (st.land_share(o) * 100.0), UITheme.T_CAPTION, UITheme.TEXT_DIM))
-		b.custom_minimum_size = Vector2(280, 22)
+		b.custom_minimum_size = Vector2(240, 22)
 		b.pressed.connect(func() -> void: hud.ctl.select_owner(o, true))
+		var oname := st.o_name[o]
+		Hints.attach(b, func() -> Dictionary: return {"title": oname, "text": tr("HUD_LB_ROW_HINT"),
+			"rows": [[tr("INFO_LAND"), "%.1f%%" % (st.land_share(o) * 100.0)], [tr("INFO_TROOPS"), UITheme.num(st.o_troops[o])]]})
 		_rows.add_child(b)

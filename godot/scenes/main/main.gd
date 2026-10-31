@@ -16,6 +16,7 @@ const SCREENS := {
 	App.State.ACHIEVEMENTS: "res://scripts/ui/screens/achievements_screen.gd",
 	App.State.RESULTS: "res://scripts/ui/screens/results_screen.gd",
 	App.State.SKILLS: "res://scripts/ui/screens/skill_tree_screen.gd",
+	App.State.ENCYCLOPEDIA: "res://scripts/ui/screens/encyclopedia_screen.gd",
 }
 const MATCH_SCENE := "res://scenes/gameplay/match.tscn"
 

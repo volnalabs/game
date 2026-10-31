@@ -1,7 +1,7 @@
 class_name HudCommandBar
 extends PanelContainer
-## Bottom command bar: attack share (with the troops a click will send), quick build slots with
-## their prices, and army / view actions.
+## Bottom command bar: attack strength (what one click on a neighbour sends), quick build slots with
+## the buildings' symbols and prices, and labelled army / view actions.
 
 var hud: GameHUD
 var _ratio_buttons: Array[Button] = []
@@ -15,17 +15,23 @@ var _quick: Array[int] = []
 
 func _init(h: GameHUD) -> void:
 	hud = h
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 10))
-	var row := UITheme.hbox(16)
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 8))
+	var row := UITheme.hbox(14)
 	add_child(row)
-	var rv := UITheme.vbox(4)
-	rv.add_child(UITheme.section(tr("HUD_ATTACK_SHARE"), "g_attack"))
+	var rv := UITheme.vbox(3)
+	var rh := UITheme.hbox(6)
+	rh.add_child(UITheme.caption(tr("HUD_ATTACK_SHARE")))
+	rh.add_child(UITheme.key_cap("Q"))
+	rh.add_child(UITheme.key_cap("E"))
+	rv.add_child(rh)
 	var seg := UITheme.hbox(2)
 	for r: float in GameHUD.RATIOS:
 		var b := UITheme.ghost_button("%d%%" % int(r * 100.0), func() -> void: hud.ctl.set_ratio(r))
 		b.toggle_mode = true
-		b.custom_minimum_size = Vector2(48, 30)
-		b.tooltip_text = tr("HUD_RATIO_TIP")
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(44, 28)
+		Hints.attach(b, func() -> Dictionary: return Glossary.hint("attack_share",
+			[[tr("HUD_SENDS"), UITheme.num(floorf(hud.sim.st.o_troops[hud.sim.player_id] * r))]]))
 		_ratio_buttons.append(b)
 		seg.add_child(b)
 	rv.add_child(seg)
@@ -33,24 +39,30 @@ func _init(h: GameHUD) -> void:
 	rv.add_child(_send)
 	row.add_child(rv)
 	row.add_child(VSeparator.new())
-	var bv := UITheme.vbox(4)
-	bv.add_child(UITheme.section(tr("DOCK_BUILD"), "ui_building"))
+	var bv := UITheme.vbox(3)
+	var bhh := UITheme.hbox(6)
+	bhh.add_child(UITheme.caption(tr("DOCK_BUILD")))
+	bhh.add_child(UITheme.key_cap("1–6"))
+	bv.add_child(bhh)
 	_bh = UITheme.hbox(4)
 	_rebuild_quick()
 	bv.add_child(_bh)
 	row.add_child(bv)
 	row.add_child(VSeparator.new())
-	var av := UITheme.vbox(4)
-	av.add_child(UITheme.section(tr("HUD_ACTIONS"), "ui_adjust"))
-	var ah := UITheme.hbox(2)
-	ah.add_child(UITheme.icon_button("ui_home", tr("ACTION_HOME"), func() -> void: hud.ctl.focus_home(), 36))
-	ah.add_child(UITheme.icon_button("ui_back", tr("ACTION_RETREAT_ALL"), func() -> void: hud.ctl.retreat_all(), 36))
-	_zones = UITheme.icon_button("ui_zones", tr("ACTION_ZONES"), func() -> void: hud.ctl.toggle_zones(), 36, true)
+	var ah := UITheme.hbox(0)
+	var home := UITheme.rail_button("ui_home", tr("ACTION_HOME_SHORT"), func() -> void: hud.ctl.focus_home(), 62)
+	Hints.attach(home, {"title": tr("ACTION_HOME"), "text": tr("ACTION_HOME_HINT"), "hotkey": "Home"})
+	ah.add_child(home)
+	var back := UITheme.rail_button("ui_back", tr("ACTION_RETREAT_SHORT"), func() -> void: hud.ctl.retreat_all(), 62)
+	Hints.attach(back, {"title": tr("ACTION_RETREAT_ALL"), "text": tr("ACTION_RETREAT_HINT")})
+	ah.add_child(back)
+	_zones = UITheme.rail_button("ui_zones", tr("ACTION_ZONES_SHORT"), func() -> void: hud.ctl.toggle_zones(), 62, true)
+	Hints.attach(_zones, Glossary.hint("zones"))
 	ah.add_child(_zones)
-	ah.add_child(UITheme.icon_button("ui_eye_off", tr("ACTION_HIDE_UI"), func() -> void: hud.set_ui_hidden(true), 36))
-	av.add_child(ah)
-	row.add_child(av)
-
+	var hide := UITheme.rail_button("ui_eye_off", tr("ACTION_HIDE_SHORT"), func() -> void: hud.set_ui_hidden(true), 62)
+	Hints.attach(hide, {"title": tr("ACTION_HIDE_UI"), "text": tr("ACTION_HIDE_HINT"), "hotkey": "Tab"})
+	ah.add_child(hide)
+	row.add_child(ah)
 
 
 ## Quick build slots: the first unlocked buildable kinds (keys 1..n), rebuilt when research
@@ -64,25 +76,25 @@ func _rebuild_quick() -> void:
 	_build_cost.clear()
 	var keyn := 1
 	for k in _quick:
-		var id := hud.sim.rules.b_ids[k]
 		var kk := k
+		var key := keyn
 		var b := Button.new()
 		b.focus_mode = Control.FOCUS_NONE
 		b.toggle_mode = true
-		b.custom_minimum_size = Vector2(64, 58)
-		b.tooltip_text = "%s\n%s\n%s" % [tr("B_" + id.to_upper()), tr("B_%s_TIP" % id.to_upper()), tr("HUD_BUILD_KEY") % keyn]
-		b.add_theme_stylebox_override("normal", UITheme.box(UITheme.SURFACE_2, UITheme.R_M, UITheme.STROKE, 4))
-		b.add_theme_stylebox_override("hover", UITheme.box(UITheme.SURFACE_3, UITheme.R_M, UITheme.STROKE_STRONG, 4))
-		b.add_theme_stylebox_override("pressed", UITheme.box(UITheme.ACCENT.darkened(0.55), UITheme.R_M, UITheme.ACCENT, 4))
-		b.add_theme_stylebox_override("disabled", UITheme.box(Color(0.07, 0.09, 0.12, 0.7), UITheme.R_M, Color(1, 1, 1, 0.03), 4))
-		var v := UITheme.vbox(2)
+		b.custom_minimum_size = Vector2(58, 52)
+		b.add_theme_stylebox_override("normal", UITheme.box(Color(1, 1, 1, 0.04), UITheme.R_M, Color.TRANSPARENT, 4))
+		b.add_theme_stylebox_override("hover", UITheme.box(Color(1, 1, 1, 0.09), UITheme.R_M, Color.TRANSPARENT, 4))
+		b.add_theme_stylebox_override("pressed", UITheme.box(Color(UITheme.ACCENT, 0.18), UITheme.R_M, UITheme.ACCENT, 4))
+		b.add_theme_stylebox_override("disabled", UITheme.box(Color(1, 1, 1, 0.02), UITheme.R_M, Color.TRANSPARENT, 4))
+		var v := UITheme.vbox(1)
 		v.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		v.alignment = BoxContainer.ALIGNMENT_CENTER
-		var ic := Icons.rect("b_" + id, 26)
+		var ic := Icons.rect(Symbols.building_id(hud.sim.rules, k), 26)
 		ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		v.add_child(ic)
 		var cl := UITheme.label("", 11, UITheme.GOLD)
+		cl.add_theme_font_override("font", UITheme.font_numbers)
 		cl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(cl)
 		b.add_child(v)
@@ -91,6 +103,7 @@ func _rebuild_quick() -> void:
 				hud.ctl.cancel_build()
 			else:
 				hud.ctl.begin_build(kk))
+		Hints.attach(b, func() -> Dictionary: return BuildingInfo.hint(hud.sim, kk, hud.sim.player_id, str(key)))
 		_build[k] = b
 		_build_cost[k] = cl
 		_bh.add_child(b)
@@ -111,9 +124,12 @@ func refresh() -> void:
 	for k: int in _build:
 		var b: Button = _build[k]
 		var cost := sim.structures.cost(pid, k)
-		(_build_cost[k] as Label).text = UITheme.num(cost)
-		(_build_cost[k] as Label).add_theme_color_override("font_color", UITheme.GOLD if sim.st.o_gold[pid] >= cost else UITheme.BAD)
+		var cl: Label = _build_cost[k]
+		cl.text = UITheme.num(cost)
+		var reason := BuildingInfo.blocker(sim, k, pid) if playing else tr("REJECT_NOT_PLAYING")
+		cl.add_theme_color_override("font_color", UITheme.GOLD if reason == "" else UITheme.BAD)
 		# Unaffordable kinds can still be placed in preview (the ghost explains why it is refused).
 		b.disabled = not playing
-		b.modulate.a = 1.0 if sim.structures.can_afford(pid, k) else 0.6
+		b.set_meta("reason", reason)
+		b.modulate.a = 1.0 if reason == "" else 0.7
 		b.button_pressed = hud.ctl.build_kind == k

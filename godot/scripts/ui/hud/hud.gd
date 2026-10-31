@@ -19,6 +19,12 @@ var board: HudLeaderboard
 var command: HudCommandBar
 var toasts: ToastStack
 var build_tip: BuildTip
+## Instruction bar while placing a building (what the mouse buttons do).
+var place_bar: PanelContainer
+var tip_card: HudTipCard
+var _tip_queue: Array[String] = []
+var _place_label: Label
+var _place_icon: TextureRect
 var zone_legend: HudZoneLegend
 var log_lines: Array[String] = []
 var ai_debug: bool = false
@@ -91,14 +97,44 @@ func setup(controller: Node, sim_: Sim) -> void:
 	toasts.offset_top = 80
 	zone_legend = HudZoneLegend.new(self)
 	add_child(zone_legend)
-	zone_legend.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
-	zone_legend.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	zone_legend.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE)
 	build_tip = BuildTip.new()
 	add_child(build_tip)
+	_build_place_bar()
+	tip_card = HudTipCard.new(self)
+	add_child(tip_card)
 	_build_spawn_banner()
 	_build_pause()
 	_build_end()
 	refresh()
+	# HUD buttons never take keyboard focus: map hotkeys (Space, 1-6, Q/E) must keep working.
+	for c in find_children("*", "BaseButton", true, false):
+		(c as BaseButton).focus_mode = Control.FOCUS_NONE
+
+
+func _build_place_bar() -> void:
+	place_bar = PanelContainer.new()
+	place_bar.add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE_2, UITheme.R_M, Color(UITheme.ACCENT, 0.6), 8))
+	place_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var h := UITheme.hbox(10)
+	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	place_bar.add_child(h)
+	_place_icon = Icons.rect("b_city", 22)
+	h.add_child(_place_icon)
+	_place_label = UITheme.label("", UITheme.T_BODY, UITheme.TEXT, true)
+	h.add_child(_place_label)
+	for part: Array in [["", "PLACE_CLICK"], ["", "PLACE_SHIFT"], ["", "PLACE_CANCEL"]]:
+		h.add_child(UITheme.key_cap(tr("KEY_" + part[1])))
+		h.add_child(UITheme.label(tr(part[1]), UITheme.T_CAPTION, UITheme.TEXT_DIM))
+	add_child(place_bar)
+	place_bar.visible = false
+
+
+func _layout_place_bar() -> void:
+	place_bar.reset_size()
+	var vs := get_viewport_rect().size
+	var cb := command.get_global_rect()
+	place_bar.position = Vector2(vs.x * 0.5 - place_bar.size.x * 0.5, cb.position.y - place_bar.size.y - 8.0)
 
 
 func _process(delta: float) -> void:
@@ -108,9 +144,45 @@ func _process(delta: float) -> void:
 		refresh()
 
 
+## Queues a contextual tip (shown when the tip card is free; each tip only once).
+func tip(id: String) -> void:
+	if Tips.should_show(id) and not _tip_queue.has(id) and tip_card.current != id:
+		_tip_queue.append(id)
+
+
 func refresh() -> void:
 	if sim == null:
 		return
+	if not tip_card.visible and not _tip_queue.is_empty() and not is_modal_open():
+		tip_card.show_tip(_tip_queue.pop_front())
+	tip_card.visible = tip_card.visible and not ui_hidden
+	var vs := get_viewport_rect().size
+	toasts.offset_top = 80.0
+	if tip_card.visible:
+		# Top centre, under the top bar: never over the docks, the command bar or the placement bar.
+		tip_card.reset_size()
+		# Centred in the free band between the left dock (rail or open panel) and the right column.
+		var left := dock.get_global_rect().end.x + 8.0 if dock.panel.visible else dock.rail.get_global_rect().end.x + 8.0
+		var right := board.get_global_rect().position.x - 8.0
+		var x := left + (right - left - tip_card.size.x) * 0.5
+		tip_card.position = Vector2(clampf(x, left, maxf(left, right - tip_card.size.x)), top.get_global_rect().end.y + 8.0)
+		toasts.offset_top = tip_card.position.y + tip_card.size.y + 8.0
+	if zone_legend.visible:
+		# Bottom left, above the command bar; hidden while it would cover an open dock panel.
+		zone_legend.reset_size()
+		var cb := command.get_global_rect()
+		zone_legend.position = Vector2(10.0, cb.position.y - zone_legend.size.y - 8.0)
+		if zone_legend.position.x + zone_legend.size.x > cb.position.x:
+			zone_legend.position.y = minf(zone_legend.position.y, cb.position.y - zone_legend.size.y - 8.0)
+		var lr := zone_legend.get_global_rect()
+		if (dock.panel.visible and lr.intersects(dock.panel.get_global_rect())) or lr.intersects(dock.rail.get_global_rect()):
+			zone_legend.visible = false
+	var placing: bool = ctl.get("build_kind") != null and int(ctl.build_kind) >= 0 and not ui_hidden
+	place_bar.visible = placing
+	if placing:
+		_place_icon.texture = Icons.tex(Symbols.building_id(sim.rules, int(ctl.build_kind)), 22)
+		_place_label.text = tr("PLACE_TITLE") % BuildingInfo.title(sim.rules, int(ctl.build_kind))
+		_layout_place_bar()
 	top.refresh()
 	command.refresh()
 	board.refresh()
@@ -209,6 +281,7 @@ func _build_pause() -> void:
 	v.add_child(UITheme.button(tr("PAUSE_SAVE"), func() -> void: ctl.save_game(), 0, "ui_save"))
 	v.add_child(UITheme.button(tr("PAUSE_LOAD"), func() -> void: ctl.load_last(), 0, "ui_load"))
 	v.add_child(UITheme.button(tr("PAUSE_SETTINGS"), func() -> void: ctl.open_settings(), 0, "ui_settings"))
+	v.add_child(UITheme.button(tr("PAUSE_ENCYCLOPEDIA"), func() -> void: ctl.open_encyclopedia(), 0, "ui_book"))
 	v.add_child(UITheme.button(tr("PAUSE_RESTART"), func() -> void: ctl.restart(), 0, "ui_restart"))
 	v.add_child(UITheme.button(tr("PAUSE_MAIN_MENU"), func() -> void: ctl.quit_to_menu(), 0, "ui_home"))
 	var keys := UITheme.label(tr("PAUSE_KEYS"), UITheme.T_CAPTION, UITheme.TEXT_DIM)

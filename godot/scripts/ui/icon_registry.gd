@@ -1,7 +1,8 @@
 class_name Icons
 extends RefCounted
-## The game's icon library (data/ui/icons.json: white SVGs from Game-icons.net CC BY 3.0 and Tabler
-## MIT, built by tools/icons/import_icons.py). Icons are rasterised at the exact pixel size they are
+## The game's icon library: interface icons (Tabler, MIT) and cosmetic / achievement art
+## (Game-icons.net, CC BY 3.0) from data/ui/icons.json (tools/icons/import_icons.py); building and
+## resource ids (b_*, r_*) resolve to the game's own symbols (Symbols, data/ui/symbols.json). Icons are rasterised at the exact pixel size they are
 ## shown at (crisp at any UI scale) and tinted with modulate.
 
 const PATH := "res://data/ui/icons.json"
@@ -19,7 +20,7 @@ static func _load() -> void:
 
 static func has(id: String) -> bool:
 	_load()
-	return _icons.has(id)
+	return _icons.has(id) or Symbols.has(id)
 
 
 static func ids() -> Array:
@@ -36,6 +37,9 @@ static func tex(id: String, px: int = 24) -> Texture2D:
 		if root != null:
 			scale = root.content_scale_factor
 	var size := maxi(8, int(round(px * scale)))
+	# Buildings and resources: the game's own symbol set (same everywhere).
+	if Symbols.has(id):
+		return Symbols.tex_px(id, size, "full" if px < 40 else "near")
 	var key := "%s@%d" % [id, size]
 	if _cache.has(key):
 		return _cache[key]

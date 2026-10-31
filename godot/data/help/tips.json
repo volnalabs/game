@@ -1,0 +1,101 @@
+{
+	"_comment": "Contextual one-time tips (Tips).",
+	"tips": [
+		{
+			"id": "spawn",
+			"title": {
+				"ru": "Выберите место старта",
+				"en": "Choose your start"
+			},
+			"text": {
+				"ru": "Наведите курсор на свободную сушу: видно, сколько земли вы займёте и кто рядом. Щёлкните, затем подтвердите.",
+				"en": "Hover free land to see how much you take and who is nearby. Click, then confirm."
+			},
+			"article": "ui_start"
+		},
+		{
+			"id": "resources",
+			"title": {
+				"ru": "Ресурсы",
+				"en": "Resources"
+			},
+			"text": {
+				"ru": "Наверху — золото, снаряжение, армия и исследование. Наведите на любой ресурс: подсказка объяснит, откуда он берётся и на что нужен.",
+				"en": "At the top: gold, supplies, army and research. Hover any of them to learn where it comes from and what it is for."
+			},
+			"article": "economy_overview"
+		},
+		{
+			"id": "expand",
+			"title": {
+				"ru": "Расширяйтесь",
+				"en": "Expand"
+			},
+			"text": {
+				"ru": "Ничейная земля захватывается дёшево. Щёлкните по ней или по слабому соседу — атакует выбранная доля армии (Q / E).",
+				"en": "Free land is cheap. Click it or a weak neighbour — the chosen share of your army attacks (Q / E)."
+			},
+			"article": "army_attack"
+		},
+		{
+			"id": "build",
+			"title": {
+				"ru": "Строительство",
+				"en": "Construction"
+			},
+			"text": {
+				"ru": "Призрак показывает, куда встанет здание. Зелёный — можно, красный — нельзя; причина видна рядом с курсором. ПКМ или Esc — отмена.",
+				"en": "The ghost shows where the building goes. Green — allowed, red — not, with the reason next to the cursor. RMB or Esc cancels."
+			},
+			"article": "buildings_overview"
+		},
+		{
+			"id": "research",
+			"title": {
+				"ru": "Выберите исследование",
+				"en": "Pick a research"
+			},
+			"text": {
+				"ru": "Очки исследований уже копятся. Откройте «Науку» слева и выберите технологию — иначе очки пропадают.",
+				"en": "Research points are accumulating. Open Research on the left and pick a technology — otherwise points are wasted."
+			},
+			"article": "research_overview"
+		},
+		{
+			"id": "incoming",
+			"title": {
+				"ru": "На вас напали",
+				"en": "You are under attack"
+			},
+			"text": {
+				"ru": "Красная стрелка показывает, откуда идёт атака. Держите армию дома, стройте оборонные посты на границе или контратакуйте.",
+				"en": "The red arrow shows where the attack comes from. Keep troops home, build defence posts at the border or counter-attack."
+			},
+			"article": "army_defense"
+		},
+		{
+			"id": "low_gold",
+			"title": {
+				"ru": "Расходы больше дохода",
+				"en": "Spending exceeds income"
+			},
+			"text": {
+				"ru": "Содержание армии больше дохода. Когда казна опустеет, армия начнёт таять. Стройте города или сократите армию атаками.",
+				"en": "Army upkeep exceeds income. When the treasury is empty, the army will melt. Build cities or spend troops in attacks."
+			},
+			"article": "economy_overview"
+		},
+		{
+			"id": "landing",
+			"title": {
+				"ru": "Морской десант",
+				"en": "Naval landing"
+			},
+			"text": {
+				"ru": "Щелчок по чужому берегу без общей границы отправляет транспорт. Нужны снаряжение и своё побережье на той же воде.",
+				"en": "A click on a foreign coast you do not border sends a transport. It needs supplies and your own coast on the same water."
+			},
+			"article": "army_naval"
+		}
+	]
+}

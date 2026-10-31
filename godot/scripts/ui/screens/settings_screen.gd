@@ -45,6 +45,25 @@ func _ready() -> void:
 		Settings.show_ai_debug = on
 		Settings.save_settings())
 	form.add_child(dbg)
+	var anim := CheckBox.new()
+	anim.text = tr("SETTINGS_ANIMATIONS")
+	anim.button_pressed = Settings.ui_animations
+	anim.toggled.connect(func(on: bool) -> void:
+		Settings.ui_animations = on
+		Settings.save_settings())
+	form.add_child(anim)
+	var tips := CheckBox.new()
+	tips.text = tr("SETTINGS_TIPS")
+	tips.button_pressed = Settings.show_tips
+	tips.toggled.connect(func(on: bool) -> void:
+		Settings.show_tips = on
+		Settings.save_settings())
+	var tr_ := UITheme.hbox(12)
+	tr_.add_child(tips)
+	tr_.add_child(UITheme.ghost_button(tr("SETTINGS_TIPS_RESET"), func() -> void:
+		Tips.reset()
+		tips.button_pressed = true, "ui_restart"))
+	form.add_child(tr_)
 	c.add_child(back_button())
 
 

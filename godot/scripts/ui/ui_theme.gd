@@ -6,15 +6,16 @@ extends RefCounted
 ## shares one visual language.
 
 # ---- colour tokens ----
-const BG := Color("#0a0e14")
-const SURFACE := Color(0.063, 0.086, 0.118, 0.9)
-const SURFACE_2 := Color(0.094, 0.125, 0.165, 0.95)
-const SURFACE_3 := Color(0.13, 0.17, 0.22, 0.98)
-const STROKE := Color(1, 1, 1, 0.07)
-const STROKE_STRONG := Color(1, 1, 1, 0.16)
-const TEXT := Color("#e6edf3")
-const TEXT_DIM := Color("#8b98a8")
-const TEXT_FAINT := Color("#5c6a7a")
+# v3 (Phase 2A.1): neutral, flat surfaces; secondary text kept above WCAG 4.5:1 / 3:1 on SURFACE.
+const BG := Color("#0b0f14")
+const SURFACE := Color(0.067, 0.085, 0.108, 0.94)
+const SURFACE_2 := Color(0.098, 0.12, 0.147, 0.97)
+const SURFACE_3 := Color(0.135, 0.16, 0.19, 0.99)
+const STROKE := Color(1, 1, 1, 0.08)
+const STROKE_STRONG := Color(1, 1, 1, 0.18)
+const TEXT := Color("#e8edf2")
+const TEXT_DIM := Color("#a6b1bd")
+const TEXT_FAINT := Color("#7d8996")
 const GOLD := Color("#f2c14e")
 const SUPPLY := Color("#7cc4ff")
 const ARMY := Color("#dfe7ef")
@@ -40,16 +41,16 @@ const SP_M := 12
 const SP_L := 16
 const SP_XL := 24
 const SP_XXL := 32
-const R_S := 6
-const R_M := 10
-const R_L := 14
+const R_S := 4
+const R_M := 6
+const R_L := 8
 const T_CAPTION := 12
 const T_BODY := 14
 const T_BODY_L := 16
-const T_TITLE := 20
-const T_H2 := 26
-const T_H1 := 40
-const T_DISPLAY := 60
+const T_TITLE := 19
+const T_H2 := 24
+const T_H1 := 34
+const T_DISPLAY := 56
 
 ## Current accent (switchable UI theme cosmetic).
 static var ACCENT: Color = Color("#3ec7d6")
@@ -60,6 +61,8 @@ static var font_regular: Font
 static var font_medium: Font
 static var font_bold: Font
 static var font_heading: FontVariation
+## Regular font with tabular figures (numbers line up and do not jitter while they change).
+static var font_numbers: FontVariation
 
 
 static func _fonts() -> void:
@@ -70,7 +73,10 @@ static func _fonts() -> void:
 	font_bold = load("res://assets/fonts/Rubik-Bold.ttf")
 	font_heading = FontVariation.new()
 	font_heading.base_font = font_bold
-	font_heading.spacing_glyph = 1
+	font_numbers = FontVariation.new()
+	font_numbers.base_font = font_medium
+	var ts := TextServerManager.get_primary_interface()
+	font_numbers.opentype_features = {ts.name_to_tag("tnum"): 1}
 
 
 ## Applies a UI theme (data/ui/themes.json) — accent colour of buttons, bars and highlights.
@@ -102,7 +108,17 @@ static func theme() -> Theme:
 	t.set_stylebox("hover", "Button", box(SURFACE_3, R_M, STROKE_STRONG, 10))
 	t.set_stylebox("pressed", "Button", box(ACCENT.darkened(0.55), R_M, ACCENT, 10))
 	t.set_stylebox("disabled", "Button", box(Color(0.07, 0.09, 0.12, 0.7), R_M, Color(1, 1, 1, 0.04), 10))
-	t.set_stylebox("focus", "Button", box(Color.TRANSPARENT, R_M, ACCENT.darkened(0.2), 10))
+	var focus := box(Color.TRANSPARENT, R_M, ACCENT, 10)
+	focus.set_border_width_all(2)
+	t.set_stylebox("focus", "Button", focus)
+	t.set_stylebox("focus", "CheckBox", focus)
+	# Checkboxes are plain rows (the box glyph shows the state), not accent buttons.
+	for st_name in ["normal", "pressed", "hover_pressed", "disabled"]:
+		t.set_stylebox(st_name, "CheckBox", box(Color.TRANSPARENT, R_S, Color.TRANSPARENT, 6))
+	t.set_stylebox("hover", "CheckBox", box(Color(1, 1, 1, 0.05), R_S, Color.TRANSPARENT, 6))
+	t.set_stylebox("hover_pressed", "CheckBox", box(Color(1, 1, 1, 0.05), R_S, Color.TRANSPARENT, 6))
+	t.set_color("font_pressed_color", "CheckBox", TEXT)
+	t.set_color("font_hover_pressed_color", "CheckBox", TEXT)
 	t.set_stylebox("panel", "PanelContainer", box(SURFACE, R_L, STROKE, 12))
 	t.set_stylebox("panel", "Panel", box(SURFACE, R_L, STROKE, 12))
 	t.set_stylebox("normal", "LineEdit", box(Color(0.05, 0.07, 0.1), R_S, STROKE_STRONG, 8))
@@ -117,7 +133,7 @@ static func theme() -> Theme:
 	t.set_color("font_color", "PopupMenu", TEXT)
 	t.set_color("font_hover_color", "PopupMenu", Color.WHITE)
 	t.set_stylebox("hover", "PopupMenu", box(ACCENT.darkened(0.5), R_S, Color.TRANSPARENT, 4))
-	t.set_stylebox("panel", "TooltipPanel", box(Color(0.06, 0.08, 0.11, 0.98), R_S, STROKE_STRONG, 10))
+	t.set_stylebox("panel", "TooltipPanel", box(SURFACE_2, R_S, STROKE_STRONG, 10))
 	t.set_color("font_color", "TooltipLabel", TEXT)
 	t.set_font_size("font_size", "TooltipLabel", T_BODY)
 	t.set_stylebox("slider", "HSlider", box(Color(1, 1, 1, 0.08), 3, Color.TRANSPARENT, 2))
@@ -128,6 +144,10 @@ static func theme() -> Theme:
 	t.set_stylebox("panel", "ItemList", box(Color(0.05, 0.07, 0.1), R_S, STROKE, 6))
 	t.set_stylebox("panel", "ScrollContainer", StyleBoxEmpty.new())
 	t.set_stylebox("panel", "TabContainer", box(SURFACE, R_M, STROKE, 10))
+	t.set_stylebox("tab_selected", "TabContainer", box(SURFACE_3, R_S, Color.TRANSPARENT, 8))
+	t.set_stylebox("tab_unselected", "TabContainer", box(Color.TRANSPARENT, R_S, Color.TRANSPARENT, 8))
+	t.set_stylebox("tab_hovered", "TabContainer", box(SURFACE_2, R_S, Color.TRANSPARENT, 8))
+	t.set_color("font_unselected_color", "TabContainer", TEXT_DIM)
 	t.set_color("default_color", "RichTextLabel", TEXT)
 	t.set_font("bold_font", "RichTextLabel", font_bold)
 	t.set_constant("separation", "VBoxContainer", SP_S)
@@ -174,10 +194,11 @@ static func label(text: String, size: int = T_BODY, color: Color = TEXT, bold: b
 	return l
 
 
+## Small secondary heading (sentence case — no shouted capitals).
 static func caption(text: String, color: Color = TEXT_DIM) -> Label:
 	_fonts()
-	var l := label(text.to_upper(), 11, color)
-	l.add_theme_font_override("font", font_heading)
+	var l := label(text, T_CAPTION, color)
+	l.add_theme_font_override("font", font_medium)
 	return l
 
 
@@ -191,7 +212,8 @@ static func title(text: String, size: int = T_H2) -> Label:
 static func button(text: String, cb: Callable = Callable(), min_w: int = 0, icon: String = "") -> Button:
 	var b := Button.new()
 	b.text = text
-	b.focus_mode = Control.FOCUS_NONE
+	# Menus are keyboard-navigable (the HUD switches focus off so map hotkeys keep working).
+	b.focus_mode = Control.FOCUS_ALL
 	if min_w > 0:
 		b.custom_minimum_size.x = min_w
 	if icon != "":
@@ -246,11 +268,71 @@ static func panel(pad: int = SP_M) -> PanelContainer:
 	return p
 
 
-## A raised card (inside panels).
+## A unit of content (an item, a case, a map): a flat fill, outlined only when highlighted.
 static func card(pad: int = SP_M, highlight: Color = Color.TRANSPARENT) -> PanelContainer:
 	var p := PanelContainer.new()
-	p.add_theme_stylebox_override("panel", box(SURFACE_2, R_M, highlight if highlight.a > 0.0 else STROKE, pad))
+	p.add_theme_stylebox_override("panel", box(SURFACE_2, R_M, highlight if highlight.a > 0.0 else Color.TRANSPARENT, pad))
 	return p
+
+
+## A list row: no box, just padding; rows are separated with `separator()`.
+static func row(sep: int = SP_S) -> HBoxContainer:
+	var h := hbox(sep)
+	h.custom_minimum_size.y = 28
+	return h
+
+
+## Name / value pair with tabular figures for numbers.
+static func key_value(k: String, v: String, color: Color = TEXT) -> HBoxContainer:
+	_fonts()
+	var h := hbox(12)
+	var kl := label(k, T_BODY, TEXT_DIM)
+	kl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(kl)
+	var vl := label(v, T_BODY, color)
+	vl.add_theme_font_override("font", font_numbers)
+	vl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	h.add_child(vl)
+	return h
+
+
+## A keyboard key, shown next to actions that have a hotkey.
+static func key_cap(text: String) -> PanelContainer:
+	var p := PanelContainer.new()
+	var s := box(Color(1, 1, 1, 0.06), R_S, STROKE_STRONG, 1)
+	s.content_margin_left = 6
+	s.content_margin_right = 6
+	p.add_theme_stylebox_override("panel", s)
+	p.add_child(label(text, T_CAPTION, TEXT_DIM))
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return p
+
+
+## Labelled icon button for rails and action bars: the icon with its name under it.
+static func rail_button(icon: String, text: String, cb: Callable = Callable(), w: int = 64, toggle: bool = false) -> Button:
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_NONE
+	b.toggle_mode = toggle
+	b.custom_minimum_size = Vector2(w, 50)
+	b.add_theme_stylebox_override("normal", box(Color.TRANSPARENT, R_M, Color.TRANSPARENT, 4))
+	b.add_theme_stylebox_override("hover", box(Color(1, 1, 1, 0.06), R_M, Color.TRANSPARENT, 4))
+	b.add_theme_stylebox_override("pressed", box(Color(ACCENT, 0.16), R_M, Color(ACCENT, 0.7), 4))
+	b.add_theme_stylebox_override("disabled", box(Color.TRANSPARENT, R_M, Color.TRANSPARENT, 4))
+	var v := vbox(2)
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	v.alignment = BoxContainer.ALIGNMENT_CENTER
+	var ic := Icons.rect(icon, 20, TEXT)
+	ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	v.add_child(ic)
+	var l := label(text, 11, TEXT_DIM)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(l)
+	b.add_child(v)
+	b.set_meta("label", text)
+	if cb.is_valid():
+		b.pressed.connect(cb)
+	return b
 
 
 static func vbox(sep: int = SP_S) -> VBoxContainer:
@@ -287,12 +369,13 @@ static func icon_label(icon: String, text: String, color: Color = TEXT, size: in
 	return h
 
 
-## Section header: small caps caption with an optional icon.
+## Section header: a quiet medium-weight caption (the icon is optional and small).
 static func section(text: String, icon: String = "") -> HBoxContainer:
 	var h := hbox(6)
 	if icon != "":
-		h.add_child(Icons.rect(icon, 14, TEXT_DIM))
-	h.add_child(caption(text))
+		h.add_child(Icons.rect(icon, 14, TEXT_FAINT))
+	var l := caption(text, TEXT_DIM)
+	h.add_child(l)
 	return h
 
 
@@ -305,6 +388,7 @@ static func stat_row(k: String, v: String, color: Color = TEXT, icon: String = "
 	kl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(kl)
 	var vl := label(v, T_BODY - 1, color)
+	vl.add_theme_font_override("font", font_numbers)
 	vl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	h.add_child(vl)
 	return h
@@ -325,7 +409,7 @@ static func progress(value: float, color: Color = Color(0, 0, 0, 0), height: int
 ## Small rounded tag (rarity, status).
 static func badge(text: String, color: Color) -> PanelContainer:
 	var p := PanelContainer.new()
-	var s := box(Color(color, 0.16), 20, Color(color, 0.55), 2)
+	var s := box(Color(color, 0.14), R_S, Color.TRANSPARENT, 2)
 	s.content_margin_left = 8
 	s.content_margin_right = 8
 	p.add_theme_stylebox_override("panel", s)

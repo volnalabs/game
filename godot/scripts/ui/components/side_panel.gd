@@ -11,17 +11,19 @@ var _icon: TextureRect
 
 
 func _init(width: int = 360) -> void:
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 14))
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 12))
 	custom_minimum_size.x = width
 	var v := UITheme.vbox(10)
 	add_child(v)
 	var head := UITheme.hbox(8)
-	_icon = Icons.rect("ui_info", 20, UITheme.ACCENT)
+	_icon = Icons.rect("ui_info", 20, UITheme.TEXT_DIM)
 	head.add_child(_icon)
-	_title = UITheme.title("", UITheme.T_TITLE)
+	_title = UITheme.label("", UITheme.T_TITLE, UITheme.TEXT, true)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(_title)
-	head.add_child(UITheme.icon_button("ui_close", tr("CLOSE"), func() -> void: closed.emit(), 30))
+	var close := UITheme.icon_button("ui_close", "", func() -> void: closed.emit(), 30)
+	Hints.attach(close, {"title": tr("CLOSE"), "text": tr("PANEL_CLOSE_HINT")})
+	head.add_child(close)
 	v.add_child(head)
 	v.add_child(UITheme.separator())
 	var scroll := ScrollContainer.new()

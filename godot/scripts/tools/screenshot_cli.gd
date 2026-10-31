@@ -1,11 +1,14 @@
 extends SceneTree
 ## Drives the real game through its screens and saves screenshots (visual check without a person).
-##   xvfb-run -a godot --rendering-driver opengl3 --path godot -s res://scripts/tools/screenshot_cli.gd -- <out_dir> [map_id] [ticks]
+##   xvfb-run -a godot --rendering-driver opengl3 --path godot -s res://scripts/tools/screenshot_cli.gd -- <out_dir> [map_id] [ticks] [WxH]
 
 var out_dir := "/tmp/shots"
 var map_id := "earth"
 var ticks := 1500
+var win := Vector2i(1600, 900)
 var main: Node
+var _tips_before: Array = []
+var _show_tips_before := true
 
 
 func _init() -> void:
@@ -16,6 +19,8 @@ func _init() -> void:
 		map_id = args[1]
 	if args.size() > 2:
 		ticks = int(args[2])
+	if args.size() > 3 and args[3].contains("x"):
+		win = Vector2i(int(args[3].get_slice("x", 0)), int(args[3].get_slice("x", 1)))
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	process_frame.connect(_run, CONNECT_ONE_SHOT)
 
@@ -33,7 +38,13 @@ func _shot(name: String) -> void:
 
 
 func _run() -> void:
-	root.size = Vector2i(1600, 900)
+	root.size = win
+	# Tips are shown as for a new player; the player's own tip settings are restored at the end.
+	var settings := root.get_node("Settings")
+	_tips_before = (settings.seen_tips as Array).duplicate()
+	_show_tips_before = settings.show_tips
+	settings.seen_tips = []
+	settings.show_tips = true
 	# A demo profile in its own file (never the player's real one).
 	var prof := root.get_node_or_null("Profile")
 	if prof != null:
@@ -107,6 +118,52 @@ func _run() -> void:
 	ctl.cam.focus(sp, ctl.cam.min_zoom * 3.0)
 	await _wait(30)
 	await _shot("06_playing")
+	ctl.hud.tip_card.close()
+	# Every building type around the player's start, all researched (map symbols at three zooms).
+	sim.research.state[sim.player_id] = {"done": ResearchSystem.techs().map(func(t: Dictionary) -> String: return String(t["id"])),
+		"current": "", "progress": {}}
+	sim.mods.mark(sim.player_id)
+	var home: int = sim.st.o_spawn_tile[sim.player_id]
+	var hx: int = home % sim.map.width
+	var hy: int = home / sim.map.width
+	for y in range(hy - 45, hy + 45):
+		for x in range(hx - 45, hx + 45):
+			var t := sim.map.tile_at(clampi(x, 0, sim.map.width - 1), clampi(y, 0, sim.map.height - 1))
+			if sim.map.land[t] == 1 and sim.st.struct_at[t] < 0:
+				sim.st.set_owner(t, sim.player_id)
+	var built: Array[int] = []
+	for k: int in ctl.hud.call("quick_kinds") + [Rules.B_RADAR, Rules.B_AIRBASE, Rules.B_ACADEMY, Rules.B_LOGISTICS, Rules.B_COMMAND, Rules.B_BUNKER, Rules.B_POWER, Rules.B_NAVAL_BASE, Rules.B_RESEARCH]:
+		sim.st.add_gold(sim.player_id, 5000000.0)
+		sim.st.add_supplies(sim.player_id, 5000.0)
+		var r := sim.structures.try_build(sim.player_id, k, sim.map.tile_at(hx + (built.size() % 4) * 18 - 27, hy + (built.size() / 4) * 18 - 27))
+		if r["ok"]:
+			built.append(int(r["id"]))
+	for i in 130:
+		sim.st.tick += 1
+		sim.structures.tick()
+	var hp := Vector2(home % sim.map.width, home / sim.map.width)
+	for zz: Array in [["06c_zoom_far", 1.4], ["06d_zoom_mid", 4.0], ["06e_zoom_near", 11.0]]:
+		ctl.cam.focus(hp, ctl.cam.min_zoom * float(zz[1]))
+		await _wait(6)
+		await _shot(String(zz[0]))
+	if not built.is_empty():
+		ctl.select_structure(built[0])
+		await _wait(6)
+		await _shot("06f_city_selected")
+		for sid in built.slice(1):
+			ctl.select_structure(sid)
+			await _wait(3)
+			await _shot("06g_building_%s" % sim.rules.b_ids[sim.structures.structs[sid].kind])
+		ctl.select_structure(-1)
+		# Hover hint over a building.
+		var hsp: Vector2 = ctl.cam.get_canvas_transform() * (Vector2(sim.structures.structs[built[0]].tile % sim.map.width, sim.structures.structs[built[0]].tile / sim.map.width) + Vector2(0.5, 0.5))
+		ctl._mouse_screen = hsp
+		ctl.hover_structure = -2
+		ctl._update_structure_hover()
+		await _wait(4)
+		await _shot("06h_building_hover")
+		root.get_node("HintLayer").hide_hint()
+	ctl.cam.focus(hp, ctl.cam.min_zoom * 3.0)
 	# A war between two states, selected: its fronts, losses and captures.
 	var war: AttackSystem.Attack = null
 	for a in sim.attacks.attacks:
@@ -131,8 +188,10 @@ func _run() -> void:
 	sim.submit(Commands.build(sim.player_id, Rules.B_DEFENSE, sim.st.o_spawn_tile[sim.player_id]))
 	sim.step()
 	ctl.toggle_zones()
+	ctl.cam.focus(hp, ctl.cam.min_zoom * 4.0)
+	await _wait(3)
 	ctl.begin_build(Rules.B_DEFENSE)
-	var gt: int = sim.st.o_spawn_tile[sim.player_id]
+	var gt: int = sim.map.tile_at(int(hp.x) + 9, int(hp.y) + 9)
 	ctl.hover_tile = gt
 	ctl._mouse_screen = ctl.cam.get_canvas_transform() * Vector2(gt % sim.map.width + 0.5, gt / sim.map.width + 0.5)
 	await _wait(10)
@@ -208,4 +267,18 @@ func _run() -> void:
 	app.goto(app.State.MAIN_MENU)
 	await _wait(20)
 	await _shot("16_main_menu_profile")
+	app.goto(app.State.ENCYCLOPEDIA)
+	await _wait(5)
+	main._current.call("show_article", "b_factory")
+	await _wait(5)
+	await _shot("17_encyclopedia_building")
+	main._current.call("show_article", "g_supplies")
+	await _wait(5)
+	await _shot("17b_encyclopedia_term")
+	app.goto(app.State.SETTINGS)
+	await _wait(5)
+	await _shot("18_settings")
+	settings.seen_tips = _tips_before
+	settings.show_tips = _show_tips_before
+	settings.save_settings()
 	quit()

@@ -18,21 +18,21 @@ func _init(h: GameHUD) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_theme_constant_override("separation", 8)
 	var rp := PanelContainer.new()
-	rp.add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 6))
+	rp.add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 4))
 	rp.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	add_child(rp)
-	rail = UITheme.vbox(4)
+	rail = UITheme.vbox(2)
 	rp.add_child(rail)
-	panel = SidePanel.new(360)
-	panel.custom_minimum_size.y = 460
+	panel = SidePanel.new(380)
+	panel.custom_minimum_size.y = 470
 	panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	panel.visible = false
 	panel.closed.connect(func() -> void: open(""))
 	add_child(panel)
 	register("state", "ui_flag", "DOCK_STATE", HudPanels.state)
 	register("army", "r_army", "DOCK_ARMY", HudPanels.army)
-	register("economy", "g_economy", "DOCK_ECONOMY", HudPanels.economy)
-	register("build", "ui_building", "DOCK_BUILD", HudPanels.build)
+	register("economy", "r_gold", "DOCK_ECONOMY", HudPanels.economy)
+	register("build", "b_city", "DOCK_BUILD", HudPanels.build)
 	register("research", "r_research", "DOCK_RESEARCH", HudPanels.research)
 	register("log", "ui_book", "DOCK_LOG", HudPanels.events)
 
@@ -40,7 +40,8 @@ func _init(h: GameHUD) -> void:
 func register(id: String, icon: String, title_key: String, builder: Callable) -> void:
 	_tabs[id] = {"icon": icon, "title": title_key, "builder": builder}
 	_order.append(id)
-	var b := UITheme.icon_button(icon, tr(title_key), func() -> void: open(id if current != id else ""), 42, true)
+	var b := UITheme.rail_button(icon, tr(title_key + "_SHORT"), func() -> void: open(id if current != id else ""), 78, true)
+	Hints.attach(b, {"title": tr(title_key), "text": tr(title_key + "_HINT")})
 	_buttons[id] = b
 	rail.add_child(b)
 

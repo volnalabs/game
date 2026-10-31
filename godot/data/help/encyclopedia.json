@@ -1,0 +1,156 @@
+{
+	"_comment": "Encyclopedia articles (handwritten). Building, technology and glossary articles are generated from their data files by the encyclopedia screen.",
+	"categories": [
+		"interface",
+		"economy",
+		"buildings",
+		"army",
+		"research",
+		"victory"
+	],
+	"articles": [
+		{
+			"id": "ui_overview",
+			"category": "interface",
+			"icon": "ui_map",
+			"title": {
+				"ru": "Экран партии",
+				"en": "The match screen"
+			},
+			"body": {
+				"ru": "Карта занимает весь экран. Сверху — ваше государство, ресурсы, время и прогресс победы. Слева — панели: государство, армия, экономика, строительство, наука и журнал. Справа — рейтинг и карточка выбранного государства или здания. Снизу — сила атаки, быстрое строительство и действия.\n\nНаведите курсор на любой показатель или кнопку — появится объяснение. Tab скрывает интерфейс, Esc открывает меню.",
+				"en": "The map fills the screen. At the top: your state, resources, time and victory progress. Left: panels for state, army, economy, construction, research and the log. Right: ranking and the card of the selected state or building. Bottom: attack strength, quick build and actions.\n\nHover any value or button for an explanation. Tab hides the interface, Esc opens the menu."
+			}
+		},
+		{
+			"id": "ui_controls",
+			"category": "interface",
+			"icon": "ui_keyboard",
+			"title": {
+				"ru": "Управление",
+				"en": "Controls"
+			},
+			"body": {
+				"ru": "Левая кнопка мыши по соседу — атака выбранной долей армии. По чужому берегу без общей границы — морской десант. По своему зданию — карточка здания.\nПравая кнопка — выбрать государство; в режиме строительства — отмена.\nКолесо — масштаб, зажатая средняя кнопка или WASD — перемещение.\nQ / E — сила атаки, 1–6 — быстрое строительство, Z — зоны, Пробел — пауза, Home — к своей стране, F1 — справочник, F5 — сохранение.",
+				"en": "Left click on a neighbour — attack with the chosen share of the army. On a foreign coast you do not border — a naval landing. On your building — the building card.\nRight click — select a state; in build mode — cancel.\nWheel — zoom, middle drag or WASD — pan.\nQ / E — attack strength, 1–6 — quick build, Z — zones, Space — pause, Home — your state, F1 — encyclopedia, F5 — save."
+			}
+		},
+		{
+			"id": "ui_start",
+			"category": "interface",
+			"icon": "g_capital",
+			"title": {
+				"ru": "Выбор старта",
+				"en": "Choosing a start"
+			},
+			"body": {
+				"ru": "Наведите курсор на свободную сушу: подсветится земля, которую вы займёте сразу, и свободная земля рядом для первой экспансии. Справа видно ближайших соседей и уровень опасности. Щёлкните, чтобы выбрать, и подтвердите повторным щелчком или Enter.\n\nХороший старт — много свободной земли, выход к морю и сильные соседи подальше.",
+				"en": "Hover free land: the land you take at once and free land nearby for the first expansion light up. The nearest neighbours and a danger level are shown. Click to choose and confirm with a second click or Enter.\n\nA good start has plenty of free land, sea access and strong neighbours far away."
+			}
+		},
+		{
+			"id": "army_attack",
+			"category": "army",
+			"icon": "g_attack",
+			"title": {
+				"ru": "Атака",
+				"en": "Attacking"
+			},
+			"body": {
+				"ru": "Щелчок по соседнему государству отправляет в атаку выбранную долю армии (Q / E). Войска захватывают землю клетка за клеткой; бой идёт, пока у атаки есть солдаты. Потери зависят от рельефа, размеров армий и укреплений защитника.\n\nНичейная земля захватывается дёшево — расширяйтесь в первые минуты.\n\nСтрелка на карте показывает фронт атаки, всплывающие числа — потери сторон.",
+				"en": "Clicking a neighbouring state sends the chosen share of your army (Q / E). Troops take land tile by tile; the fight goes on while the attack has soldiers. Losses depend on terrain, army sizes and the defender's fortifications.\n\nFree land is cheap to take — expand in the first minutes.\n\nThe arrow on the map shows the attack's front; floating numbers show both sides' losses."
+			}
+		},
+		{
+			"id": "army_defense",
+			"category": "army",
+			"icon": "g_defense",
+			"title": {
+				"ru": "Оборона и отступление",
+				"en": "Defence and retreat"
+			},
+			"body": {
+				"ru": "Солдаты дома защищают всю территорию. Оборонные посты и бункеры усиливают землю вокруг себя. Если атака идёт плохо, отведите её на панели «Армия» или кнопкой «Отступить»: часть войск вернётся.",
+				"en": "Soldiers at home defend all your land. Defence posts and bunkers strengthen the land around them. If an attack goes badly, pull it back from the Army panel or with Retreat: part of the troops come back."
+			}
+		},
+		{
+			"id": "army_naval",
+			"category": "army",
+			"icon": "g_landing",
+			"title": {
+				"ru": "Морской десант",
+				"en": "Naval landings"
+			},
+			"body": {
+				"ru": "Щёлкните по чужому берегу, с которым у вас нет общей границы: транспорт с войсками поплывёт от вашего ближайшего побережья на той же воде и начнёт атаку с места высадки. Десант стоит снаряжения; число транспортов в море ограничено (военно-морская база его увеличивает). Радар противника ослабляет высадку.",
+				"en": "Click a foreign coast you do not border: a transport sails from your nearest coast on the same water and attacks from the landing site. Landings cost supplies; the number of transports at sea is limited (a naval base raises it). An enemy radar weakens landings."
+			}
+		},
+		{
+			"id": "victory_rules",
+			"category": "victory",
+			"icon": "g_victory",
+			"title": {
+				"ru": "Как победить",
+				"en": "How to win"
+			},
+			"body": {
+				"ru": "Победа — когда ваше государство занимает нужную долю всей суши (её видно на верхней панели) или, если так настроено, когда уничтожены все соперники. Если ваша территория исчезнет, партия проиграна — можно досмотреть её до конца.",
+				"en": "You win when your state holds the required share of all land (shown in the top bar) or, if set, when all rivals are eliminated. If your territory disappears, the match is lost — you can still watch it to the end."
+			}
+		},
+		{
+			"id": "victory_rewards",
+			"category": "victory",
+			"icon": "r_xp",
+			"title": {
+				"ru": "Награды за партию",
+				"en": "Match rewards"
+			},
+			"body": {
+				"ru": "После партии вы получаете опыт и кредиты профиля: за участие, победу, время, захваченную землю и уничтоженные государства, с учётом сложности. Короткие и пассивные партии приносят меньше. Кредиты профиля не связаны с золотом партии.",
+				"en": "After a match you earn profile experience and credits: for playing, winning, time, land taken and states eliminated, adjusted for difficulty. Short and idle matches give less. Profile credits are separate from in-match gold."
+			}
+		},
+		{
+			"id": "economy_overview",
+			"category": "economy",
+			"icon": "r_gold",
+			"title": {
+				"ru": "Как устроена экономика",
+				"en": "How the economy works"
+			},
+			"body": {
+				"ru": "Земля приносит золото каждую секунду. Армия растёт сама, но солдаты сверх бесплатной части лимита требуют содержания. Золото тратится на здания; снаряжение — на военные здания и десанты. Следите за итогом в секунду на панели «Финансы»: если он отрицательный и казна пуста, армия начнёт таять.",
+				"en": "Land yields gold every second. The army grows by itself, but soldiers above the free part of the cap need upkeep. Gold buys buildings; supplies pay for military buildings and landings. Watch the net per second on the Economy panel: if it is negative and the treasury is empty, the army starts to melt."
+			}
+		},
+		{
+			"id": "research_overview",
+			"category": "research",
+			"icon": "r_research",
+			"title": {
+				"ru": "Исследования",
+				"en": "Research"
+			},
+			"body": {
+				"ru": "Очки исследований копятся каждую секунду и вкладываются в выбранную технологию. Технологии открывают новые здания и дают постоянные бонусы до конца партии. Одновременно изучается одна технология; при переключении прогресс сохраняется. Исследовательские центры многократно ускоряют науку.",
+				"en": "Research points build up every second into the chosen technology. Technologies unlock new buildings and give lasting bonuses for the match. One technology at a time; progress is kept when you switch. Research centres speed science up many times."
+			}
+		},
+		{
+			"id": "buildings_overview",
+			"category": "buildings",
+			"icon": "b_city",
+			"title": {
+				"ru": "Строительство",
+				"en": "Construction"
+			},
+			"body": {
+				"ru": "Выберите здание на панели «Стройка» или клавишами 1–6 и щёлкните по своей земле. Призрак показывает, куда встанет здание, зелёный — можно, красный — нельзя, и почему. Между зданиями нужно расстояние; порт и военно-морская база строятся на берегу. Повторная постройка рядом с городом, портом или фабрикой улучшает их.",
+				"en": "Pick a building on the Build panel or with keys 1–6 and click your land. The ghost shows where it will stand: green — allowed, red — not, and why. Buildings need space between them; ports and naval bases go on the coast. Building again next to a city, port or factory upgrades it."
+			}
+		}
+	]
+}

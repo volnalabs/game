@@ -19,18 +19,13 @@ LICENSES = os.path.join(REPO, "godot", "assets", "licenses")
 
 # icon id -> game-icons name
 GAME = {
-    # buildings
-    "b_city": "modern-city", "b_port": "harbor-dock", "b_factory": "factory", "b_defense": "military-fort",
-    "b_sam": "missile-pod", "b_silo": "rocket", "b_research_center": "round-bottom-flask", "b_radar": "radar-dish",
-    "b_airbase": "jet-fighter", "b_military_academy": "graduate-cap", "b_logistics_hub": "truck",
-    "b_command_center": "radio-tower", "b_bunker": "bunker", "b_power_plant": "power-generator", "b_naval_base": "battleship",
+    # (buildings and the main resources use the game's own symbols: tools/symbols/make_symbols.py)
     # weapons
     "w_missile": "incoming-rocket", "w_heavy_missile": "rocket-flight", "w_cluster": "cluster-bomb",
     "w_mirv": "missile-swarm", "w_tactical_nuke": "nuclear-bomb", "w_strategic_nuke": "mushroom-cloud",
     "w_artillery": "cannon-shot", "w_air_strike": "bombing-run", "w_emp": "lightning-dome",
     # resources and stats
-    "r_gold": "coins", "r_supplies": "cargo-crate", "r_army": "helmet", "r_research": "atom",
-    "r_credits": "crown-coin", "r_xp": "star-medal", "r_land": "earth-africa-europe", "r_fragments": "crystal-cluster",
+    "r_credits": "crown-coin", "r_xp": "star-medal", "r_fragments": "crystal-cluster",
     # menu / meta
     "m_new_game": "planet-conquest", "m_profile": "person", "m_progress": "laurels", "m_cases": "locked-chest",
     "m_case_open": "open-treasure-chest", "m_inventory": "backpack", "m_research": "skills", "m_achievements": "trophy-cup",

@@ -1,0 +1,327 @@
+{
+	"_comment": "Plain-language glossary for hints and the encyclopedia (Glossary).",
+	"terms": {
+		"gold": {
+			"icon": "r_gold",
+			"name": {
+				"ru": "Золото",
+				"en": "Gold"
+			},
+			"what": {
+				"ru": "Деньги государства. На золото строят и улучшают здания.",
+				"en": "Your state's money. Buildings are bought and upgraded with gold."
+			},
+			"from": {
+				"ru": "Доход с территории каждую секунду; больше — с городов, портов и фабрик.",
+				"en": "Income from your land every second; more from cities, ports and factories."
+			},
+			"spend": {
+				"ru": "Постройки и содержание большой армии.",
+				"en": "Buildings and the upkeep of a large army."
+			},
+			"short": {
+				"ru": "Если казна пуста, а содержание армии выше дохода, армия перестаёт расти и часть солдат дезертирует.",
+				"en": "With an empty treasury and upkeep above income, the army stops growing and some soldiers desert."
+			},
+			"more": {
+				"ru": "Захватывайте землю, стройте города и фабрики, держите армию в пределах лимита.",
+				"en": "Take land, build cities and factories, keep the army within its cap."
+			}
+		},
+		"income": {
+			"icon": "r_gold",
+			"name": {
+				"ru": "Доход",
+				"en": "Income"
+			},
+			"what": {
+				"ru": "Сколько золота государство получает за секунду до вычета содержания армии.",
+				"en": "Gold earned per second before army upkeep."
+			},
+			"from": {
+				"ru": "Площадь территории, города, порты (торговля), фабрики (+10% за уровень).",
+				"en": "Territory, cities, ports (trade), factories (+10% per level)."
+			},
+			"more": {
+				"ru": "Больше земли, города, порты рядом с чужими портами, фабрики, исследования экономики.",
+				"en": "More land, cities, ports near other ports, factories, economy research."
+			}
+		},
+		"upkeep": {
+			"icon": "r_upkeep",
+			"name": {
+				"ru": "Содержание армии",
+				"en": "Army upkeep"
+			},
+			"what": {
+				"ru": "Плата за солдат сверх бесплатной части лимита армии. Вычитается из дохода каждую секунду.",
+				"en": "Payment for soldiers above the free part of the army cap. Taken from income every second."
+			},
+			"short": {
+				"ru": "Когда содержание больше дохода и казна пуста — армия тает.",
+				"en": "When upkeep exceeds income and the treasury is empty, the army melts."
+			},
+			"more": {
+				"ru": "Держите армию не выше 60% лимита, стройте города (лимит растёт), исследуйте «Банковское дело».",
+				"en": "Keep the army under 60% of its cap, build cities (cap grows), research Banking."
+			}
+		},
+		"supplies": {
+			"icon": "r_supplies",
+			"name": {
+				"ru": "Снаряжение",
+				"en": "Supplies"
+			},
+			"what": {
+				"ru": "Военные материалы: нужны для укреплений, военных построек и морских десантов.",
+				"en": "Military materials: needed for fortifications, military buildings and naval landings."
+			},
+			"from": {
+				"ru": "Понемногу с территории, в основном — с фабрик; электростанции усиливают фабрики.",
+				"en": "A little from land, mostly from factories; power plants boost factories."
+			},
+			"spend": {
+				"ru": "Оборонные посты, бункеры, радары, авиабазы, транспорты для десанта.",
+				"en": "Defence posts, bunkers, radars, airbases, transports for landings."
+			},
+			"short": {
+				"ru": "Без снаряжения нельзя строить военные здания и отправлять десанты.",
+				"en": "Without supplies you cannot build military buildings or send landings."
+			},
+			"more": {
+				"ru": "Стройте фабрики и электростанции.",
+				"en": "Build factories and power plants."
+			}
+		},
+		"army": {
+			"icon": "r_army",
+			"name": {
+				"ru": "Армия",
+				"en": "Army"
+			},
+			"what": {
+				"ru": "Солдаты государства. Ими атакуют соседей и держат оборону: чем больше армия, тем труднее вас захватить.",
+				"en": "Your soldiers. They attack neighbours and defend: the bigger the army, the harder you are to conquer."
+			},
+			"from": {
+				"ru": "Растёт сама каждую секунду, быстрее всего — когда армия заметно ниже лимита.",
+				"en": "Grows every second by itself, fastest when well below the cap."
+			},
+			"spend": {
+				"ru": "Атаки и десанты: часть армии уходит на фронт и гибнет в боях.",
+				"en": "Attacks and landings: part of the army goes to the front and dies in battle."
+			},
+			"short": {
+				"ru": "Слабую армию легко атаковать; рост останавливается при банкротстве.",
+				"en": "A weak army invites attacks; growth stops when bankrupt."
+			},
+			"more": {
+				"ru": "Земля и города поднимают лимит; логистика ускоряет рост.",
+				"en": "Land and cities raise the cap; logistics speeds growth."
+			}
+		},
+		"army_cap": {
+			"icon": "r_army",
+			"name": {
+				"ru": "Лимит армии",
+				"en": "Army cap"
+			},
+			"what": {
+				"ru": "Наибольшая армия, которую может прокормить государство (второе число у армии).",
+				"en": "The largest army your state can sustain (the second number of the army)."
+			},
+			"from": {
+				"ru": "Площадь территории и города (+250 000 за уровень).",
+				"en": "Territory and cities (+250,000 per level)."
+			},
+			"more": {
+				"ru": "Захватывайте землю и стройте города.",
+				"en": "Take land and build cities."
+			}
+		},
+		"research": {
+			"icon": "r_research",
+			"name": {
+				"ru": "Исследования",
+				"en": "Research"
+			},
+			"what": {
+				"ru": "Очки исследований открывают технологии: новые здания и постоянные бонусы на эту партию.",
+				"en": "Research points unlock technologies: new buildings and lasting bonuses for this match."
+			},
+			"from": {
+				"ru": "Каждую секунду; исследовательские центры дают намного больше.",
+				"en": "Every second; research centres give much more."
+			},
+			"spend": {
+				"ru": "Текущая технология на вкладке «Наука».",
+				"en": "The current technology on the Research tab."
+			},
+			"short": {
+				"ru": "Если ничего не выбрано, очки пропадают зря.",
+				"en": "If nothing is selected, points are wasted."
+			},
+			"more": {
+				"ru": "Стройте исследовательские центры, изучите «Разведку».",
+				"en": "Build research centres, research Intelligence."
+			}
+		},
+		"territory": {
+			"icon": "r_land",
+			"name": {
+				"ru": "Территория",
+				"en": "Territory"
+			},
+			"what": {
+				"ru": "Земля государства. Даёт доход и лимит армии; победа — по доле суши.",
+				"en": "Your land. It gives income and army cap; victory is by share of land."
+			},
+			"from": {
+				"ru": "Атаки на соседей и на ничейную землю, десанты.",
+				"en": "Attacks on neighbours and free land, landings."
+			},
+			"short": {
+				"ru": "Потеря земли уменьшает доход и лимит армии.",
+				"en": "Losing land lowers income and army cap."
+			}
+		},
+		"attack_share": {
+			"icon": "g_attack",
+			"name": {
+				"ru": "Сила атаки",
+				"en": "Attack strength"
+			},
+			"what": {
+				"ru": "Какая доля армии уходит в атаку по щелчку на соседа. Остальные войска остаются дома.",
+				"en": "Share of the army sent by one click on a neighbour. The rest stays home."
+			},
+			"short": {
+				"ru": "Слишком большая доля оставляет страну без защиты.",
+				"en": "Too large a share leaves your land undefended."
+			},
+			"more": {
+				"ru": "Клавиши Q и E меняют долю.",
+				"en": "Q and E change the share."
+			}
+		},
+		"victory": {
+			"icon": "g_victory",
+			"name": {
+				"ru": "Победа",
+				"en": "Victory"
+			},
+			"what": {
+				"ru": "Цель партии: занять нужную долю всей суши (или уничтожить всех, если так настроено).",
+				"en": "Goal of the match: hold the required share of all land (or eliminate everyone, if set)."
+			},
+			"more": {
+				"ru": "Расширяйтесь, захватывайте соседей, удерживайте фронты.",
+				"en": "Expand, conquer neighbours, hold your fronts."
+			}
+		},
+		"rank": {
+			"icon": "ui_trophy",
+			"name": {
+				"ru": "Место",
+				"en": "Rank"
+			},
+			"what": {
+				"ru": "Место вашего государства по площади среди всех живых государств.",
+				"en": "Your state's place by land among all living states."
+			}
+		},
+		"speed": {
+			"icon": "ui_clock",
+			"name": {
+				"ru": "Скорость игры",
+				"en": "Game speed"
+			},
+			"what": {
+				"ru": "Пауза останавливает время; ×2 и ×4 ускоряют партию.",
+				"en": "Pause stops time; ×2 and ×4 speed up the match."
+			},
+			"more": {
+				"ru": "Пробел — пауза, + и − меняют скорость.",
+				"en": "Space pauses, + and − change speed."
+			}
+		},
+		"radius": {
+			"icon": "ui_zones",
+			"name": {
+				"ru": "Радиус действия",
+				"en": "Effect radius"
+			},
+			"what": {
+				"ru": "Расстояние в клетках карты от здания, на котором действует его эффект. Видно в режиме зон (Z).",
+				"en": "Distance in map tiles from a building within which its effect works. Shown in zone mode (Z)."
+			}
+		},
+		"build_time": {
+			"icon": "ui_clock",
+			"name": {
+				"ru": "Время постройки",
+				"en": "Build time"
+			},
+			"what": {
+				"ru": "Сколько секунд строится здание; до конца стройки оно не действует.",
+				"en": "How many seconds a building takes; it has no effect until finished."
+			}
+		},
+		"cost": {
+			"icon": "r_gold",
+			"name": {
+				"ru": "Стоимость",
+				"en": "Cost"
+			},
+			"what": {
+				"ru": "Цена здания. У городов, портов и фабрик каждое следующее здание того же типа дороже.",
+				"en": "Price of a building. Each further city, port or factory costs more."
+			}
+		},
+		"tech": {
+			"icon": "r_research",
+			"name": {
+				"ru": "Технология",
+				"en": "Technology"
+			},
+			"what": {
+				"ru": "Открытие в дереве исследований; действует до конца партии. Некоторые здания требуют технологию.",
+				"en": "A discovery in the research tree; lasts for the match. Some buildings need a technology."
+			}
+		},
+		"zones": {
+			"icon": "ui_zones",
+			"name": {
+				"ru": "Зоны действия",
+				"en": "Effect zones"
+			},
+			"what": {
+				"ru": "Круги показывают, где действуют оборонные посты, бункеры, радары и авиабазы.",
+				"en": "Circles show where posts, bunkers, radars and airbases have effect."
+			},
+			"more": {
+				"ru": "Клавиша Z включает и выключает зоны.",
+				"en": "Z toggles zones."
+			}
+		},
+		"transport": {
+			"icon": "g_landing",
+			"name": {
+				"ru": "Десант",
+				"en": "Landing"
+			},
+			"what": {
+				"ru": "Транспорт с войсками плывёт к чужому берегу и начинает атаку оттуда. Нужно своё побережье на той же воде.",
+				"en": "A transport with troops sails to a foreign coast and attacks from there. Needs your own coast on the same water."
+			},
+			"spend": {
+				"ru": "Снаряжение и выбранная доля армии.",
+				"en": "Supplies and the chosen share of the army."
+			},
+			"more": {
+				"ru": "Щёлкните по чужому берегу, с которым нет общей границы.",
+				"en": "Click a foreign coast you do not border."
+			}
+		}
+	}
+}

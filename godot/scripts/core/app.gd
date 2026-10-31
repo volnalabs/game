@@ -7,11 +7,12 @@ signal state_changed(state: int)
 signal refresh_requested
 
 enum State { MAIN_MENU, MAP_SELECT, MAP_GENERATOR, MATCH_SETUP, LOADING, SPAWN_SELECT, PLAYING, PAUSED,
-	VICTORY, DEFEAT, LOAD_GAME, SETTINGS, CREDITS, PROFILE, PROGRESS, CASES, INVENTORY, ACHIEVEMENTS, RESULTS, SKILLS }
+	VICTORY, DEFEAT, LOAD_GAME, SETTINGS, CREDITS, PROFILE, PROGRESS, CASES, INVENTORY, ACHIEVEMENTS, RESULTS, SKILLS,
+	ENCYCLOPEDIA }
 
 const STATE_NAMES := ["main_menu", "map_select", "map_generator", "match_setup", "loading", "spawn_select",
 	"playing", "paused", "victory", "defeat", "load_game", "settings", "credits", "profile", "progress", "cases",
-	"inventory", "achievements", "results", "skills"]
+	"inventory", "achievements", "results", "skills", "encyclopedia"]
 
 var state: int = State.MAIN_MENU
 ## Selected map for the next match (registry map or a generated world).
@@ -26,6 +27,10 @@ var load_path: String = ""
 var menu_extras: Array[Dictionary] = []
 ## Callables returning a Control for the right column of the main menu (profile card...).
 var menu_cards: Array[Callable] = []
+
+
+func _ready() -> void:
+	add_menu_entry("info", "ui_book", "MENU_ENCYCLOPEDIA", State.ENCYCLOPEDIA)
 
 
 func add_menu_entry(section: String, icon: String, label: String, state: int) -> void:

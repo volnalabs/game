@@ -10,6 +10,9 @@ var default_speed: float = 1.0
 var show_ai_debug: bool = false
 var ui_animations: bool = true
 var show_zones: bool = false
+## Contextual first-time tips, and the ones already seen.
+var show_tips: bool = true
+var seen_tips: Array = []
 var last_difficulty: String = "normal"
 var last_bots: int = 20
 
@@ -32,6 +35,8 @@ func load_settings() -> void:
 	last_bots = cfg.get_value("game", "bots", last_bots)
 	ui_animations = cfg.get_value("ui", "animations", ui_animations)
 	show_zones = cfg.get_value("game", "zones", show_zones)
+	show_tips = cfg.get_value("ui", "tips", show_tips)
+	seen_tips = cfg.get_value("ui", "seen_tips", seen_tips)
 
 
 func save_settings() -> void:
@@ -45,6 +50,8 @@ func save_settings() -> void:
 	cfg.set_value("game", "bots", last_bots)
 	cfg.set_value("ui", "animations", ui_animations)
 	cfg.set_value("game", "zones", show_zones)
+	cfg.set_value("ui", "tips", show_tips)
+	cfg.set_value("ui", "seen_tips", seen_tips)
 	cfg.save(PATH)
 
 

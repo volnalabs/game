@@ -1,14 +1,17 @@
 class_name HudInspector
 extends PanelContainer
-## Right inspector of the selected state: header (flag, name, kind, personality) and tabs —
-## overview, economy, army, buildings, threats, actions (+ AI debug). Other states' economies are
-## hidden unless AI debugging is on (fog of war applies to the player too).
+## Right inspector. For a selected state: header (flag, name, kind, personality) and text tabs —
+## overview, economy, army, buildings, threats, actions (+ AI debug). For a selected building: what it
+## is, what it does with exact numbers, its state and actions. Other states' economies are hidden
+## unless AI debugging is on (fog of war applies to the player too).
 
 var hud: GameHUD
 var owner_id: int = 0
 var tab: String = "overview"
 var _head: HBoxContainer
-var _tabs: HBoxContainer
+var _tabs: HFlowContainer
+## Selected building (structure id) or -1: the inspector then shows the building page.
+var structure_id: int = -1
 var _body: VBoxContainer
 var _tab_buttons: Dictionary = {}
 var _dirty: bool = true
@@ -16,18 +19,25 @@ var _dirty: bool = true
 
 func _init(h: GameHUD) -> void:
 	hud = h
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 12))
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 12))
 	custom_minimum_size.x = 340
 	var v := UITheme.vbox(10)
 	add_child(v)
 	_head = UITheme.hbox(10)
 	v.add_child(_head)
-	_tabs = UITheme.hbox(2)
+	_tabs = HFlowContainer.new()
+	_tabs.add_theme_constant_override("h_separation", 2)
+	_tabs.add_theme_constant_override("v_separation", 2)
 	v.add_child(_tabs)
-	for t in [["overview", "ui_info"], ["economy", "g_economy"], ["army", "r_army"], ["buildings", "ui_building"],
-			["threats", "ui_warning"], ["actions", "g_target"], ["ai", "m_research"]]:
-		var id: String = t[0]
-		var b := UITheme.icon_button(t[1], tr("TAB_" + id.to_upper()), func() -> void: set_tab(id), 34, true)
+	for id: String in ["overview", "economy", "army", "buildings", "threats", "actions", "ai"]:
+		var tid := id
+		var b := UITheme.ghost_button(tr("TABX_" + id.to_upper()), func() -> void: set_tab(tid))
+		b.toggle_mode = true
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size.y = 28
+		b.add_theme_font_size_override("font_size", UITheme.T_CAPTION + 1)
+		b.add_theme_stylebox_override("pressed", UITheme.box(Color(1, 1, 1, 0.09), UITheme.R_S, Color.TRANSPARENT, 6))
+		Hints.attach(b, {"title": tr("TABX_" + id.to_upper()), "text": tr("TABX_%s_HINT" % id.to_upper())})
 		_tab_buttons[id] = b
 		_tabs.add_child(b)
 	v.add_child(UITheme.separator())
@@ -38,6 +48,7 @@ func _init(h: GameHUD) -> void:
 
 func show_owner(id: int) -> void:
 	owner_id = id
+	structure_id = -1
 	visible = id > 0 and not hud.ui_hidden
 	_dirty = true
 	if visible:
@@ -50,8 +61,24 @@ func set_tab(t: String) -> void:
 	refresh(true)
 
 
+## Shows the building page of structure `sid`.
+func show_structure(sid: int) -> void:
+	structure_id = sid
+	visible = sid >= 0 and not hud.ui_hidden
+	_dirty = true
+	if visible:
+		refresh(true)
+
+
 func refresh(force: bool = false) -> void:
-	if not visible or owner_id <= 0:
+	if not visible:
+		return
+	if structure_id >= 0:
+		if force or _dirty or not get_global_rect().has_point(get_viewport().get_mouse_position()):
+			_dirty = false
+			_structure_page()
+		return
+	if owner_id <= 0:
 		return
 	if not force and not _dirty and get_global_rect().has_point(get_viewport().get_mouse_position()):
 		return
@@ -82,7 +109,10 @@ func refresh(force: bool = false) -> void:
 		kind += " · " + tr("PERS_" + brain.personality_id.to_upper())
 	nv.add_child(UITheme.label(kind, UITheme.T_CAPTION, UITheme.TEXT_DIM))
 	_head.add_child(nv)
-	_head.add_child(UITheme.icon_button("ui_close", tr("CLOSE"), func() -> void: hud.ctl.select_owner(0), 30))
+	var close := UITheme.icon_button("ui_close", "", func() -> void: hud.ctl.select_owner(0), 30)
+	Hints.attach(close, {"title": tr("CLOSE"), "text": tr("PANEL_CLOSE_HINT")})
+	_head.add_child(close)
+	_tabs.visible = true
 	for c in _body.get_children():
 		c.queue_free()
 	match tab:
@@ -170,9 +200,20 @@ func _ai(id: int) -> void:
 			continue
 		var v: Variant = d[k]
 		var vs := ("%.2f" % v) if typeof(v) == TYPE_FLOAT else str(v)
-		if k == "target":
-			vs = st.o_name[int(v)] if int(v) > 0 else "—"
-		_body.add_child(UITheme.stat_row(k, vs))
+		match k:
+			"target":
+				vs = st.o_name[int(v)] if int(v) > 0 else tr("AI_NONE")
+			"kind":
+				vs = tr("AI_KIND_" + vs.to_upper())
+			"difficulty":
+				vs = tr("DIFF_" + vs.to_upper())
+			"personality":
+				vs = tr("PERS_" + vs.to_upper())
+			"state":
+				vs = tr("AI_STATE_" + vs.to_upper())
+			"note":
+				vs = (tr("AI_SAVING_FOR") % BuildingInfo.title(hud.sim.rules, hud.sim.rules.building_index(vs.get_slice(" ", 2)))) if vs.begins_with("saving for ") else (vs if vs != "" else tr("AI_NONE"))
+		_body.add_child(UITheme.stat_row(tr("AI_K_" + k.to_upper()), vs))
 	if d.has("threats"):
 		for th: Array in d["threats"]:
 			_body.add_child(UITheme.stat_row(tr("AI_THREAT"), "%s: %.2f" % [st.o_name[int(th[0])], float(th[1])], UITheme.WARN))
@@ -183,3 +224,61 @@ func _ai(id: int) -> void:
 	t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	t.custom_minimum_size.x = 310
 	_body.add_child(t)
+
+
+## Building page: symbol, name, owner; what it does with exact numbers; state; actions.
+func _structure_page() -> void:
+	var sim := hud.sim
+	if structure_id >= sim.structures.structs.size():
+		return
+	var s: StructureSystem.Structure = sim.structures.structs[structure_id]
+	if not s.alive:
+		hud.ctl.select_structure(-1)
+		return
+	for c in _head.get_children():
+		c.queue_free()
+	for c in _body.get_children():
+		c.queue_free()
+	_tabs.visible = false
+	var plate := PanelContainer.new()
+	plate.add_theme_stylebox_override("panel", UITheme.box(Color(1, 1, 1, 0.06), UITheme.R_M, sim.st.o_color[s.owner].lightened(0.2), 6))
+	plate.add_child(Icons.rect(Symbols.building_id(sim.rules, s.kind), 36))
+	_head.add_child(plate)
+	var nv := UITheme.vbox(2)
+	nv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	nv.add_child(UITheme.label(BuildingInfo.title(sim.rules, s.kind), UITheme.T_TITLE, UITheme.TEXT, true))
+	nv.add_child(UITheme.label(sim.st.o_name[s.owner], UITheme.T_CAPTION, sim.st.o_color[s.owner].lightened(0.35)))
+	_head.add_child(nv)
+	var close := UITheme.icon_button("ui_close", "", func() -> void: hud.ctl.select_structure(-1), 30)
+	Hints.attach(close, {"title": tr("CLOSE"), "text": tr("PANEL_CLOSE_HINT")})
+	_head.add_child(close)
+	var d := BuildingInfo.structure_hint(sim, s)
+	var short := UITheme.label(String(d["text"]), UITheme.T_BODY, UITheme.TEXT_DIM)
+	short.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	short.custom_minimum_size.x = 310
+	_body.add_child(short)
+	_body.add_child(UITheme.section(tr("BI_EFFECT")))
+	for line in BuildingInfo.effects(sim.rules, s.kind):
+		var l := UITheme.label(line, UITheme.T_BODY, UITheme.TEXT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 310
+		_body.add_child(l)
+	_body.add_child(UITheme.separator())
+	for r: Array in d["rows"]:
+		_body.add_child(UITheme.key_value(String(r[0]), String(r[1]), r[2] if r.size() > 2 else UITheme.TEXT))
+	if s.done_tick > 0:
+		var total := float(sim.rules.building_ticks(s.kind))
+		_body.add_child(UITheme.progress(clampf(1.0 - float(s.done_tick - sim.st.tick) / total, 0.0, 1.0), UITheme.ACCENT, 6))
+	var pid := sim.player_id
+	if s.owner == pid and sim.rules.building_upgradable(s.kind) and s.done_tick == 0 and sim.phase == Sim.Phase.PLAYING:
+		var reason := BuildingInfo.blocker(sim, s.kind, pid)
+		var up := UITheme.accent_button(tr("BI_UPGRADE") % [s.level + 1, UITheme.num(sim.structures.cost(pid, s.kind))],
+			func() -> void: hud.ctl.upgrade_structure(s.id), 0, "ui_plus")
+		Hints.disable(up, reason)
+		Hints.attach(up, func() -> Dictionary: return {"title": tr("BI_UPGRADE_TITLE"), "text": tr("BI_UPGRADE_HINT"), "reason": reason})
+		_body.add_child(up)
+		if reason != "":
+			var rl := UITheme.label(reason, UITheme.T_CAPTION, UITheme.BAD)
+			_body.add_child(rl)
+	if s.owner != pid:
+		_body.add_child(UITheme.button(tr("BI_SHOW_OWNER"), func() -> void: hud.ctl.select_owner(s.owner), 0, "ui_flag"))

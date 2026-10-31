@@ -40,6 +40,9 @@ var spawn_pending: int = -1
 var spawn_info_pending: Dictionary = {}
 var spawn_info_hover: Dictionary = {}
 var _advisor: SpawnAdvisor
+## Building under the cursor and the selected building (structure ids, -1 = none).
+var hover_structure: int = -1
+var selected_structure: int = -1
 ## Reward bookkeeping: paid once at the end (or as abandoned when leaving early).
 var _paid: bool = false
 var _min_share_late: float = 1.0
@@ -59,6 +62,7 @@ func _ready() -> void:
 	if sim.phase == Sim.Phase.SPAWN:
 		App.goto(App.State.SPAWN_SELECT)
 		_focus_player_nation()
+		hud.tip("spawn")
 	else:
 		App.goto(App.State.PLAYING)
 
@@ -123,6 +127,8 @@ func _build_world() -> void:
 	add_child(ghost)
 	effects = EffectsLayer.new()
 	add_child(effects)
+	# Beyond the map edge: deep ocean, not a black void.
+	RenderingServer.set_default_clear_color(TerrainColors.styled(TerrainColors.BASE[0], renderer.map_style).darkened(0.25))
 	cam = MapCamera.new()
 	add_child(cam)
 	cam.make_current()
@@ -190,6 +196,7 @@ func _process(delta: float) -> void:
 	_update_ghost(delta)
 	_handle_events()
 	_track_for_rewards()
+	_situational_tips()
 	_check_end()
 
 
@@ -201,6 +208,8 @@ func _handle_events() -> void:
 		effects.on_event(e)
 		match String(e["type"]):
 			SimEvents.ATTACK_STARTED:
+				if int(e["target"]) == pid and int(e["attacker"]) > 0 and st.o_kind[int(e["attacker"])] != Rules.KIND_TRIBE:
+					hud.tip("incoming")
 				if int(e["target"]) == pid:
 					hud.log_line(tr("LOG_ATTACKED") % [st.o_name[int(e["attacker"])], UITheme.num(float(e["troops"]))], UITheme.BAD)
 			SimEvents.ELIMINATED:
@@ -246,8 +255,23 @@ func _handle_events() -> void:
 					effects.ring(int(e["tile"]), UITheme.ACCENT, 14.0)
 			SimEvents.PHASE:
 				if e.get("phase", "") == "playing" and sim.player_id > 0:
+					if hud.tip_card.current == "spawn":
+						hud.tip_card.close()
+					hud.tip("resources")
+					hud.tip("expand")
 					App.goto(App.State.PLAYING)
 					hud.log_line(tr("LOG_START"), UITheme.ACCENT)
+
+
+## Situational tips (research idle, money trouble, first landing).
+func _situational_tips() -> void:
+	var pid := sim.player_id
+	if pid <= 0 or sim.phase != Sim.Phase.PLAYING or not sim.is_player_alive() or sim.st.tick % 20 != 0:
+		return
+	if sim.elapsed_seconds() > 40.0 and sim.research.current(pid) == "":
+		hud.tip("research")
+	if sim.st.o_income[pid] < sim.st.o_upkeep[pid] and sim.st.o_gold[pid] < 20000.0:
+		hud.tip("low_gold")
 
 
 func _track_for_rewards() -> void:
@@ -269,6 +293,7 @@ func _pay(abandoned: bool) -> Dictionary:
 
 
 func _exit_tree() -> void:
+	RenderingServer.set_default_clear_color(UITheme.BG)
 	# Leaving a running match (menu, new game, load, restart) counts as abandoned.
 	if not _paid and sim != null and sim.phase == Sim.Phase.PLAYING:
 		_pay(true)
@@ -314,12 +339,18 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse_screen = (event as InputEventMouseMotion).position
 		hover_tile = tile_at_screen(_mouse_screen)
+		_update_structure_hover()
 		hover_owner = sim.st.owner[hover_tile] if hover_tile >= 0 else 0
 		_update_spawn_hover()
 	elif event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
-			_left_click(tile_at_screen(mb.position))
+			# A click on a building (outside build mode) selects the building.
+			var sid := structures.pick(mb.position) if build_kind < 0 and sim.phase == Sim.Phase.PLAYING else -1
+			if sid >= 0:
+				select_structure(sid)
+			else:
+				_left_click(tile_at_screen(mb.position))
 		elif mb.button_index == MOUSE_BUTTON_RIGHT:
 			if mb.pressed:
 				_press_pos = mb.position
@@ -338,6 +369,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_ESCAPE:
 				if spawn_pending >= 0:
 					cancel_spawn()
+				elif selected_structure >= 0:
+					select_structure(-1)
 				elif hud.ui_hidden:
 					hud.set_ui_hidden(false)
 				elif build_kind >= 0:
@@ -368,6 +401,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				set_speed(maxf(speed * 0.5, 0.5))
 			KEY_HOME:
 				focus_home()
+			KEY_F1:
+				open_encyclopedia()
 			KEY_Z:
 				toggle_zones()
 
@@ -418,6 +453,7 @@ func _left_click(t: int) -> void:
 		sim.submit(Commands.attack_tile(pid, t, ratio))
 	elif sim.map.coastal[t] == 1:
 		sim.submit(Commands.boat_ratio(pid, t, ratio))
+		hud.tip("landing")
 		hud.log_line(tr("LOG_BOAT_SENT") % (tr("FREE_LAND") if o == 0 else st.o_name[o]), UITheme.ACCENT)
 	else:
 		hud.toast(tr("REJECT_NO_BORDER"))
@@ -465,7 +501,8 @@ func begin_build(kind: int) -> void:
 	if not GameHUD.build_kinds(sim.rules).has(kind):
 		return
 	build_kind = kind
-	hud.toast(tr("BUILD_MODE") % tr("B_" + sim.rules.b_ids[kind].to_upper()), UITheme.ACCENT, "b_" + sim.rules.b_ids[kind])
+	select_structure(-1)
+	hud.tip("build")
 	hud.refresh()
 
 
@@ -516,6 +553,45 @@ func start_research(tech_id: String) -> void:
 	sim.submit(Commands.research(sim.player_id, tech_id))
 	hud.toast(tr("RESEARCH_STARTED") % MetaData.text(ResearchSystem.tech(tech_id).get("name", {})), UITheme.RESEARCH, "r_research")
 	hud.dock.mark_dirty()
+
+
+func select_structure(sid: int) -> void:
+	selected_structure = sid
+	structures.selected = sid
+	zones.selected_structure = sid
+	if sid >= 0:
+		Hints.hide()
+		hud.inspector.show_structure(sid)
+	elif hud.inspector.structure_id >= 0:
+		hud.inspector.show_owner(selected_owner)
+
+
+## Orders the next level of one of the player's buildings (same order as building on its tile).
+func upgrade_structure(sid: int) -> void:
+	var s: StructureSystem.Structure = sim.structures.structs[sid]
+	var pv := sim.structures.preview(sim.player_id, s.kind, s.tile)
+	if not pv["ok"] or int(pv["upgrade"]) != sid:
+		hud.toast(BuildTip.reason_text(pv, sim.rules) if not pv["ok"] else tr("BI_UPGRADE_BUSY"), UITheme.BAD, "ui_warning")
+		return
+	sim.submit(Commands.build(sim.player_id, s.kind, s.tile))
+	hud.inspector.show_structure(sid)
+
+
+## Hint card for the building under the cursor (name, purpose, main effect, key figures).
+func _update_structure_hover() -> void:
+	var sid := -1
+	if build_kind < 0 and not menu_open and sim.phase == Sim.Phase.PLAYING and not hud.ui_hidden:
+		sid = structures.pick(_mouse_screen)
+	if sid == hover_structure:
+		return
+	hover_structure = sid
+	structures.hovered = sid
+	if sid < 0:
+		Hints.hide()
+		return
+	var s: StructureSystem.Structure = sim.structures.structs[sid]
+	var r := structures.plate_radius() * cam.zoom.x
+	Hints.show_at(Rect2(_mouse_screen - Vector2(r, r), Vector2(r, r) * 2.0), BuildingInfo.structure_hint(sim, s))
 
 
 func toggle_zones() -> void:
@@ -599,6 +675,22 @@ func landing_on(id: int) -> void:
 	hud.log_line(tr("LOG_BOAT_SENT") % st.o_name[id], UITheme.ACCENT)
 
 
+## Encyclopedia as an overlay on top of the match (the match pauses while it is open).
+func open_encyclopedia(article: String = "") -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 5
+	add_child(layer)
+	var s: Control = (load("res://scripts/ui/screens/encyclopedia_screen.gd") as GDScript).new()
+	s.set("overlay", true)
+	s.set("start_article", article)
+	var was_paused := paused
+	paused = true
+	layer.add_child(s)
+	s.tree_exited.connect(func() -> void:
+		layer.queue_free()
+		paused = was_paused)
+
+
 func open_settings() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 5
@@ -611,6 +703,9 @@ func open_settings() -> void:
 
 func select_owner(id: int, focus: bool = false) -> void:
 	selected_owner = id
+	selected_structure = -1
+	structures.selected = -1
+	zones.selected_structure = -1
 	hud.show_owner(id)
 	if focus and id > 0:
 		var c := sim.st.centroid(id)

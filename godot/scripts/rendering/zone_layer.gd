@@ -15,6 +15,8 @@ var show_all: bool = false
 var extra_owner: int = 0
 ## Kind being placed: its zones are shown even when show_all is off.
 var focus_kind: int = -1
+## Selected building: its zone is always shown.
+var selected_structure: int = -1
 
 
 static func kind_color(rules: Rules, kind: int) -> Color:
@@ -31,7 +33,7 @@ static func zone_kinds(rules: Rules) -> Array[int]:
 
 
 func visible_zones() -> bool:
-	return show_all or focus_kind >= 0
+	return show_all or focus_kind >= 0 or selected_structure >= 0
 
 
 func _process(_delta: float) -> void:
@@ -53,7 +55,7 @@ func _draw() -> void:
 		if r <= 0.0:
 			continue
 		var mine := s.owner == pid
-		var show := (show_all or s.kind == focus_kind) and (mine or s.owner == extra_owner)
+		var show := ((show_all or s.kind == focus_kind) and (mine or s.owner == extra_owner)) or s.id == selected_structure
 		if not show:
 			continue
 		var pos := Vector2(s.tile % W + 0.5, s.tile / W + 0.5)

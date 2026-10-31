@@ -17,6 +17,7 @@ Settings="*res://scripts/core/settings.gd"
 MapRegistry="*res://scripts/maps/map_registry.gd"
 App="*res://scripts/core/app.gd"
 Profile="*res://scripts/meta/profile.gd"
+HintLayer="*res://scripts/ui/components/hint_layer.gd"
 
 [display]
 

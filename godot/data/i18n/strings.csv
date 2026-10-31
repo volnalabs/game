@@ -114,6 +114,166 @@ SETTINGS_EDGE_SCROLL,Прокрутка карты у края экрана,Scro
 SETTINGS_AI_DEBUG,Отладка AI (F3),AI debugging (F3)
 CREDITS_TITLE,Титры и лицензии,Credits & licences
 CREDITS_ICONS,Иконки,Icons
+KEY_SPACE,Пробел,Space
+HUD_LB_ROW_HINT,"Щёлкните, чтобы выбрать это государство и показать его на карте.",Click to select this state and show it on the map.
+AI_NONE,—,—
+AI_KIND_STRATEGIC,стратегический,strategic
+AI_KIND_LEGACY,базовый,baseline
+AI_KIND_TRIBE,племя,tribe
+AI_SAVING_FOR,копит на «%s»,saving for %s
+AI_STATE_EXPAND,расширение,expanding
+AI_STATE_DEVELOP,развитие,developing
+AI_STATE_PREPARE_WAR,подготовка к войне,preparing war
+AI_STATE_WAR,война,war
+AI_STATE_DEFEND,оборона,defending
+AI_STATE_CONSOLIDATE,укрепление,consolidating
+SETTINGS_ANIMATIONS,Анимации интерфейса,Interface animations
+SETTINGS_TIPS,Подсказки для новичков,Beginner tips
+SETTINGS_TIPS_RESET,Показать подсказки снова,Show tips again
+PAUSE_ENCYCLOPEDIA,Справочник (F1),Encyclopedia (F1)
+MENU_ENCYCLOPEDIA,Справочник,Encyclopedia
+ENC_TITLE,Справочник,Encyclopedia
+ENC_SEARCH,Поиск по справочнику,Search the encyclopedia
+ENC_CAT_INTERFACE,Интерфейс,Interface
+ENC_CAT_ECONOMY,Экономика,Economy
+ENC_CAT_BUILDINGS,Здания,Buildings
+ENC_CAT_ARMY,Армия,Army
+ENC_CAT_RESEARCH,Исследования,Research
+ENC_CAT_VICTORY,Победа,Victory
+ENC_ON_MAP,Так здание выглядит на карте при разном масштабе,How the building looks on the map at different zooms
+ENC_BRANCH,Ветка,Branch
+ENC_COST_RP,"Стоимость, очков","Cost, points"
+ENC_REQUIRES,Сначала изучить,Requires
+ENC_NOTHING,ничего,nothing
+ENC_UNLOCKS,Открывает: %s,Unlocks: %s
+TIP_OK,Понятно,Got it
+TIP_MORE,Подробнее,More
+TIP_OFF,Не показывать подсказки,Turn tips off
+HUD_TIME,Время,Time
+HUD_PAUSE_SHORT,Пауза,Pause
+HUD_GOAL_NOW,Сейчас,Now
+HUD_GOAL_NEED,Нужно для победы,Needed to win
+HUD_MENU_HINT,"Пауза, сохранение, настройки, справочник и выход.","Pause, save, settings, encyclopedia and exit."
+HUD_PER_SEC_IN,Поступает,Coming in
+HUD_GROWTH,Рост,Growth
+HUD_RESEARCHING,Изучается,Researching
+RESEARCH_IDLE_SHORT,не выбрано,none
+HUD_SENDS,Отправит войск,Troops sent
+GLOSS_FROM,Откуда берётся,Where it comes from
+GLOSS_SPEND,На что тратится,What it is spent on
+GLOSS_SHORT,Если не хватает,When it runs short
+GLOSS_MORE,Как увеличить,How to get more
+DOCK_STATE_SHORT,Страна,State
+DOCK_ARMY_SHORT,Армия,Army
+DOCK_ECONOMY_SHORT,Финансы,Economy
+DOCK_BUILD_SHORT,Стройка,Build
+DOCK_RESEARCH_SHORT,Наука,Research
+DOCK_LOG_SHORT,Журнал,Log
+DOCK_STATE_HINT,"Ваше государство: территория, место в рейтинге и построенные здания.","Your state: territory, rank and buildings."
+DOCK_ARMY_HINT,"Войска, идущие атаки и десанты; здесь же можно отвести войска.","Troops, running attacks and landings; retreat from here."
+DOCK_ECONOMY_HINT,"Откуда берётся золото и куда уходит: доход, содержание армии, итог в секунду.","Where gold comes from and goes: income, army upkeep, net per second."
+DOCK_BUILD_HINT,"Все здания: что делают, сколько стоят, что нужно для постройки.","All buildings: what they do, what they cost, what they need."
+DOCK_RESEARCH_HINT,Технологии этой партии: новые здания и постоянные бонусы.,This match's technologies: new buildings and lasting bonuses.
+DOCK_LOG_HINT,Последние события партии.,Latest events of the match.
+PANEL_CLOSE_HINT,Закрыть панель (Esc).,Close the panel (Esc).
+BUILD_PANEL_NOTE,"Выберите здание, затем щёлкните по своей земле. Наведите на здание, чтобы узнать подробности.","Pick a building, then click your land. Hover a building for details."
+BCAT_ECONOMY,Экономика,Economy
+BCAT_MILITARY,Армия,Military
+BCAT_DEFENSE,Оборона,Defence
+BCAT_SCIENCE,Наука и логистика,Science and logistics
+B_CITY_SHORT,Растит армию и доход: главный источник силы.,Grows your army and income: your main source of strength.
+B_PORT_SHORT,Приносит доход от морской торговли. Только на берегу.,Earns sea-trade income. Coast only.
+B_FACTORY_SHORT,Увеличивает доход и даёт снаряжение для военных построек и десантов.,Raises income and makes supplies for military buildings and landings.
+B_DEFENSE_SHORT,Укрепляет землю вокруг: нападающие теряют больше и продвигаются медленнее.,Fortifies the land around it: attackers lose more and advance slower.
+B_RESEARCH_CENTER_SHORT,Ускоряет исследования.,Speeds up research.
+B_RADAR_SHORT,Замечает вражеские десанты у ваших берегов и ослабляет их.,Spots enemy landings near your coast and weakens them.
+B_AIRBASE_SHORT,Авиаподдержка: ваши атаки рядом с базой несут меньше потерь.,Air support: your attacks near the base take fewer losses.
+B_MILITARY_ACADEMY_SHORT,Обученные войска теряют меньше солдат в атаках.,Trained troops lose fewer soldiers in attacks.
+B_LOGISTICS_HUB_SHORT,Армия восполняется быстрее.,Your army replenishes faster.
+B_COMMAND_CENTER_SHORT,Быстрее наступление и меньше потерь при отступлении.,Faster attacks and fewer losses when retreating.
+B_BUNKER_SHORT,"Маленькая укреплённая зона, которую не разрушить захватом.",A small fortified zone that is not destroyed by capture.
+B_POWER_PLANT_SHORT,Фабрики дают больше снаряжения.,Factories produce more supplies.
+B_NAVAL_BASE_SHORT,Больше и быстрее десантные транспорты. Только на берегу.,More and faster landing transports. Coast only.
+B_SAM_SHORT,Перехватывает вражеские ракеты над вашей землёй.,Intercepts enemy missiles over your land.
+B_SILO_SHORT,Хранит и запускает ракеты.,Stores and launches missiles.
+FX_CITY_CAP,+%s к лимиту армии за уровень,+%s army cap per level
+FX_CITY_GOLD,+%s золота в секунду за уровень,+%s gold per second per level
+FX_PORT_TRADE,+%s золота в секунду за уровень,+%s gold per second per level
+FX_PORT_PARTNER,+%s/с за чужие порты на той же воде (до %s/с),+%s/s per foreign port on the same water (up to %s/s)
+FX_FACTORY_INCOME,+%d%% к доходу за уровень (всего до +%d%%),+%d%% income per level (up to +%d%%)
+FX_FACTORY_SUPPLIES,+%s снаряжения в секунду за уровень,+%s supplies per second per level
+FX_DEFENSE,В радиусе %d клеток нападающий теряет в %.0f раза больше и продвигается в %.0f раза медленнее,Within %d tiles attackers lose %.0f× more and advance %.0f× slower
+FX_DEFENSE_LOST,"Разрушается, если вражеская армия захватит его клетку",Destroyed if an enemy takes its tile
+FX_RESEARCH,+%s очка исследований в секунду за уровень,+%s research points per second per level
+FX_RADAR,Вражеский десант в радиусе %d клеток теряет %d%% войск при высадке,Enemy landings within %d tiles lose %d%% of their troops
+FX_AIRBASE,Ваши атаки в радиусе %d клеток теряют на %d%% меньше солдат,Your attacks within %d tiles lose %d%% fewer soldiers
+FX_ACADEMY,Потери в атаках −%d%% за уровень (до %d уровней),Attack losses −%d%% per level (up to %d levels)
+FX_LOGISTICS,Рост армии +%d%% за уровень (до %d уровней),Army growth +%d%% per level (up to %d levels)
+FX_COMMAND,"При отступлении сохраняется на %d%% больше войск, атаки быстрее на %d%% за уровень (до %d уровней)","Retreats keep %d%% more troops, attacks %d%% faster per level (up to %d levels)"
+FX_BUNKER,Укреплённая зона радиусом %d клеток; при захвате переходит к захватчику целой,Fortified zone of %d tiles; captured intact
+FX_POWER,Снаряжение +%d%% за уровень (до %d уровней),Supplies +%d%% per level (up to %d levels)
+FX_NAVAL,Транспорты быстрее на %d%% и +%d транспорт в море за уровень (до %d уровней),Transports %d%% faster and +%d at sea per level (up to %d levels)
+FX_UPGRADE,Повторная постройка рядом улучшает здание на уровень,Building again next to it upgrades it by a level
+BI_COST,Стоимость,Cost
+BI_SUPPLIES,Снаряжение,Supplies
+BI_TIME,Время постройки,Build time
+BI_RADIUS,Радиус действия,Effect radius
+BI_TILES,%d клеток,%d tiles
+BI_PLACE,Где строить,Where
+BI_COAST,на своём побережье,on your coast
+BI_REQUIRES,Нужно исследование,Requires research
+BI_OWNER,Владелец,Owner
+BI_LEVEL,Уровень,Level
+BI_STATUS,Состояние,Status
+BI_BUILDING_LEFT,"строится, %d с","building, %d s"
+BI_EFFECT,Что даёт,What it does
+BI_UPGRADE,Улучшить до ур. %d — %s,Upgrade to lv. %d — %s
+BI_UPGRADE_TITLE,Улучшение,Upgrade
+BI_UPGRADE_HINT,"Следующий уровень усиливает эффект здания. Пока идёт улучшение, прежний уровень продолжает работать.",The next level strengthens the effect. The current level keeps working during the upgrade.
+BI_UPGRADE_BUSY,Здание уже строится или улучшается,The building is already being built or upgraded
+BI_SHOW_OWNER,Показать владельца,Show the owner
+NEED_GOLD,Не хватает %s золота,%s gold short
+NEED_SUPPLIES,Не хватает %s снаряжения,%s supplies short
+ACTION_HOME_SHORT,Домой,Home
+ACTION_HOME_HINT,Переместить камеру к своему государству.,Move the camera to your state.
+ACTION_RETREAT_SHORT,Отступить,Retreat
+ACTION_RETREAT_HINT,"Отвести все ваши атаки. Часть войск вернётся домой, часть погибнет при отходе.","Pull back all your attacks. Part of the troops come home, part are lost."
+ACTION_ZONES_SHORT,Зоны,Zones
+ACTION_HIDE_SHORT,Скрыть,Hide
+ACTION_HIDE_HINT,"Скрыть интерфейс, чтобы видеть всю карту. Вернуть — Tab или Esc.",Hide the interface to see the whole map. Tab or Esc brings it back.
+TABX_OVERVIEW,Обзор,Overview
+TABX_OVERVIEW_HINT,"Земля, армия, место и соотношение сил с вами.","Land, army, rank and the balance of power with you."
+TABX_ECONOMY,Финансы,Economy
+TABX_ECONOMY_HINT,Доход и расходы (у чужих государств скрыты).,Income and spending (hidden for other states).
+TABX_ARMY,Армия,Army
+TABX_ARMY_HINT,"Войска, атаки, десанты.","Troops, attacks, landings."
+TABX_BUILDINGS,Здания,Buildings
+TABX_BUILDINGS_HINT,Построенные здания и их уровни.,Built buildings and their levels.
+TABX_THREATS,Угрозы,Threats
+TABX_THREATS_HINT,Кто нападает и на кого нападает это государство.,Who is attacking and whom this state attacks.
+TABX_ACTIONS,Действия,Actions
+TABX_ACTIONS_HINT,"Атаковать, высадить десант, показать на карте.","Attack, send a landing, show on the map."
+TABX_AI,ИИ,AI
+TABX_AI_HINT,Отладка решений ИИ (F3).,AI decision debugging (F3).
+AI_K_KIND,Тип ИИ,AI type
+AI_K_DIFFICULTY,Сложность,Difficulty
+AI_K_PERSONALITY,Характер,Personality
+AI_K_STATE,Состояние,State
+AI_K_TARGET,Цель,Target
+AI_K_NOTE,План,Plan
+AI_K_FILL,Заполнение армии,Army fill
+AI_K_RESERVE,Резерв обороны,Defence reserve
+AI_K_NEXT_THINK,След. решение (тик),Next decision (tick)
+HUD_LB_MORE,Ещё,More
+HUD_LB_HINT,Показать 10 крупнейших государств вместо 5.,Show the 10 largest states instead of 5.
+HUD_LB_COLLAPSE_HINT,Свернуть или развернуть рейтинг.,Collapse or expand the ranking.
+PLACE_TITLE,Строительство: %s,Building: %s
+PLACE_CLICK,поставить,place
+PLACE_SHIFT,поставить несколько,place several
+PLACE_CANCEL,отменить,cancel
+KEY_PLACE_CLICK,ЛКМ,LMB
+KEY_PLACE_SHIFT,Shift + ЛКМ,Shift + LMB
+KEY_PLACE_CANCEL,ПКМ / Esc,RMB / Esc
 B_RESEARCH_CENTER,Исследовательский центр,Research centre
 B_RESEARCH_CENTER_TIP,Исследовательский центр: +2 очка исследований в секунду за уровень.,Research centre: +2 research points per second per level.
 B_RADAR,Радар,Radar
@@ -338,7 +498,7 @@ Flags: Wikimedia Commons (public domain / CC0).
 Fictional maps, the generator, procedural flags and the interface are VolnaLabs' own work (AGPL-3.0)."
 HUD_ARMY,Армия / вместимость,Army / capacity
 HUD_ARMY_TIP,Войска растут быстрее всего примерно при 40% вместимости. Войска сверх 60% вместимости требуют содержания.,Troops grow fastest around 40% of capacity. Troops above 60% of capacity cost upkeep.
-HUD_ATTACK_SHARE,Доля армии в атаку (Q / E),Share of the army per attack (Q / E)
+HUD_ATTACK_SHARE,Сила атаки,Share of the army per attack (Q / E)
 HUD_RATIO_TIP,Сколько войск отправить при щелчке по чужой земле,How many troops a click on foreign land sends
 HUD_GOLD,Золото,Gold
 HUD_GOLD_TIP,"Доход: территория, города, торговля портов, бонус фабрик. Расход: постройки и содержание армии.","Income: territory, cities, port trade, factory bonus. Spending: buildings and army upkeep."
@@ -351,7 +511,7 @@ HUD_ATTACKS,Атаки,Attacks
 HUD_NO_ATTACKS,Нет активных атак,No active attacks
 HUD_RETREAT_TIP,Отступить: войска вернутся через 2 с (75%),Retreat: troops come home in 2 s (75%)
 HUD_RETREATING,отступление,retreating
-HUD_GOAL,Господство: %.1f%% из %.0f%%,Domination: %.1f%% of %.0f%%
+HUD_GOAL,Победа: %.1f%% суши из %.0f%%,"Victory: %.1f%% of land, need %.0f%%"
 HUD_DEFEATED,уничтожено,defeated
 HUD_SPEED_TIP,Пауза (пробел) и скорость (+ / −),Pause (space) and speed (+ / −)
 HUD_BUILD_KEY,"Клавиша %d, затем щелчок по своей земле","Key %d, then click your land"
@@ -437,7 +597,7 @@ PAUSE_SAVE,Сохранить (F5),Save (F5)
 PAUSE_LOAD,Загрузить,Load
 PAUSE_RESTART,Начать заново,Restart
 PAUSE_MAIN_MENU,Главное меню,Main menu
-PAUSE_KEYS,"ЛКМ — атака / десант / постройка · ПКМ — информация, перетаскивание — камера · колесо — масштаб · WASD — камера · 1–9 — постройки · Q/E — доля атаки · пробел — пауза · +/− — скорость · Tab — скрыть интерфейс · F3 — отладка AI · F5 — сохранить · Home — к своей стране","LMB — attack / landing / build · RMB — info, drag — camera · wheel — zoom · WASD — camera · 1–9 — buildings · Q/E — attack share · space — pause · +/− — speed · Tab — hide UI · F3 — AI debug · F5 — save · Home — your state"
+PAUSE_KEYS,"ЛКМ — атака, десант, постройка или выбор здания · ПКМ — выбрать государство · колесо — масштаб · WASD или перетаскивание — камера · Q/E — сила атаки · 1–6 — постройки · Z — зоны · Пробел — пауза · Tab — скрыть интерфейс · F1 — справочник · F5 — сохранить · Home — к своей стране","LMB — attack, landing, build or select a building · RMB — select a state · wheel — zoom · WASD or drag — camera · Q/E — attack strength · 1–6 — buildings · Z — zones · Space — pause · Tab — hide the interface · F1 — encyclopedia · F5 — save · Home — your state"
 SAVED,Партия сохранена,Match saved
 SAVE_FAILED,Не удалось сохранить,Saving failed
 END_VICTORY,Победа!,Victory!
