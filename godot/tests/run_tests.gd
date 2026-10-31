@@ -13,6 +13,11 @@ func _run() -> void:
 	if prof != null:
 		prof.store = ProfileStore.new("user://test_profile.json")
 		prof.data = ProfileData.fresh()
+	# Same start for every machine: no beginner tips over the map unless a test turns them on
+	# (in memory only; the player's settings file is not changed).
+	var settings := root.get_node_or_null("Settings")
+	if settings != null:
+		settings.show_tips = false
 	var filter := ""
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:

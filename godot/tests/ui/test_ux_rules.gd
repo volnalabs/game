@@ -138,8 +138,8 @@ func test_tips_once_and_can_be_disabled() -> void:
 	Tips.disable_all()
 	check(not Tips.should_show("research"), "tips can be switched off")
 	s.seen_tips = seen
-	s.show_tips = on
 	s.save_settings()
+	s.show_tips = on
 
 
 func test_encyclopedia_builds_every_article() -> void:

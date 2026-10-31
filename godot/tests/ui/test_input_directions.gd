@@ -30,6 +30,9 @@ func _start(w: int, h: int) -> Node:
 	while ctl.sim == null:
 		await _wait(2)
 	ctl.paused = true
+	# Map clicks only: no tip card over the map.
+	if ctl.hud.tip_card.visible:
+		ctl.hud.tip_card.close()
 	return ctl
 
 
