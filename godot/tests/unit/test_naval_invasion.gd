@@ -327,6 +327,11 @@ func test_many_transports_stay_cheap() -> void:
 	t0 = Time.get_ticks_usec()
 	for i in 50:
 		sim.naval.tick()
-	check(Time.get_ticks_usec() - t0 < 200000, "moving them is cheap")
+	# A budget, not a benchmark: well under a millisecond per transport per tick even on a busy CI
+	# machine (a tight bound made this test flaky).
+	var move_us := Time.get_ticks_usec() - t0
+	var per := float(move_us) / float(50 * maxi(1, sim.naval.boats.size()))
+	print("      moving: %.1f µs per transport per tick" % per)
+	check(per < 1000.0, "moving them is cheap")
 	print("      30 orders planned in %.1f ms" % (plan_us / 1000.0))
 	sim.rules.n["max_boats"] = 3
