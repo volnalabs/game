@@ -26,6 +26,15 @@ var threats: Dictionary = {}
 var relations: Dictionary = {}
 var plan_note: String = ""
 var has_coast: bool = true
+var bodies_cache: Array[int] = []
+## Offensive commitments (expansions, attacks, reinforcements, landings) are spaced by at least
+## OFFENSE_GAP ticks whatever the difficulty: series showed that a bot thinking every 5 ticks
+## otherwise keeps feeding attacks and scatters its army. Reactions (counter-attacks) stay fast.
+const OFFENSE_GAP := 20
+var next_offense: int = 0
+## Tick of the last offensive commitment (stalemate pressure).
+var last_offense: int = 0
+var bodies_tick: int = -100000
 var next_strategic: int = 0
 var next_econ: int = 0
 var next_naval: int = 0
@@ -222,15 +231,33 @@ func _act_on_state() -> void:
 			_opportunistic(0.25)
 		S_DEVELOP, S_CONSOLIDATE:
 			_opportunistic(0.4)
-	# Naval: islands to settle or overseas opportunities.
-	if now >= next_naval and (perception.free_contact == 0 or state != S_EXPAND):
-		next_naval = now + int(220.0 / maxf(float(pers["naval"]), 0.3))
-		if state in [S_EXPAND, S_DEVELOP, S_WAR, S_PREPARE] and (perception.neighbors.is_empty() or perception.free_contact == 0):
-			NavalPlanner.act(self)
+	# Naval: whenever there is no free land to take on our own landmass, compare the best landing
+	# (free islands, overseas rivals) with the best land war and take it when it is worth more.
+	# Landings are limited by the boats at sea, not by the land offensive cooldown.
+	if now >= next_naval and perception.free_contact == 0 and state != S_DEFEND:
+		var landing := NavalPlanner.best_landing(self)
+		var land_u := 0.0
+		if not options.is_empty() and float(options[0]["u"]) > 0.0:
+			land_u = float(options[0]["u"])
+		if not landing.is_empty() and float(landing["u"]) > land_u * 0.7:
+			NavalPlanner.launch(self, landing)
+			last_offense = now
+			next_naval = now + 30
+		else:
+			next_naval = now + int(150.0 / maxf(float(pers["naval"]), 0.3))
+
+
+func _offense_ready() -> bool:
+	return sim.st.tick >= next_offense
+
+
+func _committed() -> void:
+	next_offense = sim.st.tick + OFFENSE_GAP
+	last_offense = sim.st.tick
 
 
 func _expand() -> void:
-	if perception.free_contact == 0:
+	if perception.free_contact == 0 or not _offense_ready():
 		return
 	var a := sim.attacks.find(id, 0)
 	var available := _available_expand()
@@ -245,6 +272,7 @@ func _expand() -> void:
 	send = minf(send, maxf(need, 300.0))
 	if send >= 100.0:
 		submit(Commands.attack_target(id, 0, send))
+		_committed()
 		log.add(sim.st.tick, "expand", 0, {"troops": send, "u": e["u"]})
 
 
@@ -254,6 +282,8 @@ func _wage_war() -> void:
 		last_war_end = st.tick
 		set_state(S_DEVELOP, 0)
 		return
+	if not _offense_ready():
+		return
 	var a := sim.attacks.find(id, target)
 	var available := _available()
 	if a != null:
@@ -262,6 +292,7 @@ func _wage_war() -> void:
 		var e := AttackPlanner.best_size(self, target, available)
 		if not e.is_empty() and float(e["u"]) > 0.0:
 			submit(Commands.attack_target(id, target, float(e["troops"])))
+			_committed()
 			log.add(st.tick, "reinforce", target, {"troops": e["troops"], "u": e["u"], "reason": e["reason"]})
 		return
 	if _wars() >= max_wars():
@@ -274,6 +305,7 @@ func _wage_war() -> void:
 		set_state(S_DEVELOP, 0)
 		return
 	submit(Commands.attack_target(id, target, float(e2["troops"])))
+	_committed()
 	expect(target, float(e2["troops"]), float(e2["captured"]))
 	log.add(st.tick, "attack", target, {"troops": e2["troops"], "u": e2["u"], "captured": e2["captured"],
 		"loss": e2["loss"], "reason": e2["reason"]})
@@ -281,7 +313,7 @@ func _wage_war() -> void:
 
 ## Outside of a war: take an exceptional opportunity (utility above `bar` x troops sent).
 func _opportunistic(bar: float) -> void:
-	if options.is_empty() or _wars() >= max_wars():
+	if options.is_empty() or _wars() >= max_wars() or not _offense_ready():
 		return
 	var best: Dictionary = options[0]
 	var tgt: int = best["target"]
@@ -291,6 +323,7 @@ func _opportunistic(bar: float) -> void:
 	if e.is_empty() or float(e["u"]) < bar * float(e["troops"]):
 		return
 	submit(Commands.attack_target(id, tgt, float(e["troops"])))
+	_committed()
 	expect(tgt, float(e["troops"]), float(e["captured"]))
 	log.add(sim.st.tick, "attack", tgt, {"troops": e["troops"], "u": e["u"], "captured": e["captured"],
 		"reason": "opportunity:" + String(e["reason"])})
@@ -332,7 +365,7 @@ func to_dict() -> Dictionary:
 		"last_war_end": last_war_end, "state_ticks": state_ticks, "started": _started,
 		"has_coast": has_coast, "memory": perception.memory, "prng": perception.rng.get_state(),
 		"options": options, "threats": threats, "war_plan": war_plan, "countered": countered, "noticed": _noticed,
-		"free_estimate": perception.free_estimate, "plan_note": plan_note})
+		"free_estimate": perception.free_estimate, "plan_note": plan_note, "next_offense": next_offense, "last_offense": last_offense})
 	return d
 
 
@@ -357,5 +390,7 @@ func from_dict(d: Dictionary) -> void:
 	_noticed = d.get("noticed", {})
 	perception.free_estimate = d.get("free_estimate", 0)
 	plan_note = d.get("plan_note", "")
+	next_offense = d.get("next_offense", 0)
+	last_offense = d.get("last_offense", 0)
 	if d.has("prng"):
 		perception.rng.set_state(d["prng"])

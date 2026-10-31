@@ -5,18 +5,28 @@ extends RefCounted
 ## transport when the best landing is worth it. Matters most on archipelago maps.
 
 
-## Water bodies where the bot has a coast (sampled from its border, then its spawn area).
+## Water bodies where the bot owns coast. A state that owns a whole island has no land border at
+## all, so the coast lists of the map are checked (fully for small bodies, sampled for big ones);
+## cached for a while.
 static func my_bodies(bot: StrategicAI) -> Array[int]:
 	var st := bot.sim.st
+	if bot.sim.st.tick - bot.bodies_tick < 300 and not bot.bodies_cache.is_empty():
+		return bot.bodies_cache
 	var out: Array[int] = []
-	var t := st.o_border_head[bot.id]
-	var n := 0
-	while t >= 0 and n < 4000:
-		var b := st.map.coast_body[t]
-		if b > 0 and not out.has(b):
-			out.append(b)
-		t = st.bnext[t]
-		n += 1
+	for b: int in st.map.coast_by_body:
+		var list: PackedInt32Array = st.map.coast_by_body[b]
+		if list.size() <= 4000:
+			for t in list:
+				if st.owner[t] == bot.id:
+					out.append(b)
+					break
+		else:
+			for _i in 400:
+				if st.owner[list[bot.rng.below(list.size())]] == bot.id:
+					out.append(b)
+					break
+	bot.bodies_cache = out
+	bot.bodies_tick = st.tick
 	return out
 
 
@@ -54,8 +64,9 @@ static func best_landing(bot: StrategicAI) -> Dictionary:
 				# A free shore: value the island (or coast) we can grab.
 				var lm := st.map.landmass[t]
 				var size := float(st.map.landmass_sizes[lm]) if lm > 0 else 50.0
-				var grab := minf(size, send / maxf(CombatMath.neutral_loss(sim.rules, 80.0, Rules.KIND_NATION), 1.0))
-				u = grab * worth * float(bot.pers["expansion"]) - grab * 16.0
+				var per := maxf(CombatMath.neutral_loss(sim.rules, 80.0, Rules.KIND_NATION), 1.0)
+				var grab := minf(size, send / per)
+				u = grab * worth * float(bot.pers["expansion"]) - grab * per * AttackPlanner.troop_cost(bot, grab * per)
 				reason = "free_shore"
 			else:
 				var their := bot.perception.guess_troops(o)
@@ -73,7 +84,12 @@ static func best_landing(bot: StrategicAI) -> Dictionary:
 				reason = "overseas_war"
 			u *= float(bot.pers["naval"]) / (1.0 + dist / 300.0)
 			if u > 0.0 and (best.is_empty() or u > float(best["u"])):
-				best = {"tile": t, "owner": o, "u": u, "troops": send, "reason": reason}
+				var n := send
+				if o == 0:
+					var lm2 := st.map.landmass[t]
+					var isl := float(st.map.landmass_sizes[lm2]) if lm2 > 0 else 50.0
+					n = clampf(isl * 16.0 * 1.3, 500.0, send)
+				best = {"tile": t, "owner": o, "u": u, "troops": n, "reason": reason}
 	return best
 
 
@@ -81,6 +97,10 @@ static func act(bot: StrategicAI) -> bool:
 	var best := best_landing(bot)
 	if best.is_empty():
 		return false
+	launch(bot, best)
+	return true
+
+
+static func launch(bot: StrategicAI, best: Dictionary) -> void:
 	bot.submit(Commands.boat(bot.id, int(best["tile"]), float(best["troops"])))
 	bot.log.add(bot.sim.st.tick, "boat", int(best["owner"]), {"troops": best["troops"], "u": best["u"], "reason": best["reason"]})
-	return true

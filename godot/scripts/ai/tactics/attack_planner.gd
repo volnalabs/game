@@ -23,7 +23,12 @@ static func troop_cost(bot: StrategicAI, n: float) -> float:
 	var cap := bot.cap()
 	var after := maxf(0.0, bot.troops() - n)
 	var g := maxf(r.troop_growth(st.o_kind[bot.id], (after + bot.troops()) * 0.5, cap), 1.0)
-	return clampf(n / g / REGROW_HORIZON, 0.2, 1.5)
+	var c := clampf(n / g / REGROW_HORIZON, 0.2, 1.5)
+	# An army at its cap does not grow and costs upkeep: troops above ~85 % of the cap are
+	# nearly free to spend.
+	if bot.fill() > 0.85:
+		c *= clampf((1.0 - bot.fill()) / 0.15, 0.25, 1.0)
+	return c
 
 
 static func curve_for(bot: StrategicAI, target: int, n_max: float) -> Dictionary:
@@ -99,6 +104,11 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 	danger += maxf(0.0, nv.est_troops - float(fc["killed"])) * 0.5
 	var exposure := maxf(0.0, danger - home) * 0.25 * float(bot.diff["exposure_weight"]) * (1.0 - float(pers["risk_tolerance"]))
 	var u: float = (gain + weaken + annex_bonus + opp + grudge + coalition) * float(pers["war_appetite"]) - losses - exposure
+	# Stalemate pressure: a full army that has not attacked for a long time accepts harder fights.
+	var stagnation := 0.0
+	if bot.fill() > 0.9 and st.tick - bot.last_offense > 1200:
+		stagnation = minf(1.0, float(st.tick - bot.last_offense - 1200) / 1800.0) * 0.25 * troops
+		u += stagnation
 	var grace := false
 	if target == sim.player_id and sim.elapsed_seconds() * 10.0 < float(bot.diff["player_grace_ticks"]) and float(rel["grudge"]) <= 0.0:
 		u = u * 0.25 - 0.05 * troops if u > 0.0 else u
@@ -115,6 +125,8 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 			reason = "insufficient_troops"
 		else:
 			reason = "loss_exceeds_value"
+	elif stagnation > 0.0 and u < stagnation:
+		reason = "break_stalemate"
 	elif opp > 0.25 * gain:
 		reason = "weak_neighbor_at_war"
 	elif coalition > 0.0:
