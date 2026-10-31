@@ -2,7 +2,7 @@ keys,ru,en
 PLAYER_DEFAULT_NAME,Игрок,Player
 FREE_LAND,ничья земля,free land
 GAME_SUBTITLE,Мировая стратегия,World Strategy
-FOOTER_COPYRIGHT,© OpenFront and Contributors · основано на RoWorld (© 2026 Snick Co.) · VolnaLabs · GNU AGPL v3,© OpenFront and Contributors · based on RoWorld (© 2026 Snick Co.) · VolnaLabs · GNU AGPL v3
+FOOTER_COPYRIGHT,© OpenFront and Contributors · основано на RoWorld (© 2026 Snick Co.) · TerraFront от VolnaLabs · GNU AGPL v3,© OpenFront and Contributors · based on RoWorld (© 2026 Snick Co.) · TerraFront by VolnaLabs · GNU AGPL v3
 MENU_NEW_GAME,Новая игра,New game
 MENU_LOAD,Загрузить,Load game
 MENU_GENERATOR,Генератор миров,World generator
@@ -500,7 +500,7 @@ ZONES_TITLE,Зоны действия,Effect zones
 ZONES_NOTE,Пунктир — постройка ещё не готова. Красноватые — зоны выбранного государства.,Dashed: not finished yet. Reddish: zones of the selected state.
 ACTION_ZONES,Зоны действия построек (Z),Building effect zones (Z)
 CREDITS_ENGINE_PARTS,Сторонние компоненты Godot,Godot third-party components
-CREDITS_BODY,"Разработка: VolnaLabs.
+CREDITS_BODY,"TerraFront. Разработка: VolnaLabs.
 © OpenFront and Contributors — игра является модифицированной версией OpenFront через RoWorld (© 2026 Snick Co.) и распространяется под GNU AGPL v3 с дополнительными условиями (см. LICENSE).
 
 Карты Земли и регионов: Natural Earth и NOAA ETOPO1 (public domain).

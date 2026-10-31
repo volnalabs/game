@@ -1,4 +1,6 @@
-# VolnaLabs: World Strategy
+# TerraFront
+
+Стратегия от студии VolnaLabs (прежнее рабочее название — «VolnaLabs: World Strategy»).
 
 Однопользовательская офлайн-стратегия захвата территорий на Godot 4: реальная карта Земли и
 регионы, вымышленные миры (Пелагия, Аварис, Расколотые миры), генератор новых миров и
@@ -7,7 +9,7 @@
 Проект вырос из форка **RoWorld** (Roblox/Luau), который сам является модифицированной версией
 **OpenFront**. Оригинальная Luau-реализация сохранена в `src/` как справочная. Новая игра — в `godot/`.
 
-© OpenFront and Contributors · основано на RoWorld (© 2026 Snick Co.) · VolnaLabs · GNU AGPL v3 с
+© OpenFront and Contributors · основано на RoWorld (© 2026 Snick Co.) · TerraFront от VolnaLabs · GNU AGPL v3 с
 дополнительными условиями (см. `LICENSE`).
 
 ## Запуск

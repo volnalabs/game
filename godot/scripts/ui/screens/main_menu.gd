@@ -1,7 +1,7 @@
 extends ScreenBase
 ## Main menu built around the living strategic map (MenuBackground): the world fills the screen and
 ## the menu sits on it in an asymmetric composition instead of one long column:
-##   top left     — the VOLNA wave mark and wordmark;
+##   top left     — the TerraFront globe mark and wordmark (TERRA + accent FRONT);
 ##   top right    — quiet navigation: encyclopedia, settings, credits, quit;
 ##   bottom left  — the main decision: "Continue" (when a save exists, with what it is) and
 ##                  "New match", plus small links to loading a save and the world generator;
@@ -100,14 +100,24 @@ func _scrim(from: Vector2, to: Vector2, strength: float, reach: float) -> Textur
 func _wordmark() -> Control:
 	var h := UITheme.hbox(14)
 	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var mark := WaveMark.new()
+	var mark := GlobeMark.new()
 	mark.custom_minimum_size = Vector2(44, 44) if _compact else Vector2(54, 54)
 	mark.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	h.add_child(mark)
 	var v := UITheme.vbox(0)
 	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var logo := UITheme.title("VOLNA", 34 if _compact else 44)
-	logo.add_theme_constant_override("outline_size", 0)
+	var logo := RichTextLabel.new()
+	logo.bbcode_enabled = true
+	logo.fit_content = true
+	logo.autowrap_mode = TextServer.AUTOWRAP_OFF
+	logo.scroll_active = false
+	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var fs := 34 if _compact else 44
+	logo.add_theme_font_override("normal_font", UITheme.font_heading)
+	logo.add_theme_font_size_override("normal_font_size", fs)
+	logo.add_theme_color_override("default_color", UITheme.TEXT)
+	logo.text = "TERRA[color=#%s]FRONT[/color]" % UITheme.ACCENT.to_html(false)
+	logo.name = "Wordmark"
 	v.add_child(logo)
 	var sub := UITheme.label(tr("GAME_SUBTITLE").to_upper(), 12 if _compact else 13, UITheme.TEXT_DIM)
 	sub.add_theme_font_override("font", UITheme.font_medium)
@@ -309,8 +319,9 @@ func _continue_path() -> String:
 	return String(saves[0]["path"]) if not saves.is_empty() else ""
 
 
-## The VOLNA mark: three soft waves in the accent colour, drawn as vector strokes.
-class WaveMark:
+## The TerraFront mark: a globe (rim, parallels, a meridian) crossed by a bold front line in the
+## accent colour, drawn as vector strokes.
+class GlobeMark:
 	extends Control
 
 	func _ready() -> void:
@@ -318,13 +329,27 @@ class WaveMark:
 
 	func _draw() -> void:
 		var s := size
-		var r := minf(s.x, s.y)
-		draw_circle(s * 0.5, r * 0.5, Color(UITheme.ACCENT, 0.16))
-		for i in 3:
+		var c := s * 0.5
+		var r := minf(s.x, s.y) * 0.46
+		var lw := maxf(1.6, r * 0.09)
+		draw_circle(c, r, Color(UITheme.ACCENT, 0.14))
+		var line := Color(UITheme.TEXT, 0.8)
+		draw_arc(c, r, 0.0, TAU, 48, line, lw, true)
+		# Parallels (flattened ellipses) and a meridian.
+		for k: float in [-0.45, 0.0, 0.45]:
+			var y := c.y + r * k
+			var half := sqrt(maxf(0.0, 1.0 - k * k)) * r
 			var pts := PackedVector2Array()
-			var y0 := s.y * (0.36 + 0.15 * i)
-			var amp := r * 0.07
-			for k in 25:
-				var x := s.x * (0.2 + 0.6 * k / 24.0)
-				pts.append(Vector2(x, y0 + sin(k / 24.0 * TAU * 1.25 + i * 0.6) * amp))
-			draw_polyline(pts, Color(UITheme.ACCENT, 1.0 - i * 0.25), maxf(2.0, r * 0.075), true)
+			for i in 17:
+				var t := float(i) / 16.0
+				pts.append(Vector2(c.x - half + 2.0 * half * t, y + sin(t * PI) * r * 0.08))
+			draw_polyline(pts, Color(line, 0.55), lw * 0.6, true)
+		var mer := PackedVector2Array()
+		for i in 25:
+			var a := -PI / 2.0 + PI * float(i) / 24.0
+			mer.append(c + Vector2(cos(a) * r * 0.42, sin(a) * r))
+		draw_polyline(mer, Color(line, 0.55), lw * 0.6, true)
+		# The front: a bold zigzag across the globe.
+		var front := PackedVector2Array([c + Vector2(-r * 0.95, r * 0.25), c + Vector2(-r * 0.4, -r * 0.15),
+			c + Vector2(-r * 0.05, r * 0.2), c + Vector2(r * 0.4, -r * 0.3), c + Vector2(r * 0.92, -r * 0.05)])
+		draw_polyline(front, UITheme.ACCENT, lw * 1.4, true)

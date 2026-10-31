@@ -1,6 +1,6 @@
-# Game Design — VolnaLabs: World Strategy (v0.1, singleplayer offline)
+# Game Design — TerraFront (v0.1, singleplayer offline)
 
-Рабочее название: **VolnaLabs: World Strategy**. Жанр: стратегия захвата территорий в реальном
+Название: **TerraFront** (студия VolnaLabs; прежнее рабочее название — «VolnaLabs: World Strategy»). Жанр: стратегия захвата территорий в реальном
 времени на глобальной карте. Один человек против 2–60 локальных AI-государств.
 
 Источник истины для чисел — `godot/data/rules/default_rules.json` и `godot/data/buildings/buildings.json`.

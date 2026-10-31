@@ -8,7 +8,7 @@ func _ready() -> void:
 	text.custom_minimum_size = Vector2(980, 560)
 	text.bbcode_enabled = true
 	text.scroll_active = true
-	var s := "[b]VolnaLabs: World Strategy[/b] %s\n\n" % ProjectSettings.get_setting("application/config/version", "")
+	var s := "[b]TerraFront[/b] %s\n\n" % ProjectSettings.get_setting("application/config/version", "")
 	s += tr("CREDITS_BODY") + "\n\n"
 	s += "[b]%s[/b]\n" % tr("CREDITS_ICONS")
 	for line in Icons.attribution():

@@ -1,4 +1,7 @@
-# VolnaLabs — World Strategy
+# TerraFront (VolnaLabs)
+
+Игра называется **TerraFront** (прежнее рабочее название — «VolnaLabs: World Strategy»); VolnaLabs —
+студия-разработчик.
 
 Самостоятельная однопользовательская офлайн-стратегия на Godot 4 (папка `godot/`), выросшая из форка
 RoWorld (Roblox/Luau, исходники в `src/` сохранены как справочная реализация).

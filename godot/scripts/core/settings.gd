@@ -17,9 +17,50 @@ var last_difficulty: String = "normal"
 var last_bots: int = 20
 
 
+## The game was called "VolnaLabs: World Strategy" before it became TerraFront; Godot keeps user data
+## per project name, so the old folder (settings, profile, saves) is copied over once.
+const OLD_DATA_DIR := "VolnaLabs- World Strategy"
+
+
 func _ready() -> void:
+	migrate_old_user_data()
 	load_settings()
 	apply()
+
+
+## Copies the previous name's user data into this one when this one is still empty.
+static func migrate_old_user_data() -> void:
+	var here := OS.get_user_data_dir()
+	migrate_dir(here.get_base_dir().path_join(OLD_DATA_DIR), here)
+
+
+## Copies `old` into `here` unless `here` already has settings or a profile. True if it copied.
+static func migrate_dir(old: String, here: String) -> bool:
+	if old == here or not DirAccess.dir_exists_absolute(old):
+		return false
+	if FileAccess.file_exists(here.path_join("settings.cfg")) or FileAccess.file_exists(here.path_join("profile.json")):
+		return false
+	_copy_dir(old, here)
+	return true
+
+
+static func _copy_dir(from: String, to: String) -> void:
+	DirAccess.make_dir_recursive_absolute(to)
+	var d := DirAccess.open(from)
+	if d == null:
+		return
+	d.list_dir_begin()
+	var n := d.get_next()
+	while n != "":
+		if n != "." and n != "..":
+			var src := from.path_join(n)
+			var dst := to.path_join(n)
+			if d.current_is_dir():
+				_copy_dir(src, dst)
+			elif not FileAccess.file_exists(dst):
+				DirAccess.copy_absolute(src, dst)
+		n = d.get_next()
+	d.list_dir_end()
 
 
 func load_settings() -> void:

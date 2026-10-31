@@ -1,11 +1,11 @@
 ; Engine configuration file.
-; VolnaLabs: World Strategy — AGPL-3.0 (see ../LICENSE). Godot Engine is MIT licensed.
+; TerraFront (by VolnaLabs) — AGPL-3.0 (see ../LICENSE). Godot Engine is MIT licensed.
 
 config_version=5
 
 [application]
 
-config/name="VolnaLabs: World Strategy"
+config/name="TerraFront"
 config/description="Singleplayer offline territory strategy with real, fictional and generated worlds."
 config/version="0.1.0"
 run/main_scene="res://scenes/main/main.tscn"

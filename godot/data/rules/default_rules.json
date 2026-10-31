@@ -1,5 +1,5 @@
 {
-	"_comment": "Balance of VolnaLabs: World Strategy. Distances and tile counts are in full-size tiles (scaled by the map's k_lin, see scripts/rules/rules.gd). Combat numbers follow RoWorld/OpenFront (src/shared/Core/Rules.luau); the economy is VolnaLabs' own (docs/game-design/GAME_DESIGN.md).",
+	"_comment": "Balance of TerraFront. Distances and tile counts are in full-size tiles (scaled by the map's k_lin, see scripts/rules/rules.gd). Combat numbers follow RoWorld/OpenFront (src/shared/Core/Rules.luau); the economy is VolnaLabs' own (docs/game-design/GAME_DESIGN.md).",
 	"tick_rate": 10,
 	"max_owners": 512,
 	"terrain": {
