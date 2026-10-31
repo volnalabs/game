@@ -221,22 +221,27 @@ func _check_end() -> void:
 # Input
 # ---------------------------------------------------------------------------------------------
 
-func _tile_at_mouse() -> int:
-	var p := cam.get_canvas_transform().affine_inverse() * get_viewport().get_mouse_position()
+## Map tile under a screen position (the event's own position, in viewport coordinates).
+func tile_at_screen(screen_pos: Vector2) -> int:
+	var p := cam.get_canvas_transform().affine_inverse() * screen_pos
 	return sim.map.tile_at(int(floor(p.x)), int(floor(p.y)))
+
+
+func _tile_at_mouse() -> int:
+	return tile_at_screen(get_viewport().get_mouse_position())
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if sim == null:
 		return
 	if event is InputEventMouseMotion:
-		hover_tile = _tile_at_mouse()
+		hover_tile = tile_at_screen((event as InputEventMouseMotion).position)
 		hover_owner = sim.st.owner[hover_tile] if hover_tile >= 0 else 0
 		effects.spawn_hover = hover_tile if sim.phase == Sim.Phase.SPAWN and sim.player_id > 0 and sim.st.o_spawned[sim.player_id] == 0 else -1
 	elif event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
-			_left_click(_tile_at_mouse())
+			_left_click(tile_at_screen(mb.position))
 		elif mb.button_index == MOUSE_BUTTON_RIGHT:
 			if mb.pressed:
 				_press_pos = mb.position
@@ -244,7 +249,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if build_kind >= 0:
 					cancel_build()
 				else:
-					var t := _tile_at_mouse()
+					var t := tile_at_screen(mb.position)
 					select_owner(sim.st.owner[t] if t >= 0 else 0)
 	elif event is InputEventKey and event.pressed and not event.echo:
 		var k := (event as InputEventKey).keycode

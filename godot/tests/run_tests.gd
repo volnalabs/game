@@ -13,7 +13,7 @@ func _run() -> void:
 	if args.size() > 0:
 		filter = args[0]
 	var files: Array[String] = []
-	for sub in ["unit", "integration", "ai", "performance"]:
+	for sub in ["unit", "integration", "ui", "ai", "performance"]:
 		_collect("res://tests/" + sub, files)
 	var total := 0
 	var failed := 0
@@ -38,7 +38,7 @@ func _run() -> void:
 			inst.call("before_each")
 			var before: int = (inst.get("failures") as Array).size()
 			var ts := Time.get_ticks_msec()
-			inst.call(mname)
+			await inst.call(mname)
 			var dt := Time.get_ticks_msec() - ts
 			var fails: Array = inst.get("failures")
 			if fails.size() > before:

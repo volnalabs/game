@@ -18,6 +18,9 @@ var _current_path: String = ""
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# The root only hosts screens: it must never swallow mouse events, or clicks on the map
+	# (handled in MatchController._unhandled_input) never arrive.
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = UITheme.theme()
 	App.state_changed.connect(_on_state)
 	_on_state(App.state)
