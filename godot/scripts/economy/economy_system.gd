@@ -60,12 +60,12 @@ func _update_trade() -> void:
 	var by_body: Dictionary = {}
 	var ports := []
 	for s in structures.structs:
-		if s.alive and s.kind == Rules.B_PORT and s.active_levels > 0:
+		if s.alive and s.kind == Rules.B_PORT and s.counted() > 0:
 			var body := st.map.coast_body[s.tile]
 			if not by_body.has(body):
 				by_body[body] = {}
 			var d: Dictionary = by_body[body]
-			d[s.owner] = int(d.get(s.owner, 0)) + s.active_levels
+			d[s.owner] = int(d.get(s.owner, 0)) + s.counted()
 			ports.append(s)
 	var trade := PackedFloat64Array()
 	trade.resize(st.owner_count + 1)
@@ -76,6 +76,6 @@ func _update_trade() -> void:
 			if o != s.owner:
 				others += int(d[o])
 		var bonus := minf(float(others) * float(e["port_trade_partner"]), e["port_trade_partner_max"])
-		trade[s.owner] += float(s.active_levels) * (float(e["port_trade_base"]) + bonus)
+		trade[s.owner] += float(s.counted()) * (float(e["port_trade_base"]) + bonus)
 	for id in range(1, st.owner_count + 1):
 		st.set_port_trade(id, trade[id])

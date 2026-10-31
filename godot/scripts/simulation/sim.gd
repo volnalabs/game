@@ -23,6 +23,7 @@ var victory: Victory
 var ai: AIDirector
 var mods: Modifiers
 var research: ResearchSystem
+var weapons: WeaponSystem
 
 var phase: int = Phase.SPAWN
 var player_id: int = 0
@@ -57,6 +58,7 @@ func _init(cfg: MatchConfig, map_def: MapDefinition, map_data: MapData) -> void:
 	naval = NavalSystem.new(st, rules, events, attacks)
 	naval.mods = mods
 	naval.structures = structures
+	weapons = WeaponSystem.new(st, rules, rng, events, structures, research, attacks)
 	spawn = SpawnSystem.new(st, rules, rng)
 	victory = Victory.new(st, cfg.victory, rules.tick_rate)
 	_create_owners()
@@ -198,6 +200,8 @@ func apply_command(c: Dictionary) -> String:
 			return research.start(who, String(c.get("tech", "")))
 		Commands.CANCEL_BOAT:
 			return naval.cancel(who, int(c.get("boat", -1)))
+		Commands.LAUNCH:
+			return weapons.launch(who, rules.weapon_index(String(c.get("weapon", ""))), int(c.get("tile", -1)))
 	return "unknown"
 
 
@@ -278,6 +282,8 @@ func step() -> void:
 	_lap("attacks", t0)
 	naval.tick()
 	_lap("naval", t0)
+	weapons.tick()
+	_lap("weapons", t0)
 	_process_eliminations()
 	if st.tick % 10 == 0:
 		_check_end()
@@ -338,7 +344,7 @@ func to_dict() -> Dictionary:
 		"play_start_tick": play_start_tick, "result": result, "rng": rng.get_state(),
 		"state": st.to_dict(), "attacks": attacks.to_dict(), "structures": structures.to_dict(),
 		"naval": naval.to_dict(), "spawn_starts": spawn.starts, "victory_start": victory.start_tick,
-		"commands": _commands, "ai": ai.to_dict(), "research": research.to_dict(),
+		"commands": _commands, "ai": ai.to_dict(), "research": research.to_dict(), "weapons": weapons.to_dict(),
 	}
 
 
@@ -359,6 +365,7 @@ func from_dict(d: Dictionary) -> void:
 	_commands.assign(d["commands"])
 	ai.from_dict(d["ai"])
 	research.from_dict(d.get("research", {}))
+	weapons.from_dict(d.get("weapons", {}))
 	structures.invalidate_caches()
 	mods.mark_all()
 	mods.update()
@@ -377,4 +384,10 @@ func state_hash() -> int:
 		if b.alive:
 			bts.append([b.id, b.owner, b.troops, snappedf(b.progress, 0.001), b.target_tile, b.goal_tile, b.returning])
 	parts.append(bts)
+	var ms := []
+	for m in weapons.munitions:
+		if m.alive:
+			ms.append([m.id, m.owner, m.weapon, m.to_tile, m.launch_tick, m.chased])
+	parts.append(ms)
+	parts.append(weapons.fallout.size())
 	return hash(parts)

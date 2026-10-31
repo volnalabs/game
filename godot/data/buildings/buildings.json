@@ -68,7 +68,7 @@
 			"coastal": false,
 			"icon": "sam",
 			"radius": 70.0,
-			"phase": "5b"
+			"requires": "air_defence"
 		},
 		{
 			"id": "silo",
@@ -80,7 +80,7 @@
 			"upgradable": true,
 			"coastal": false,
 			"icon": "silo",
-			"phase": "5b"
+			"requires": "rocketry"
 		},
 		{
 			"id": "research_center",

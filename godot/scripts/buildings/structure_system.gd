@@ -20,10 +20,16 @@ class Structure:
 	## Levels already active (an upgrading structure keeps its previous level working).
 	var active_levels: int = 0
 	var alive: bool = true
+	## Switched off by an EMP until this tick (0 = working). While off, its levels do not count.
+	var disabled_until: int = 0
+
+	## Levels that count for effects right now (0 while switched off).
+	func counted() -> int:
+		return 0 if disabled_until > 0 else active_levels
 
 	func to_dict() -> Dictionary:
 		return {"id": id, "kind": kind, "owner": owner, "tile": tile, "level": level,
-			"done_tick": done_tick, "active_levels": active_levels, "alive": alive}
+			"done_tick": done_tick, "active_levels": active_levels, "alive": alive, "disabled_until": disabled_until}
 
 	static func from_dict(d: Dictionary) -> Structure:
 		var s := Structure.new()
@@ -113,7 +119,7 @@ func defense_posts_of(who: int) -> PackedInt32Array:
 		return _posts_cache[who]
 	var out := PackedInt32Array()
 	for s in structs:
-		if s.alive and s.owner == who and s.kind == Rules.B_DEFENSE and s.active_levels > 0:
+		if s.alive and s.owner == who and s.kind == Rules.B_DEFENSE and s.counted() > 0:
 			out.append(s.tile)
 	_posts_cache[who] = out
 	return out
@@ -131,7 +137,7 @@ func active_tiles_of(who: int, kind: int) -> PackedInt32Array:
 		return per[kind]
 	var out := PackedInt32Array()
 	for s in structs:
-		if s.alive and s.owner == who and s.kind == kind and s.active_levels > 0:
+		if s.alive and s.owner == who and s.kind == kind and s.counted() > 0:
 			out.append(s.tile)
 	per[kind] = out
 	_tiles_cache[who] = per
@@ -312,9 +318,43 @@ func tick() -> void:
 			s.done_tick = 0
 			var add := s.level - s.active_levels
 			s.active_levels = s.level
-			st.add_blevel(s.owner, s.kind, add)
+			if s.disabled_until == 0:
+				st.add_blevel(s.owner, s.kind, add)
 			_changed(s.owner)
 			events.emit(SimEvents.BUILD_DONE, {"id": s.id, "owner": s.owner, "kind": s.kind, "tile": s.tile, "level": s.level})
+		if s.alive and s.disabled_until > 0 and now >= s.disabled_until:
+			s.disabled_until = 0
+			st.add_blevel(s.owner, s.kind, s.active_levels)
+			_changed(s.owner)
+			events.emit(SimEvents.STRUCT_ENABLED, {"id": s.id, "owner": s.owner, "kind": s.kind, "tile": s.tile})
+
+
+## Switches a building off until tick `until` (EMP): its levels stop counting meanwhile.
+func disable(s: Structure, until: int) -> void:
+	if not s.alive:
+		return
+	if s.disabled_until == 0:
+		st.add_blevel(s.owner, s.kind, -s.active_levels)
+	s.disabled_until = maxi(s.disabled_until, until)
+	_changed(s.owner)
+
+
+## Knocks `levels` levels off a building (strikes); at level 0 it is destroyed. True if destroyed.
+func damage(s: Structure, levels: int) -> bool:
+	if not s.alive or levels <= 0:
+		return false
+	if s.level <= levels:
+		destroy(s)
+		return true
+	var lost_active := mini(levels, s.active_levels)
+	s.level -= levels
+	s.active_levels -= lost_active
+	if s.disabled_until == 0:
+		st.add_blevel(s.owner, s.kind, -lost_active)
+	st.add_bowned(s.owner, s.kind, -levels)
+	_changed(s.owner)
+	events.emit(SimEvents.STRUCT_DAMAGED, {"id": s.id, "kind": s.kind, "owner": s.owner, "tile": s.tile, "level": s.level})
+	return false
 
 
 func _on_tile_changed(t: int, old: int, new_owner: int) -> void:
@@ -327,9 +367,9 @@ func _on_tile_changed(t: int, old: int, new_owner: int) -> void:
 	if new_owner == 0 or (s.kind == Rules.B_DEFENSE and not bool(rules.building_effect(s.kind).get("survives_capture", false))):
 		destroy(s)
 		return
-	st.add_blevel(old, s.kind, -s.active_levels)
+	st.add_blevel(old, s.kind, -s.counted())
 	st.add_bowned(old, s.kind, -s.level)
-	st.add_blevel(new_owner, s.kind, s.active_levels)
+	st.add_blevel(new_owner, s.kind, s.counted())
 	st.add_bowned(new_owner, s.kind, s.level)
 	s.owner = new_owner
 	_changed(old)
@@ -341,7 +381,7 @@ func destroy(s: Structure) -> void:
 	if not s.alive:
 		return
 	s.alive = false
-	st.add_blevel(s.owner, s.kind, -s.active_levels)
+	st.add_blevel(s.owner, s.kind, -s.counted())
 	st.add_bowned(s.owner, s.kind, -s.level)
 	st.set_struct_at(s.tile, -1)
 	_grid_remove(s)

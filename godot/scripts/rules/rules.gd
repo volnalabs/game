@@ -6,6 +6,7 @@ extends RefCounted
 ## k_area = k_lin^2 (same convention as RoWorld's Rules.luau:8-70).
 
 const RULES_PATH := "res://data/rules/default_rules.json"
+const WEAPONS_PATH := "res://data/weapons/weapons.json"
 const BUILDINGS_PATH := "res://data/buildings/buildings.json"
 
 # Terrain codes (map_data.gd mirrors these).
@@ -93,6 +94,16 @@ var b_search_radius: float
 var b_port_search: float
 var b_ids: PackedStringArray
 
+# Weapons and air defence (data/weapons/weapons.json), distances already in this map's tiles.
+var weapons_raw: Dictionary
+## Weapon definitions (scaled copies): id, launcher, requires, cost, supplies, range, radius,
+## radius_inner, speed, flight, launch_delay, intercept, threat, effect.
+var w_list: Array[Dictionary] = []
+var w_ids: PackedStringArray
+var w_launchers: Dictionary = {}
+var w_sam: Dictionary = {}
+var w_fallout: Dictionary = {}
+
 
 static var _cache: Dictionary = {}
 
@@ -157,6 +168,52 @@ func _load(k: float) -> void:
 	b_ids = PackedStringArray()
 	for kd: Dictionary in b_kinds:
 		b_ids.append(kd["id"])
+	_load_weapons()
+
+
+func _load_weapons() -> void:
+	weapons_raw = _read_json(WEAPONS_PATH)
+	w_launchers = weapons_raw.get("launchers", {})
+	w_sam = weapons_raw.get("sam", {}).duplicate()
+	w_sam["interceptor_speed"] = float(w_sam.get("interceptor_speed", 12.0)) / k_lin
+	w_fallout = weapons_raw.get("fallout", {})
+	w_list.clear()
+	w_ids = PackedStringArray()
+	for wd: Dictionary in weapons_raw.get("weapons", []):
+		var w := wd.duplicate(true)
+		for key: String in ["range", "radius", "radius_inner", "speed"]:
+			if w.has(key):
+				w[key] = float(w[key]) / k_lin
+		var ef: Dictionary = w["effect"]
+		for key: String in ["spread", "warhead_inner", "warhead_outer", "warhead_speed"]:
+			if ef.has(key):
+				ef[key] = float(ef[key]) / k_lin
+		if ef.has("kill_per_tile"):
+			ef["kill_per_tile"] = float(ef["kill_per_tile"]) * k_area
+		w_list.append(w)
+		w_ids.append(String(w["id"]))
+
+
+func weapon_index(id: String) -> int:
+	return w_ids.find(id)
+
+
+func weapon(i: int) -> Dictionary:
+	return w_list[i]
+
+
+## Building kind a weapon is launched from.
+func weapon_launcher_kind(i: int) -> int:
+	var l: Dictionary = w_launchers.get(String(w_list[i]["launcher"]), {})
+	return building_index(String(l.get("building", "")))
+
+
+func launcher_reload(i: int) -> int:
+	return int(w_launchers.get(String(w_list[i]["launcher"]), {}).get("reload_ticks", 100))
+
+
+func launcher_charges_per_level(i: int) -> int:
+	return int(w_launchers.get(String(w_list[i]["launcher"]), {}).get("charges_per_level", 1))
 
 
 # ---------------------------------------------------------------------------------------------

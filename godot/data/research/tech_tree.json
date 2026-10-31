@@ -5,7 +5,8 @@
 		"military",
 		"defense",
 		"logistics",
-		"strategic"
+		"strategic",
+		"weapons"
 	],
 	"rp_base_per_sec": 0.6,
 	"techs": [
@@ -143,12 +144,15 @@
 				"en": "Combined arms"
 			},
 			"desc": {
-				"ru": "Наступление быстрее на 8%.",
-				"en": "Attacks advance 8% faster."
+				"ru": "Наступление быстрее на 8%. Открывает артиллерийский удар с оборонных постов.",
+				"en": "Attacks advance 8% faster. Unlocks artillery fire from defence posts."
 			},
 			"modifiers": {
 				"attack_speed_mult": 0.08
-			}
+			},
+			"weapons": [
+				"artillery"
+			]
 		},
 		{
 			"id": "aviation",
@@ -163,11 +167,14 @@
 				"en": "Aviation"
 			},
 			"desc": {
-				"ru": "Открывает авиабазу.",
-				"en": "Unlocks the airbase."
+				"ru": "Открывает авиабазу и авиаудары.",
+				"en": "Unlocks the airbase and air strikes."
 			},
 			"unlocks": [
 				"airbase"
+			],
+			"weapons": [
+				"air_strike"
 			]
 		},
 		{
@@ -434,6 +441,133 @@
 				"growth_mult": 0.04,
 				"attack_loss_mult": -0.03
 			}
+		},
+		{
+			"id": "rocketry",
+			"branch": "weapons",
+			"tier": 1,
+			"cost": 220,
+			"requires": [
+				"combined_arms"
+			],
+			"name": {
+				"ru": "Ракетостроение",
+				"en": "Rocketry"
+			},
+			"desc": {
+				"ru": "Открывает ракетную шахту, ракету и тяжёлую ракету.",
+				"en": "Unlocks the missile silo, the missile and the heavy missile."
+			},
+			"unlocks": [
+				"silo"
+			],
+			"weapons": [
+				"missile",
+				"heavy_missile"
+			]
+		},
+		{
+			"id": "guided_munitions",
+			"branch": "weapons",
+			"tier": 2,
+			"cost": 260,
+			"requires": [
+				"rocketry"
+			],
+			"name": {
+				"ru": "Высокоточные боеприпасы",
+				"en": "Guided munitions"
+			},
+			"desc": {
+				"ru": "Открывает кассетную ракету.",
+				"en": "Unlocks the cluster missile."
+			},
+			"weapons": [
+				"cluster"
+			]
+		},
+		{
+			"id": "electronic_warfare",
+			"branch": "weapons",
+			"tier": 3,
+			"cost": 300,
+			"requires": [
+				"guided_munitions",
+				"radar"
+			],
+			"name": {
+				"ru": "Радиоэлектронная борьба",
+				"en": "Electronic warfare"
+			},
+			"desc": {
+				"ru": "Открывает ЭМИ-удар: постройки в зоне отключаются на 30 с.",
+				"en": "Unlocks the EMP strike: buildings in its zone switch off for 30 s."
+			},
+			"weapons": [
+				"emp"
+			]
+		},
+		{
+			"id": "nuclear_program",
+			"branch": "weapons",
+			"tier": 3,
+			"cost": 380,
+			"requires": [
+				"guided_munitions",
+				"war_economy"
+			],
+			"name": {
+				"ru": "Ядерная программа",
+				"en": "Nuclear programme"
+			},
+			"desc": {
+				"ru": "Открывает тактический ядерный заряд.",
+				"en": "Unlocks the tactical nuke."
+			},
+			"weapons": [
+				"tactical_nuke"
+			]
+		},
+		{
+			"id": "thermonuclear",
+			"branch": "weapons",
+			"tier": 4,
+			"cost": 520,
+			"requires": [
+				"nuclear_program"
+			],
+			"name": {
+				"ru": "Термоядерное оружие",
+				"en": "Thermonuclear weapons"
+			},
+			"desc": {
+				"ru": "Открывает стратегический заряд и РГЧ (MIRV).",
+				"en": "Unlocks the strategic nuke and the MIRV."
+			},
+			"weapons": [
+				"strategic_nuke",
+				"mirv"
+			]
+		},
+		{
+			"id": "air_defence",
+			"branch": "defense",
+			"tier": 3,
+			"cost": 200,
+			"requires": [
+				"radar"
+			],
+			"name": {
+				"ru": "Противовоздушная оборона",
+				"en": "Air defence"
+			},
+			"desc": {
+				"ru": "Открывает ЗРК: перехват ракет и авиаударов над вашей землёй.",
+				"en": "Unlocks the SAM site: intercepts missiles and air strikes over your land."
+			},
+			"unlocks": [
+				"sam"
+			]
 		}
 	]
 }
