@@ -111,8 +111,10 @@ var interceptors: Array[Interceptor] = []
 var ammo: Dictionary = {}
 ## Tile -> tick its fallout ends.
 var fallout: Dictionary = {}
-## Tiles whose fallout appeared or cleared since the renderer last looked.
+## Tiles whose fallout appeared or cleared since the renderer last looked (capped: with no renderer
+## draining it, fallout_resync tells a late renderer to repaint everything instead).
 var fallout_changed: PackedInt32Array = PackedInt32Array()
+var fallout_resync: bool = false
 ## Nuclear history: owner -> nukes launched (any nuclear weapon) / last nuclear launch tick.
 var nukes_launched: Dictionary = {}
 var last_nuke_tick: Dictionary = {}
@@ -767,7 +769,7 @@ func _add_fallout(t: int, until: int) -> void:
 	if not fallout.has(t):
 		_base_value[t] = st.tile_value[t]
 		_set_value(t, st.tile_value[t] * float(rules.w_fallout.get("value_mult", 0.2)))
-		fallout_changed.append(t)
+		_note_fallout(t)
 	fallout[t] = maxi(int(fallout.get(t, 0)), until)
 
 
@@ -788,13 +790,20 @@ func _decay_fallout() -> void:
 		fallout.erase(t)
 		_set_value(t, float(_base_value.get(t, st.tile_value[t])))
 		_base_value.erase(t)
-		fallout_changed.append(t)
+		_note_fallout(t)
 
 
 func drain_fallout_changes() -> PackedInt32Array:
 	var out := fallout_changed
 	fallout_changed = PackedInt32Array()
 	return out
+
+
+func _note_fallout(t: int) -> void:
+	if fallout_changed.size() >= 200000:
+		fallout_changed = PackedInt32Array()
+		fallout_resync = true
+	fallout_changed.append(t)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -841,6 +850,6 @@ func from_dict(d: Dictionary) -> void:
 		fallout[t] = fe[i]
 		_base_value[t] = fb[i]
 		st.tile_value[t] = fb[i] * float(rules.w_fallout.get("value_mult", 0.2))
-		fallout_changed.append(t)
+	fallout_resync = true
 	nukes_launched = (d.get("nukes_launched", {}) as Dictionary).duplicate()
 	last_nuke_tick = (d.get("last_nuke_tick", {}) as Dictionary).duplicate()

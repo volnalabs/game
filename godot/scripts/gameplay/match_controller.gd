@@ -44,10 +44,17 @@ var spawn_info_hover: Dictionary = {}
 var _advisor: SpawnAdvisor
 ## Building under the cursor and the selected building (structure ids, -1 = none).
 var hover_arrow: int = -1
+var weapons_fx: WeaponLayer
+var fallout: FalloutLayer
 ## Sea landing being prepared (LandingPlanner result + "tile"), {} = none.
 var naval_plan: Dictionary = {}
 ## The player's transport selected on the map (boat id), -1 = none.
 var selected_boat: int = -1
+## Weapon being aimed (index in rules.w_list), -1 = none; locked target tile; live preview
+## {"tile", "check", "est"} for the locked target or the tile under the cursor.
+var weapon_aim: int = -1
+var weapon_target: int = -1
+var weapon_preview: Dictionary = {}
 var hover_structure: int = -1
 var selected_structure: int = -1
 ## Reward bookkeeping: paid once at the end (or as abandoned when leaving early).
@@ -126,6 +133,9 @@ func _build_world() -> void:
 	renderer.map_style = Cosmetics.map_style()
 	add_child(renderer)
 	renderer.setup(sim)
+	fallout = FalloutLayer.new()
+	add_child(fallout)
+	fallout.setup(sim)
 	zones = ZoneLayer.new()
 	add_child(zones)
 	structures = StructureLayer.new()
@@ -134,6 +144,8 @@ func _build_world() -> void:
 	add_child(ghost)
 	effects = EffectsLayer.new()
 	add_child(effects)
+	weapons_fx = WeaponLayer.new()
+	add_child(weapons_fx)
 	# Beyond the map edge: deep ocean, not a black void.
 	RenderingServer.set_default_clear_color(TerrainColors.styled(TerrainColors.BASE[0], renderer.map_style).darkened(0.25))
 	cam = MapCamera.new()
@@ -152,6 +164,8 @@ func _build_world() -> void:
 	effects.player_capture = Cosmetics.capture_effect()
 	effects.sim = sim
 	effects.cam = cam
+	weapons_fx.sim = sim
+	weapons_fx.cam = cam
 	var ui := CanvasLayer.new()
 	ui.layer = 1
 	add_child(ui)
@@ -207,12 +221,56 @@ func _process(delta: float) -> void:
 	_check_end()
 
 
+## Messages about weapons: what flies at us, nuclear launches, interceptions, results of strikes.
+func _weapon_news(e: Dictionary) -> void:
+	var pid := sim.player_id
+	if pid <= 0:
+		return
+	var st := sim.st
+	match String(e["type"]):
+		SimEvents.WEAPON_LAUNCHED:
+			var w := sim.rules.weapon_index(String(e["weapon"]))
+			var wname := WeaponInfo.title(sim.rules, w)
+			if int(e["target_owner"]) == pid:
+				hud.toast(tr("LOG_WPN_INCOMING") % [st.o_name[int(e["owner"])], wname], UITheme.BAD, "w_missile")
+				hud.log_line(tr("LOG_WPN_INCOMING") % [st.o_name[int(e["owner"])], wname], UITheme.BAD)
+			elif e.get("nuclear", false) and int(e["owner"]) != pid:
+				hud.log_line(tr("LOG_WPN_NUKE_LAUNCH") % st.o_name[int(e["owner"])], UITheme.WARN)
+		SimEvents.INTERCEPTED:
+			var wname := WeaponInfo.title(sim.rules, sim.rules.weapon_index(String(e["weapon"])))
+			if int(e["by"]) == pid:
+				hud.log_line(tr("LOG_WPN_INTERCEPTED_BY_US") % wname, UITheme.GOOD)
+			elif int(e["owner"]) == pid:
+				hud.log_line(tr("LOG_WPN_OURS_INTERCEPTED") % wname, UITheme.WARN)
+		SimEvents.WEAPON_IMPACT:
+			var killed: Dictionary = e["killed"]
+			var wname := WeaponInfo.title(sim.rules, sim.rules.weapon_index(String(e["weapon"])))
+			if int(e["owner"]) == pid:
+				var total := 0.0
+				for o: int in killed:
+					if o != pid:
+						total += float(killed[o])
+				hud.log_line(tr("LOG_WPN_HIT") % [wname, UITheme.num(total), int(e["structures"])], UITheme.ACCENT)
+			elif killed.has(pid):
+				hud.log_line(tr("LOG_WPN_HIT_US") % [wname, UITheme.num(float(killed[pid]))], UITheme.BAD)
+		SimEvents.NUKE_DETONATED:
+			var lost: Dictionary = e["lost"]
+			for o: int in lost:
+				if o == pid or int(e["owner"]) == pid:
+					hud.log_line(tr("LOG_WPN_NUKE_HIT") % [st.o_name[o], UITheme.num(float(lost[o]))], UITheme.BAD if o == pid else UITheme.ACCENT)
+		SimEvents.STRUCT_DISABLED:
+			if int(e["owner"]) == pid:
+				hud.log_line(tr("LOG_WPN_DISABLED") % tr("B_" + sim.rules.b_ids[int(e["kind"])].to_upper()), UITheme.WARN)
+
+
 func _handle_events() -> void:
 	var pid := sim.player_id
 	var st := sim.st
 	effects.focus_owner = selected_owner
 	for e in sim.events.drain():
 		effects.on_event(e)
+		weapons_fx.on_event(e)
+		_weapon_news(e)
 		match String(e["type"]):
 			SimEvents.ATTACK_STARTED:
 				if int(e["target"]) == pid and int(e["attacker"]) > 0 and st.o_kind[int(e["attacker"])] != Rules.KIND_TRIBE:
@@ -355,6 +413,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse_screen = (event as InputEventMouseMotion).position
 		hover_tile = tile_at_screen(_mouse_screen)
+		if weapon_aim >= 0 and weapon_target < 0:
+			_update_aim(hover_tile)
 		_update_structure_hover()
 		hover_owner = sim.st.owner[hover_tile] if hover_tile >= 0 else 0
 		_update_spawn_hover()
@@ -378,6 +438,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					cancel_build()
 				elif build_open:
 					close_build_mode()
+				elif weapon_aim >= 0:
+					cancel_weapon()
 				elif not naval_plan.is_empty():
 					cancel_naval()
 				elif selected_boat >= 0:
@@ -391,11 +453,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_ENTER, KEY_KP_ENTER:
 				if spawn_pending >= 0:
 					confirm_spawn()
+				elif weapon_aim >= 0:
+					fire_weapon()
 				elif not naval_plan.is_empty():
 					confirm_naval()
 			KEY_ESCAPE:
 				if spawn_pending >= 0:
 					cancel_spawn()
+				elif weapon_aim >= 0:
+					cancel_weapon()
 				elif not naval_plan.is_empty():
 					cancel_naval()
 				elif selected_boat >= 0:
@@ -488,6 +554,9 @@ func _left_click(t: int) -> void:
 	var o := st.owner[t]
 	if o == pid:
 		select_owner(pid)
+		return
+	if weapon_aim >= 0:
+		_aim_click(t)
 		return
 	# A second click on the prepared landing's goal confirms it.
 	if not naval_plan.is_empty() and sim.map.dist2(t, int(naval_plan["tile"])) <= 9:
@@ -727,6 +796,85 @@ func attack_owner(id: int) -> void:
 				return
 		t = st.bnext[t]
 	hud.toast(tr("REJECT_NO_BORDER"))
+
+
+## Starts aiming weapon `w` (or says why it cannot be used now).
+func begin_weapon(w: int) -> void:
+	if sim.phase != Sim.Phase.PLAYING or w < 0:
+		return
+	var reason := WeaponInfo.blocker(sim, w, sim.player_id)
+	if reason != "":
+		hud.toast(reason, UITheme.BAD, "ui_warning")
+		return
+	if build_open:
+		close_build_mode()
+	cancel_naval()
+	select_structure(-1)
+	select_boat(-1)
+	hud.dock.open("")
+	weapon_aim = w
+	weapon_target = -1
+	weapon_preview = {}
+	weapons_fx.aim = {}
+	if hover_tile >= 0:
+		_update_aim(hover_tile)
+	hud.refresh()
+
+
+func cancel_weapon() -> void:
+	if weapon_aim < 0:
+		return
+	weapon_aim = -1
+	weapon_target = -1
+	weapon_preview = {}
+	weapons_fx.aim = {}
+	hud.refresh()
+
+
+## Live preview at tile `t`: the launch check and the estimated effect (same code as the impact).
+func _update_aim(t: int) -> void:
+	if weapon_aim < 0 or t < 0:
+		return
+	if int(weapon_preview.get("tile", -1)) == t:
+		return
+	var pid := sim.player_id
+	var c := sim.weapons.check(pid, weapon_aim, t)
+	var est := {} if sim.map.land[t] == 0 else sim.weapons.estimate(pid, weapon_aim, t)
+	weapon_preview = {"tile": t, "check": c, "est": est, "locked": weapon_target == t}
+	weapons_fx.aim = {"weapon": weapon_aim, "tile": t, "check": c, "est": est, "locked": weapon_target == t}
+	hud.command.refresh()
+
+
+## First click marks the target, a second click on it (or Enter / Launch) fires.
+func _aim_click(t: int) -> void:
+	if weapon_target >= 0 and sim.map.dist2(t, weapon_target) <= 4:
+		fire_weapon()
+		return
+	weapon_target = t
+	weapon_preview = {}
+	_update_aim(t)
+	var c: Dictionary = weapon_preview.get("check", {})
+	if not c.get("ok", false):
+		hud.toast(WeaponInfo.reason_text(sim, weapon_aim, String(c.get("reason", ""))), UITheme.BAD, "ui_warning")
+
+
+## Launches at the marked target (or the tile under the cursor).
+func fire_weapon() -> void:
+	if weapon_aim < 0:
+		return
+	var t := weapon_target if weapon_target >= 0 else hover_tile
+	if t < 0:
+		return
+	var c := sim.weapons.check(sim.player_id, weapon_aim, t)
+	if not c["ok"]:
+		hud.toast(WeaponInfo.reason_text(sim, weapon_aim, String(c["reason"])), UITheme.BAD, "ui_warning")
+		return
+	sim.submit(Commands.launch(sim.player_id, String(sim.rules.weapon(weapon_aim)["id"]), t))
+	if Input.is_key_pressed(KEY_SHIFT) and not sim.weapons.is_nuclear(weapon_aim):
+		weapon_target = -1
+		weapon_preview = {}
+	else:
+		cancel_weapon()
 
 
 ## "Landing" against state `id`: prepares a sea landing towards its most important place.

@@ -6,7 +6,9 @@
 		"buildings",
 		"army",
 		"research",
-		"victory"
+		"victory",
+		"weapons",
+		"air_defence"
 	],
 	"articles": [
 		{
@@ -150,6 +152,45 @@
 			"body": {
 				"ru": "Выберите здание на панели «Стройка» или клавишами 1–6 и щёлкните по своей земле. Призрак показывает, куда встанет здание, зелёный — можно, красный — нельзя, и почему. Между зданиями нужно расстояние; порт и военно-морская база строятся на берегу. Повторная постройка рядом с городом, портом или фабрикой улучшает их.",
 				"en": "Pick a building on the Build panel or with keys 1–6 and click your land. The ghost shows where it will stand: green — allowed, red — not, and why. Buildings need space between them; ports and naval bases go on the coast. Building again next to a city, port or factory upgrades it."
+			}
+		},
+		{
+			"id": "weapons_overview",
+			"category": "weapons",
+			"icon": "w_missile",
+			"title": {
+				"ru": "Как применять оружие",
+				"en": "Using weapons"
+			},
+			"body": {
+				"ru": "Оружие открывается исследованиями ветки «Вооружение» (артиллерия и авиаудары — военной веткой) и запускается с пусковых построек: ракетной шахты, авиабазы или оборонного поста. Откройте «Арсенал» на левой панели и нажмите «Прицелиться».\\n\\nВ режиме прицеливания карта показывает зону поражения, траекторию от ближайшей готовой пусковой и ЗРК противника, прикрывающие цель. Нижняя панель показывает цену, время полёта, ожидаемые потери, риск перехвата и предупреждает, если в зону попадает ваша земля. Первый щелчок отмечает цель, второй щелчок или Enter — пуск, Esc — отмена. Расчёт в предпросмотре — тот же, что и при попадании.\\n\\nУдары никогда не отбирают землю, кроме ядерных: обычные бьют по армиям, чья земля оказалась в зоне, и снимают уровни с построек; ЭМИ отключает постройки на время.",
+				"en": "Weapons are opened by the Weapons research branch (artillery and air strikes by the military branch) and launched from buildings: a missile silo, an airbase or a defence post. Open the Arsenal on the left and press Aim.\\n\\nWhile aiming the map shows the blast zone, the path from the nearest ready launcher and the enemy SAMs covering the target. The bottom bar shows the price, flight time, expected losses and interception risk and warns when your own land is in the zone. The first click marks the target; a second click or Enter launches; Esc cancels. The preview uses the same calculation as the impact.\\n\\nOnly nuclear weapons take land: conventional strikes hit the armies whose land is in the zone and knock levels off buildings; an EMP switches buildings off for a while."
+			}
+		},
+		{
+			"id": "nuclear_weapons",
+			"category": "weapons",
+			"icon": "w_tactical_nuke",
+			"title": {
+				"ru": "Ядерное оружие и осадки",
+				"en": "Nuclear weapons and fallout"
+			},
+			"body": {
+				"ru": "Ядерный заряд уничтожает всю землю во внутреннем радиусе и часть земли во внешнем кольце, разрушает постройки в зоне и сокращает армии пострадавших: их войска уменьшаются пропорционально утраченной земле в пятой степени. Зона покрывается радиоактивными осадками — эта земля долго приносит гораздо меньше.\\n\\nРГЧ (MIRV) летит носителем, которого нельзя перехватить, и над целью выпускает несколько боеголовок; каждую ЗРК может сбить. Все ядерные пуски попадают в историю партии, и другие государства их запоминают.",
+				"en": "A nuke wipes out all land within its inner radius and part of the outer ring, destroys buildings in the zone and cuts the armies of the victims: their troops shrink in proportion to the land lost, to the fifth power. The zone is covered with fallout — that land yields far less for a long time.\\n\\nA MIRV flies a bus that cannot be intercepted and over the target releases several warheads; a SAM can shoot down each of them. Every nuclear launch enters the match's history and other states remember it."
+			}
+		},
+		{
+			"id": "air_defence",
+			"category": "air_defence",
+			"icon": "b_sam",
+			"title": {
+				"ru": "Противовоздушная оборона",
+				"en": "Air defence"
+			},
+			"body": {
+				"ru": "ЗРК защищает землю своего владельца: он стреляет по ракетам, авиаударам и боеголовкам, летящим на эту землю, пока они внутри его радиуса. Перехватчик летит до цели некоторое время — если ракета успеет упасть раньше, перехват не состоится. Шанс зависит от оружия; на одну цель уходят не больше двух перехватчиков. Каждый выстрел стоит снаряжения, ЗРК держит по перехватчику на уровень и перезаряжается.\\n\\nРадар рядом с ЗРК увеличивает его дальность и точность. Артиллерию и носитель РГЧ сбить нельзя. ЭМИ-удар отключает ЗРК на время — им часто открывают путь другим ракетам.",
+				"en": "A SAM protects its owner's land: it fires at missiles, air strikes and warheads flying at that land while they are inside its radius. An interceptor takes time to reach its target — if the missile lands first there is no interception. The chance depends on the weapon; at most two interceptors chase one target. Every shot costs supplies; a SAM holds an interceptor per level and reloads.\\n\\nA radar near a SAM extends its range and accuracy. Artillery and the MIRV bus cannot be shot down. An EMP switches SAMs off for a while — it often opens the way for other missiles."
 			}
 		}
 	]

@@ -29,11 +29,19 @@ static func articles() -> Array:
 	for k in GameHUD.build_kinds(r):
 		out.append({"id": "b_" + r.b_ids[k], "category": "buildings", "title": BuildingInfo.title(r, k),
 			"icon": Symbols.building_id(r, k), "kind": "building", "building": k})
+	for w in r.w_list.size():
+		out.append({"id": "w_" + String(r.weapon(w)["id"]), "category": "weapons", "title": WeaponInfo.title(r, w),
+			"icon": WeaponInfo.symbol(r, w), "kind": "weapon", "weapon": w})
 	for t: Dictionary in ResearchSystem.techs():
 		out.append({"id": "t_" + String(t["id"]), "category": "research", "title": MetaData.text(t["name"]), "icon": "r_research",
 			"kind": "tech", "tech": t["id"]})
 	for term: String in Glossary.data():
-		out.append({"id": "g_" + term, "category": "economy" if term in ["gold", "income", "upkeep", "supplies", "army", "army_cap", "research", "territory", "cost", "build_time"] else "interface",
+		var cat := "economy" if term in ["gold", "income", "upkeep", "supplies", "army", "army_cap", "research", "territory", "cost", "build_time"] else "interface"
+		if term in ["launcher", "fallout"]:
+			cat = "weapons"
+		elif term == "interception":
+			cat = "air_defence"
+		out.append({"id": "g_" + term, "category": cat,
 			"title": Glossary.term_name(term), "icon": String(Glossary.data()[term].get("icon", "")), "kind": "term", "term": term})
 	return out
 

@@ -120,6 +120,18 @@ func show_article(id: String) -> void:
 				sizes.add_child(Icons.rect(Symbols.building_id(r, k), px, UITheme.TEXT))
 			_view.add_child(UITheme.label(tr("ENC_ON_MAP"), UITheme.T_CAPTION, UITheme.TEXT_FAINT))
 			_view.add_child(sizes)
+		"weapon":
+			var r := Encyclopedia.rules()
+			var w: int = a["weapon"]
+			_view.add_child(_para(WeaponInfo.short(r, w)))
+			_view.add_child(UITheme.section(tr("BI_EFFECT")))
+			for line in WeaponInfo.effects(r, w):
+				_view.add_child(_para(line, UITheme.TEXT))
+			_view.add_child(UITheme.separator())
+			for row: Array in WeaponInfo.rows(r, w):
+				_view.add_child(UITheme.key_value(String(row[0]), String(row[1]), row[2] if row.size() > 2 else UITheme.TEXT))
+			var tname := MetaData.text(ResearchSystem.tech(String(r.weapon(w)["requires"])).get("name", {}))
+			_view.add_child(UITheme.key_value(tr("BI_REQUIRES"), tname, UITheme.WARN))
 		"tech":
 			var t := ResearchSystem.tech(String(a["tech"]))
 			_view.add_child(_para(MetaData.text(t["desc"])))
@@ -131,6 +143,10 @@ func show_article(id: String) -> void:
 			_view.add_child(UITheme.key_value(tr("ENC_REQUIRES"), ", ".join(req) if not req.is_empty() else tr("ENC_NOTHING")))
 			for ln: Dictionary in SkillTree.describe(t.get("modifiers", {})):
 				_view.add_child(UITheme.label(String(ln["text"]), UITheme.T_BODY, UITheme.GOOD if ln["good"] else UITheme.BAD))
+			for wid: String in t.get("weapons", []):
+				var wi := Encyclopedia.rules().weapon_index(wid)
+				if wi >= 0:
+					_view.add_child(UITheme.icon_label(WeaponInfo.symbol(Encyclopedia.rules(), wi), tr("ENC_UNLOCKS") % WeaponInfo.title(Encyclopedia.rules(), wi)))
 			for u: String in t.get("unlocks", []):
 				var bk := Encyclopedia.rules().building_index(u)
 				if bk >= 0:

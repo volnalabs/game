@@ -71,6 +71,14 @@ static func effects(rules: Rules, kind: int) -> Array[String]:
 			out.append(_t("FX_BUNKER") % r)
 		"power_plant":
 			out.append(_t("FX_POWER") % [roundi(float(ef.get("factory_output_per_level", 0)) * 100.0), int(ef.get("max_levels", 1))])
+		"sam":
+			var ws := rules.w_sam
+			out.append(_t("FX_SAM") % [r, int(ws.get("charges_per_level", 1)), ceili(float(ws.get("reload_ticks", 90)) / per_s),
+				roundi(float(ws.get("shot_supplies", 0.0)))])
+			out.append(_t("FX_SAM_RADAR") % [float(ws.get("radar_range_mult", 1.0)), roundi(float(ws.get("radar_hit_bonus", 0.0)) * 100.0)])
+		"silo":
+			var l: Dictionary = rules.w_launchers.get("silo", {})
+			out.append(_t("FX_SILO") % [int(l.get("charges_per_level", 1)), ceili(float(l.get("reload_ticks", 120)) / per_s)])
 		"naval_base":
 			out.append(_t("FX_NAVAL") % [roundi(float(ef.get("boat_speed_per_level", 0)) * 100.0), int(ef.get("boat_limit_per_level", 0)), int(ef.get("max_levels", 1))])
 	if rules.building_upgradable(kind) and not ["defense", "bunker", "radar"].has(id_of(rules, kind)):

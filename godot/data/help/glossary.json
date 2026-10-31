@@ -322,6 +322,59 @@
 				"ru": "Щёлкните по чужому берегу, с которым нет общей границы.",
 				"en": "Click a foreign coast you do not border."
 			}
+		},
+		"launcher": {
+			"icon": "b_silo",
+			"name": {
+				"ru": "Пусковая и заряды",
+				"en": "Launchers and charges"
+			},
+			"what": {
+				"ru": "Оружие запускается с построек: ракеты и ядерное — с ракетной шахты, авиаудар — с авиабазы, артиллерия — с оборонного поста. Каждая пусковая держит по заряду на уровень и перезаряжается.",
+				"en": "Weapons are launched from buildings: missiles and nuclear weapons from a silo, air strikes from an airbase, artillery from a defence post. Each launcher holds a charge per level and reloads."
+			},
+			"spend": {
+				"ru": "Золото и снаряжение при каждом пуске.",
+				"en": "Gold and supplies on every launch."
+			},
+			"more": {
+				"ru": "Строить больше пусковых или повышать их уровень.",
+				"en": "Build more launchers or raise their level."
+			}
+		},
+		"interception": {
+			"icon": "b_sam",
+			"name": {
+				"ru": "Перехват (ПВО)",
+				"en": "Interception (air defence)"
+			},
+			"what": {
+				"ru": "ЗРК стреляет по ракетам, летящим на землю своего владельца, пока они в его радиусе. У каждого оружия своя вероятность перехвата; на одну цель идут не больше двух перехватчиков; выстрел стоит снаряжения. Радар рядом увеличивает дальность и точность.",
+				"en": "A SAM fires at munitions flying at its owner's land while they are in range. Each weapon has its own interception chance; at most two interceptors chase one target; each shot costs supplies. A radar nearby extends range and accuracy."
+			},
+			"from": {
+				"ru": "ЗРК (исследование «Противовоздушная оборона»), радар.",
+				"en": "SAM sites (the Air defence research), radar."
+			},
+			"more": {
+				"ru": "Больше ЗРК и уровней, радар над ними, запас снаряжения.",
+				"en": "More SAMs and levels, radar over them, a stock of supplies."
+			}
+		},
+		"fallout": {
+			"icon": "w_tactical_nuke",
+			"name": {
+				"ru": "Радиоактивные осадки",
+				"en": "Fallout"
+			},
+			"what": {
+				"ru": "После ядерного взрыва земля в его зоне на время заражена: она приносит меньше дохода тому, кто ею владеет. Осадки постепенно исчезают.",
+				"en": "After a nuclear burst the land in its zone is contaminated for a while: it yields less to whoever owns it. Fallout fades over time."
+			},
+			"short": {
+				"ru": "Заражённую землю можно захватывать, но выгоды от неё мало, пока осадки не уйдут.",
+				"en": "Contaminated land can be taken but is worth little until the fallout clears."
+			}
 		}
 	}
 }

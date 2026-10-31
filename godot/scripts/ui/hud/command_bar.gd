@@ -6,9 +6,11 @@ extends PanelContainer
 ##   attack — a foreign state is selected: target, strength, troops sent, attack / landing / cancel;
 ##   naval  — a sea landing is being prepared: target, route (sea + overland), time, troops,
 ##            send / cancel (or why it is impossible);
-##   boat   — one of the player's transports is selected: troops, destination, time left, recall.
+##   boat   — one of the player's transports is selected: troops, destination, time left, recall;
+##   weapon — aiming a weapon: cost, flight time, radius, estimated losses, interception risk, a
+##            warning when our own land is in the zone, launch / cancel (or why not).
 
-const MODES := ["normal", "build", "attack", "naval", "boat"]
+const MODES := ["normal", "build", "attack", "naval", "boat", "weapon"]
 
 var hud: GameHUD
 var mode: String = ""
@@ -38,6 +40,12 @@ var _nv_name: Label
 var _nv_line: Label
 var _nv_send: Button
 var _nv_ratio: Array[Button] = []
+# weapon aiming
+var _wp_icon: TextureRect
+var _wp_name: Label
+var _wp_line: Label
+var _wp_est: VBoxContainer
+var _wp_fire: Button
 # selected transport
 var _bt_line: Label
 var _bt_title: Label
@@ -54,6 +62,7 @@ func _init(h: GameHUD) -> void:
 	_boxes["attack"] = _build_attack()
 	_boxes["naval"] = _build_naval()
 	_boxes["boat"] = _build_boat()
+	_boxes["weapon"] = _build_weapon()
 	for m: String in MODES:
 		v.add_child(_boxes[m])
 	set_mode("normal")
@@ -208,6 +217,79 @@ func _build_naval() -> Control:
 	return row
 
 
+func _build_weapon() -> Control:
+	var row := UITheme.hbox(14)
+	_wp_icon = TextureRect.new()
+	_wp_icon.custom_minimum_size = Vector2(30, 30)
+	_wp_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_wp_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_wp_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(_wp_icon)
+	var tv := UITheme.vbox(1)
+	_wp_name = UITheme.label("", UITheme.T_BODY_L, UITheme.TEXT)
+	_wp_name.add_theme_font_override("font", UITheme.font_medium)
+	tv.add_child(_wp_name)
+	_wp_line = UITheme.label("", 12, UITheme.TEXT_DIM)
+	_wp_line.add_theme_font_override("font", UITheme.font_numbers)
+	tv.add_child(_wp_line)
+	tv.custom_minimum_size.x = 250
+	row.add_child(tv)
+	_wp_est = UITheme.vbox(0)
+	_wp_est.custom_minimum_size.x = 300
+	_wp_est.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(_wp_est)
+	_wp_fire = UITheme.accent_button(tr("AIM_LAUNCH"), func() -> void: hud.ctl.fire_weapon(), 0, "ui_target")
+	_wp_fire.custom_minimum_size.y = 40
+	_wp_fire.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(_wp_fire, func() -> Dictionary: return {"title": tr("AIM_LAUNCH"), "text": tr("AIM_LAUNCH_HINT"), "hotkey": "Enter",
+		"reason": String(_wp_fire.get_meta("reason", ""))})
+	row.add_child(_wp_fire)
+	var cancel := UITheme.ghost_button(tr("CANCEL"), func() -> void: hud.ctl.cancel_weapon(), "ui_close")
+	cancel.focus_mode = Control.FOCUS_NONE
+	cancel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(cancel, {"title": tr("CANCEL"), "text": tr("AIM_CANCEL_HINT"), "hotkey": "Esc"})
+	row.add_child(cancel)
+	return row
+
+
+func _refresh_weapon() -> void:
+	var sim := hud.sim
+	var w: int = hud.ctl.weapon_aim
+	if w < 0:
+		return
+	var r := sim.rules
+	var wd := r.weapon(w)
+	_wp_icon.texture = Icons.tex(WeaponInfo.symbol(r, w), 30)
+	_wp_name.text = WeaponInfo.title(r, w)
+	var pv: Dictionary = hud.ctl.weapon_preview
+	var c: Dictionary = pv.get("check", {})
+	var flight := 0
+	if c.get("ok", false):
+		flight = ceili(float(int(c["delay"]) + int(c["flight"])) / float(r.tick_rate))
+	_wp_line.text = tr("AIM_LINE") % [UITheme.num(float(wd["cost"])), UITheme.num(float(wd["supplies"])), flight, roundi(float(wd["radius"]))]
+	for ch in _wp_est.get_children():
+		_wp_est.remove_child(ch)
+		ch.queue_free()
+	var reason := ""
+	if pv.is_empty():
+		_wp_est.add_child(UITheme.label(tr("AIM_PICK"), 12, UITheme.TEXT_DIM))
+		reason = tr("AIM_PICK")
+	elif not c.get("ok", false):
+		reason = WeaponInfo.reason_text(sim, w, String(c.get("reason", "")))
+		var l := UITheme.label(reason, 12, UITheme.BAD)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 270
+		_wp_est.add_child(l)
+	else:
+		for ln: Array in WeaponInfo.estimate_lines(sim, sim.player_id, pv.get("est", {})):
+			var l := UITheme.label(String(ln[0]), 12, ln[1])
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.custom_minimum_size.x = 300
+			_wp_est.add_child(l)
+	_wp_fire.disabled = reason != ""
+	_wp_fire.set_meta("reason", reason)
+
+
 func _build_boat() -> Control:
 	var row := UITheme.hbox(14)
 	var ic := Icons.rect("g_landing", 26, UITheme.TEXT)
@@ -277,6 +359,8 @@ func refresh() -> void:
 			_refresh_naval()
 		"boat":
 			_refresh_boat()
+		"weapon":
+			_refresh_weapon()
 	reset_size()
 
 

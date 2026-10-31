@@ -116,6 +116,8 @@ func mode() -> String:
 		return "spawn"
 	if ctl.get("build_open") == true:
 		return "build"
+	if ctl.get("weapon_aim") != null and int(ctl.get("weapon_aim")) >= 0:
+		return "weapon"
 	if ctl.get("naval_plan") is Dictionary and not (ctl.get("naval_plan") as Dictionary).is_empty():
 		return "naval"
 	if ctl.get("selected_boat") != null and int(ctl.get("selected_boat")) >= 0:

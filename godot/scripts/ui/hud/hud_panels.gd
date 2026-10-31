@@ -192,7 +192,7 @@ static func research(hud: GameHUD, body: VBoxContainer) -> void:
 
 static func _branch_icon(br: String) -> String:
 	return {"economy": "g_economy", "military": "g_military", "defense": "g_defense", "logistics": "g_logistics",
-		"strategic": "g_strategic", "intelligence": "g_intel", "diplomacy": "g_diplomacy"}.get(br, "r_research")
+		"strategic": "g_strategic", "intelligence": "g_intel", "diplomacy": "g_diplomacy", "weapons": "w_missile"}.get(br, "r_research")
 
 
 static func _tech_card(hud: GameHUD, t: Dictionary) -> Control:
@@ -231,3 +231,89 @@ static func _tech_card(hud: GameHUD, t: Dictionary) -> Control:
 	if avail and not cur and sim.phase == Sim.Phase.PLAYING and sim.is_player_alive():
 		v.add_child(UITheme.button(tr_("RESEARCH_START"), func() -> void: hud.ctl.start_research(id), 0, "r_research"))
 	return c
+
+
+## Arsenal: every weapon (readiness, cost, why not), then air defence and nuclear history.
+static func arsenal(hud: GameHUD, body: VBoxContainer) -> void:
+	var sim := hud.sim
+	var pid := sim.player_id
+	var r := sim.rules
+	for g: String in WeaponInfo.GROUP_ORDER:
+		body.add_child(UITheme.section(tr_("WGRP_" + g.to_upper())))
+		for w in r.w_list.size():
+			if WeaponInfo.group(r, w) != g:
+				continue
+			body.add_child(_weapon_row(hud, w))
+	body.add_child(UITheme.section(tr_("AIRDEF_TITLE"), "b_sam"))
+	var sams := sim.structures.of_owner(pid, Rules.B_SAM)
+	if sams.is_empty():
+		var l := UITheme.label(tr_("AIRDEF_NONE"), UITheme.T_BODY, UITheme.TEXT_DIM)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 300
+		body.add_child(l)
+	else:
+		var ready := 0
+		var radar := 0
+		for s in sams:
+			ready += sim.weapons.charges(s, int(r.w_sam.get("charges_per_level", 1)), int(r.w_sam.get("reload_ticks", 90)))
+			if sim.structures.in_zone(pid, Rules.B_RADAR, s.tile):
+				radar += 1
+		body.add_child(UITheme.label(tr_("AIRDEF_LINE") % [sams.size(), ready, radar], UITheme.T_BODY, UITheme.TEXT))
+	var incoming := 0
+	for m in sim.weapons.munitions:
+		if m.alive and m.owner != pid and sim.st.owner[m.to_tile] == pid:
+			incoming += 1
+	if incoming > 0:
+		body.add_child(UITheme.label(tr_("AIRDEF_INCOMING") % incoming, UITheme.T_BODY, UITheme.BAD))
+	var mine := int(sim.weapons.nukes_launched.get(pid, 0))
+	var others := 0
+	for o: int in sim.weapons.nukes_launched:
+		if o != pid:
+			others += int(sim.weapons.nukes_launched[o])
+	if mine + others > 0:
+		body.add_child(UITheme.label(tr_("NUKE_HISTORY") % [mine, others], UITheme.T_CAPTION, UITheme.WARN))
+
+
+static func _weapon_row(hud: GameHUD, w: int) -> Control:
+	var sim := hud.sim
+	var pid := sim.player_id
+	var r := sim.rules
+	var wd := r.weapon(w)
+	var reason := WeaponInfo.blocker(sim, w, pid)
+	var unlocked := sim.weapons.unlocked(pid, w)
+	var row := UITheme.hbox(10)
+	row.custom_minimum_size.y = 44
+	var ic := Icons.rect(WeaponInfo.symbol(r, w), 26, UITheme.TEXT if unlocked else UITheme.TEXT_FAINT)
+	ic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(ic)
+	var v := UITheme.vbox(1)
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var nm := UITheme.label(WeaponInfo.title(r, w), UITheme.T_BODY, UITheme.TEXT if unlocked else UITheme.TEXT_DIM)
+	nm.add_theme_font_override("font", UITheme.font_medium)
+	v.add_child(nm)
+	var line := ""
+	var col := UITheme.TEXT_FAINT
+	if reason != "" and (not unlocked or WeaponInfo.readiness(sim, w, pid)["launchers"] == 0):
+		line = reason
+		col = UITheme.WARN if unlocked else UITheme.TEXT_FAINT
+	else:
+		var rd := WeaponInfo.readiness(sim, w, pid)
+		var cost := "%s · %s" % [UITheme.num(float(wd["cost"])), UITheme.num(float(wd["supplies"]))]
+		line = tr_("WPN_READY_LINE") % [int(rd["ready"]), int(rd["total"]), cost]
+		if int(rd["ready"]) == 0 and int(rd["reload_left"]) > 0:
+			line += " · " + tr_("WPN_RELOAD_IN") % ceili(float(rd["reload_left"]) / float(r.tick_rate))
+		col = UITheme.TEXT_DIM
+	var l := UITheme.label(line, 12, col)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size.x = 210
+	v.add_child(l)
+	row.add_child(v)
+	var b := UITheme.button(tr_("WPN_AIM"), func() -> void: hud.ctl.begin_weapon(w), 0, "ui_target")
+	b.focus_mode = Control.FOCUS_NONE
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.disable(b, reason)
+	Hints.attach(b, func() -> Dictionary: return WeaponInfo.hint(sim, w, pid))
+	b.set_meta("weapon", String(wd["id"]))
+	row.add_child(b)
+	Hints.attach(row, func() -> Dictionary: return WeaponInfo.hint(sim, w, pid))
+	return row
