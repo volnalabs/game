@@ -19,13 +19,8 @@ var board: HudLeaderboard
 var command: HudCommandBar
 var toasts: ToastStack
 var build_tip: BuildTip
-## Instruction bar while placing a building (what the mouse buttons do).
-var place_bar: PanelContainer
 var tip_card: HudTipCard
 var _tip_queue: Array[String] = []
-var _place_label: Label
-var _place_icon: TextureRect
-var zone_legend: HudZoneLegend
 var log_lines: Array[String] = []
 var ai_debug: bool = false
 var _t: float = 0.0
@@ -70,37 +65,27 @@ func setup(controller: Node, sim_: Sim) -> void:
 	theme = UITheme.theme()
 	top = HudTopBar.new(self)
 	add_child(top)
-	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 8)
 	dock = HudDock.new(self)
 	add_child(dock)
 	dock.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 8)
-	dock.position.y = 74
+	dock.position.y = 64
 	var right := UITheme.vbox(8)
 	right.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(right)
 	right.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 8)
 	right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	right.offset_top = 74
+	right.offset_top = 64
 	board = HudLeaderboard.new(self)
 	right.add_child(board)
 	inspector = HudInspector.new(self)
 	right.add_child(inspector)
 	command = HudCommandBar.new(self)
 	add_child(command)
-	command.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM, Control.PRESET_MODE_MINSIZE, 10)
-	command.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	command.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	# One message slot under the top bar: a single notification or a single tip, never stacked.
 	toasts = ToastStack.new()
 	add_child(toasts)
-	toasts.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
-	toasts.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	toasts.offset_top = 80
-	zone_legend = HudZoneLegend.new(self)
-	add_child(zone_legend)
-	zone_legend.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE)
 	build_tip = BuildTip.new()
 	add_child(build_tip)
-	_build_place_bar()
 	tip_card = HudTipCard.new(self)
 	add_child(tip_card)
 	_build_spawn_banner()
@@ -110,31 +95,6 @@ func setup(controller: Node, sim_: Sim) -> void:
 	# HUD buttons never take keyboard focus: map hotkeys (Space, 1-6, Q/E) must keep working.
 	for c in find_children("*", "BaseButton", true, false):
 		(c as BaseButton).focus_mode = Control.FOCUS_NONE
-
-
-func _build_place_bar() -> void:
-	place_bar = PanelContainer.new()
-	place_bar.add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE_2, UITheme.R_M, Color(UITheme.ACCENT, 0.6), 8))
-	place_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var h := UITheme.hbox(10)
-	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	place_bar.add_child(h)
-	_place_icon = Icons.rect("b_city", 22)
-	h.add_child(_place_icon)
-	_place_label = UITheme.label("", UITheme.T_BODY, UITheme.TEXT, true)
-	h.add_child(_place_label)
-	for part: Array in [["", "PLACE_CLICK"], ["", "PLACE_SHIFT"], ["", "PLACE_CANCEL"]]:
-		h.add_child(UITheme.key_cap(tr("KEY_" + part[1])))
-		h.add_child(UITheme.label(tr(part[1]), UITheme.T_CAPTION, UITheme.TEXT_DIM))
-	add_child(place_bar)
-	place_bar.visible = false
-
-
-func _layout_place_bar() -> void:
-	place_bar.reset_size()
-	var vs := get_viewport_rect().size
-	var cb := command.get_global_rect()
-	place_bar.position = Vector2(vs.x * 0.5 - place_bar.size.x * 0.5, cb.position.y - place_bar.size.y - 8.0)
 
 
 func _process(delta: float) -> void:
@@ -150,46 +110,53 @@ func tip(id: String) -> void:
 		_tip_queue.append(id)
 
 
+## What the player is doing: decides what the bottom bar shows and whether tips may appear.
+func mode() -> String:
+	if sim.phase == Sim.Phase.SPAWN:
+		return "spawn"
+	if ctl.get("build_open") == true:
+		return "build"
+	var o := int(ctl.get("selected_owner")) if ctl.get("selected_owner") != null else 0
+	if o > 0 and o != sim.player_id and sim.phase == Sim.Phase.PLAYING and sim.is_player_alive():
+		return "attack"
+	return "normal"
+
+
 func refresh() -> void:
 	if sim == null:
 		return
-	if not tip_card.visible and not _tip_queue.is_empty() and not is_modal_open():
-		tip_card.show_tip(_tip_queue.pop_front())
-	tip_card.visible = tip_card.visible and not ui_hidden
 	var vs := get_viewport_rect().size
-	toasts.offset_top = 80.0
-	if tip_card.visible:
-		# Top centre, under the top bar: never over the docks, the command bar or the placement bar.
-		tip_card.reset_size()
-		# Centred in the free band between the left dock (rail or open panel) and the right column.
-		var left := dock.get_global_rect().end.x + 8.0 if dock.panel.visible else dock.rail.get_global_rect().end.x + 8.0
-		var right := board.get_global_rect().position.x - 8.0
-		var x := left + (right - left - tip_card.size.x) * 0.5
-		tip_card.position = Vector2(clampf(x, left, maxf(left, right - tip_card.size.x)), top.get_global_rect().end.y + 8.0)
-		toasts.offset_top = tip_card.position.y + tip_card.size.y + 8.0
-	if zone_legend.visible:
-		# Bottom left, above the command bar; hidden while it would cover an open dock panel.
-		zone_legend.reset_size()
-		var cb := command.get_global_rect()
-		zone_legend.position = Vector2(10.0, cb.position.y - zone_legend.size.y - 8.0)
-		if zone_legend.position.x + zone_legend.size.x > cb.position.x:
-			zone_legend.position.y = minf(zone_legend.position.y, cb.position.y - zone_legend.size.y - 8.0)
-		var lr := zone_legend.get_global_rect()
-		if (dock.panel.visible and lr.intersects(dock.panel.get_global_rect())) or lr.intersects(dock.rail.get_global_rect()):
-			zone_legend.visible = false
-	var placing: bool = ctl.get("build_kind") != null and int(ctl.build_kind) >= 0 and not ui_hidden
-	place_bar.visible = placing
-	if placing:
-		_place_icon.texture = Icons.tex(Symbols.building_id(sim.rules, int(ctl.build_kind)), 22)
-		_place_label.text = tr("PLACE_TITLE") % BuildingInfo.title(sim.rules, int(ctl.build_kind))
-		_layout_place_bar()
+	var m := mode()
+	command.set_mode("build" if m == "build" else ("attack" if m == "attack" else "normal"))
+	command.visible = not ui_hidden and m != "spawn" and sim.player_id > 0
 	top.refresh()
 	command.refresh()
 	board.refresh()
 	dock.refresh()
 	inspector.refresh()
-	zone_legend.visible = not ui_hidden and ctl.get("zones") != null and (ctl.zones as ZoneLayer).visible_zones() \
-		and not ZoneLayer.zone_kinds(sim.rules).is_empty()
+	# Layout: top bar centred; bottom bar centred; the message slot under the top bar, centred in
+	# the free band between the left dock and the right column.
+	top.reset_size()
+	top.position = Vector2(roundf((vs.x - top.size.x) * 0.5), 8.0)
+	command.reset_size()
+	command.position = Vector2(roundf((vs.x - command.size.x) * 0.5), vs.y - command.size.y - 10.0)
+	board.set_compact(inspector.visible)
+	var left := (dock.get_global_rect().end.x if dock.panel.visible else dock.rail.get_global_rect().end.x) + 10.0
+	var right := board.get_global_rect().position.x - 10.0
+	var slot_y := top.get_global_rect().end.y + 8.0
+	# Tips only while nothing else is going on, and never together with a notification.
+	# Tips only while nothing else is going on (a tip about a mode may show in that mode), and
+	# never together with a notification.
+	var next_tip: String = tip_card.current if tip_card.current != "" else (_tip_queue[0] if not _tip_queue.is_empty() else "")
+	var tip_mode: String = {"build": "build", "spawn": "spawn"}.get(next_tip, "normal")
+	var tip_ok := m == tip_mode and not toasts.busy() and not is_modal_open() and (ctl.get("selected_structure") == null or int(ctl.get("selected_structure")) < 0)
+	if tip_ok and tip_card.current == "" and not _tip_queue.is_empty():
+		tip_card.show_tip(_tip_queue.pop_front())
+	# A tip waits (hidden, not lost) while the player is busy with something else.
+	tip_card.visible = tip_card.current != "" and not ui_hidden and tip_ok
+	for c: Control in [tip_card, toasts]:
+		c.reset_size()
+		c.position = Vector2(roundf(left + maxf(0.0, (right - left - c.size.x) * 0.5)), slot_y)
 	spawn_panel.visible = sim.phase == Sim.Phase.SPAWN and sim.player_id > 0 and not ui_hidden and ctl.get("spawn_pending") != null
 	if spawn_panel.visible:
 		spawn_panel.refresh()
@@ -197,7 +164,7 @@ func refresh() -> void:
 
 func set_ui_hidden(on: bool) -> void:
 	ui_hidden = on
-	for c: Control in [top, dock, board, inspector, command]:
+	for c: Control in [top, dock, board, inspector, command, tip_card, toasts]:
 		c.visible = not on
 	if not on:
 		inspector.visible = ctl.selected_owner > 0
@@ -221,6 +188,7 @@ func log_line(text: String, color: Color = UITheme.TEXT) -> void:
 
 func show_owner(id: int) -> void:
 	inspector.show_owner(id)
+	refresh()
 
 
 func toggle_ai_debug() -> void:

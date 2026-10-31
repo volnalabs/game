@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Builds godot/data/ui/symbols.json: VolnaLabs' own map and resource symbols (AGPL-3.0, own work).
 
-One visual language for every building and resource: solid white silhouettes on a 24-unit grid
-(tinted in game), features at least 2 units wide, no hairlines. Dark "detail" shapes are cut-like
-accents. Each symbol has three levels of detail:
+One visual language for every building and resource (v2, Phase 2A.2): soft, rounded, filled
+silhouettes on a 24-unit grid (tinted in game). Every shape is drawn with a same-colour stroke with
+round joins and caps, so all corners are rounded; features are at least 2 units wide, no hairlines.
+Dark "detail" shapes are soft cut-like accents. Each symbol has three levels of detail:
   far  — the silhouette only (legible at 10-12 px on a zoomed-out map),
   full — silhouette + main details (map at normal zoom, menus, inspector),
   near — full + small extra details (zoomed-in map, large previews).
@@ -16,7 +17,7 @@ import os
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(REPO, "godot", "data", "ui", "symbols.json")
-DARK = "#0d131a"
+DARK = "#2a2622"
 
 
 def rect(x, y, w, h, r=0):
@@ -46,7 +47,7 @@ S = {}
 # --- buildings -----------------------------------------------------------------------------------
 # City: a block of three towers of different heights on a common ground line.
 S["b_city"] = (
-    [rect(2, 11, 6, 10), rect(9, 4, 6, 17), rect(16, 8, 6, 13), rect(1, 20, 22, 2)],
+    [rect(2.5, 11, 5.5, 10, 2.2), rect(9.2, 4, 5.6, 17, 2.4), rect(16, 8, 5.5, 13, 2.2), rect(1.5, 19.5, 21, 2.5, 1.2)],
     [rect(10.5, 7, 3, 2), rect(10.5, 11, 3, 2), rect(10.5, 15, 3, 2), rect(3.5, 14, 3, 2), rect(17.5, 11, 3, 2)],
     [rect(17.5, 15, 3, 2), rect(3.5, 17.5, 3, 1.5)])
 # Port: a pier over water with a dockside crane and a container.
@@ -66,9 +67,9 @@ S["b_defense"] = (
     [rect(5, 12, 2, 2), rect(17, 12, 2, 2)])
 # Research centre: a laboratory flask standing on a building base.
 S["b_research_center"] = (
-    [rect(2, 17, 20, 5), poly((9.5, 2), (14.5, 2), (14.5, 3.6), (13.6, 3.6), (13.6, 7.5), (18.5, 16), (5.5, 16), (10.4, 7.5), (10.4, 3.6), (9.5, 3.6))],
-    [poly((8.2, 12.5), (15.8, 12.5), (17, 14.6), (7, 14.6)), rect(10.5, 18.5, 3, 3.5)],
-    [circle(11, 10.6, 0.9)])
+    [rect(3, 18, 18, 4, 1.5), circle(12, 12, 5.6), rect(10, 2.5, 4, 7, 1.2), rect(8.8, 2, 6.4, 2, 1)],
+    [path("M7 12.6 A5 5 0 0 0 17 12.6 Z")],
+    [circle(10.2, 9.6, 0.9)])
 # Radar: a tilted dish on a mast with a tripod base.
 S["b_radar"] = (
     [path("M2 7 A9.5 9.5 0 0 0 15 20 Z"), poly((8.6, 13.4), (17.6, 4.4), (19.4, 6.2), (10.4, 15.2)), circle(18.8, 4.6, 2.2),
@@ -90,17 +91,17 @@ S["b_military_academy"] = (
     [])
 # Logistics hub: a pyramid of three cargo crates.
 S["b_logistics_hub"] = (
-    [rect(1.5, 13, 9.5, 9), rect(13, 13, 9.5, 9), rect(7.25, 3, 9.5, 9)],
+    [rect(1.8, 13, 9.2, 9, 1.6), rect(13, 13, 9.2, 9, 1.6), rect(7.4, 3, 9.2, 9, 1.6)],
     [rect(5.4, 13, 1.6, 9), rect(16.9, 13, 1.6, 9), rect(11.2, 3, 1.6, 9)],
     [rect(1.5, 16.7, 9.5, 1.4), rect(13, 16.7, 9.5, 1.4), rect(7.25, 6.7, 9.5, 1.4)])
 # Command centre: a headquarters block with a tall mast and a pennant.
 S["b_command_center"] = (
-    [rect(2, 13, 20, 9), rect(10.7, 2, 2.6, 11), poly((13.3, 2), (21, 4.2), (13.3, 6.4)), rect(7, 10, 10, 3)],
+    [rect(2, 13, 20, 9, 2), rect(10.7, 2, 2.6, 11, 1.2), poly((13.3, 2.2), (20.5, 4.3), (13.3, 6.4)), rect(7, 10, 10, 3.5, 1.4)],
     [rect(4.5, 16, 3, 3), rect(16.5, 16, 3, 3), rect(10.5, 16, 3, 6)],
     [])
 # Bunker: a low armoured dome flush with the ground, with a firing slit.
 S["b_bunker"] = (
-    [path("M1.5 19 A10.5 9 0 0 1 22.5 19 Z"), rect(0.5, 19, 23, 3)],
+    [path("M2 19 A10 8.5 0 0 1 22 19 Z"), rect(1, 18.5, 22, 3.5, 1.5)],
     [rect(6.5, 13.5, 11, 2.2)],
     [rect(11, 7.6, 2, 2)])
 # Power plant: a cooling tower and a lightning bolt.
@@ -133,7 +134,7 @@ S["r_gold"] = (
     [rect(2, 14.2, 14, 1.3), rect(2, 18.2, 14, 1.3), ellipse(9, 11, 4.4, 1.4), circle(17, 8, 3.6)],
     [])
 S["r_supplies"] = (
-    [rect(2, 7, 20, 15, 1), poly((2, 7), (6, 2), (18, 2), (22, 7))],
+    [rect(2.5, 7, 19, 14.5, 2.2), poly((3, 7.5), (6.5, 2.5), (17.5, 2.5), (21, 7.5))],
     [rect(10.5, 7, 3, 15), rect(2, 13, 20, 2)],
     [])
 S["r_army"] = (
@@ -141,8 +142,8 @@ S["r_army"] = (
     [path("M7.5 6.5 A4.5 4.5 0 0 1 16.5 6.5 Z")],
     [])
 S["r_research"] = (
-    [poly((9, 2), (15, 2), (15, 3.8), (14, 3.8), (14, 8.5), (20.5, 20), (19.5, 22), (4.5, 22), (3.5, 20), (10, 8.5), (10, 3.8), (9, 3.8))],
-    [poly((7.2, 15), (16.8, 15), (19, 19.8), (5, 19.8))],
+    [circle(12, 15, 7), rect(9.8, 2.5, 4.4, 8, 1.4), rect(8.5, 2, 7, 2.2, 1.1)],
+    [path("M5.6 15.5 A6.4 6.4 0 0 0 18.4 15.5 Z")],
     [])
 S["r_land"] = (
     [poly((2, 8), (8, 3), (15, 5), (22, 3), (21, 12), (23, 19), (15, 21), (9, 19), (2, 21), (4, 13))],
@@ -154,10 +155,14 @@ S["r_upkeep"] = (
     [])
 
 
-def svg(parts_white, parts_dark):
-    inner = '<g fill="#ffffff">%s</g>' % "".join(parts_white)
+def svg(parts_white, parts_dark, soft=1.6):
+    # Shapes are slightly inset (0.92) so the rounding stroke stays inside the 24-unit box.
+    g = 'transform="translate(12 12) scale(0.92) translate(-12 -12)"'
+    inner = '<g %s fill="#ffffff" stroke="#ffffff" stroke-width="%g" stroke-linejoin="round" stroke-linecap="round">%s</g>' % (
+        g, soft, "".join(parts_white))
     if parts_dark:
-        inner += '<g fill="%s">%s</g>' % (DARK, "".join(parts_dark))
+        inner += '<g %s fill="%s" stroke="%s" stroke-width="0.7" stroke-linejoin="round" stroke-linecap="round">%s</g>' % (
+            g, DARK, DARK, "".join(parts_dark))
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">%s</svg>' % inner
 
 
@@ -165,7 +170,7 @@ def main():
     out = {"_comment": __doc__.strip().splitlines()[0] + " Generated by tools/symbols/make_symbols.py.",
            "_license": "AGPL-3.0 (VolnaLabs own work)", "symbols": {}}
     for sid, (body, detail, near) in S.items():
-        out["symbols"][sid] = {"far": svg(body, []), "full": svg(body, detail), "near": svg(body, detail + near)}
+        out["symbols"][sid] = {"far": svg(body, [], 2.4), "full": svg(body, detail), "near": svg(body, detail + near)}
     with open(OUT, "w") as f:
         json.dump(out, f, indent="\t")
         f.write("\n")

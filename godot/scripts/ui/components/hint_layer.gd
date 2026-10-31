@@ -97,22 +97,24 @@ func is_showing() -> bool:
 
 
 func _build(d: Dictionary) -> void:
-	_panel.add_theme_stylebox_override("panel", UITheme.box(Color(UITheme.SURFACE_2, 0.98), UITheme.R_S, UITheme.STROKE_STRONG, 10))
+	_panel.add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE_2, 8, Color.TRANSPARENT, 9))
 	for c in _box.get_children():
 		_box.remove_child(c)
 		c.queue_free()
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 8)
 	if String(d.get("icon", "")) != "":
-		head.add_child(Icons.rect(String(d["icon"]), 22, d.get("icon_color", UITheme.TEXT)))
-	head.add_child(UITheme.label(String(d.get("title", "")), UITheme.T_BODY_L, UITheme.TEXT, true))
+		head.add_child(Icons.rect(String(d["icon"]), 18, d.get("icon_color", UITheme.TEXT)))
+	var t := UITheme.label(String(d.get("title", "")), UITheme.T_BODY, UITheme.TEXT)
+	t.add_theme_font_override("font", UITheme.font_medium)
+	head.add_child(t)
 	if String(d.get("hotkey", "")) != "":
 		head.add_child(UITheme.spacer())
 		head.add_child(UITheme.key_cap(String(d["hotkey"])))
 	_box.add_child(head)
 	for k in ["text", "effect"]:
 		if String(d.get(k, "")) != "":
-			_box.add_child(_wrap(UITheme.label(String(d[k]), UITheme.T_BODY, UITheme.TEXT if k == "effect" else UITheme.TEXT_DIM)))
+			_box.add_child(_wrap(UITheme.label(String(d[k]), 13, UITheme.TEXT if k == "effect" else UITheme.TEXT_DIM)))
 	var rows: Array = d.get("rows", [])
 	if not rows.is_empty():
 		_box.add_child(UITheme.separator())
@@ -133,5 +135,5 @@ func _build(d: Dictionary) -> void:
 
 func _wrap(l: Label) -> Label:
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size.x = 300
+	l.custom_minimum_size.x = 260
 	return l

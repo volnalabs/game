@@ -128,7 +128,7 @@ func test_zone_toggle_and_legend() -> void:
 	await _wait(1)
 	ctl.hud.refresh()
 	check_eq(ctl.zones.show_all, not was, "toggled")
-	check_eq(ctl.hud.zone_legend.visible, not was, "legend follows the overlay")
+	check_eq(ctl.zones.visible_zones(), not was, "zones follow the toggle")
 	ctl.toggle_zones()
 	check_eq(ctl.zones.show_all, was, "restored")
 

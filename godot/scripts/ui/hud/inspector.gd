@@ -1,7 +1,8 @@
 class_name HudInspector
 extends PanelContainer
-## Right inspector. For a selected state: header (flag, name, kind, personality) and text tabs —
-## overview, economy, army, buildings, threats, actions (+ AI debug). For a selected building: what it
+## Right inspector. For a selected state: header (flag, name, kind, personality) and one row of text
+## tabs — overview, economy (own state or AI debug), army, buildings, threats (+ AI debug). Actions
+## against a foreign state live in the bottom attack bar, not here. For a selected building: what it
 ## is, what it does with exact numbers, its state and actions. Other states' economies are hidden
 ## unless AI debugging is on (fog of war applies to the player too).
 
@@ -19,24 +20,33 @@ var _dirty: bool = true
 
 func _init(h: GameHUD) -> void:
 	hud = h
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 12))
-	custom_minimum_size.x = 340
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, 10, Color.TRANSPARENT, 12))
+	custom_minimum_size.x = 300
 	var v := UITheme.vbox(10)
 	add_child(v)
 	_head = UITheme.hbox(10)
 	v.add_child(_head)
 	_tabs = HFlowContainer.new()
-	_tabs.add_theme_constant_override("h_separation", 2)
+	_tabs.add_theme_constant_override("h_separation", 0)
 	_tabs.add_theme_constant_override("v_separation", 2)
 	v.add_child(_tabs)
-	for id: String in ["overview", "economy", "army", "buildings", "threats", "actions", "ai"]:
+	for id: String in ["overview", "economy", "army", "buildings", "threats", "ai"]:
 		var tid := id
 		var b := UITheme.ghost_button(tr("TABX_" + id.to_upper()), func() -> void: set_tab(tid))
 		b.toggle_mode = true
 		b.focus_mode = Control.FOCUS_NONE
-		b.custom_minimum_size.y = 28
-		b.add_theme_font_size_override("font_size", UITheme.T_CAPTION + 1)
-		b.add_theme_stylebox_override("pressed", UITheme.box(Color(1, 1, 1, 0.09), UITheme.R_S, Color.TRANSPARENT, 6))
+		b.custom_minimum_size.y = 26
+		b.add_theme_font_size_override("font_size", UITheme.T_CAPTION)
+		for st_name: String in ["normal", "hover", "pressed", "hover_pressed"]:
+			var bg := Color.TRANSPARENT
+			if st_name == "hover":
+				bg = Color(1, 1, 1, 0.05)
+			elif st_name != "normal":
+				bg = Color(1, 1, 1, 0.09)
+			var sb := UITheme.box(bg, UITheme.R_S, Color.TRANSPARENT, 0)
+			sb.content_margin_left = 7
+			sb.content_margin_right = 7
+			b.add_theme_stylebox_override(st_name, sb)
 		Hints.attach(b, {"title": tr("TABX_" + id.to_upper()), "text": tr("TABX_%s_HINT" % id.to_upper())})
 		_tab_buttons[id] = b
 		_tabs.add_child(b)
@@ -92,8 +102,9 @@ func refresh(force: bool = false) -> void:
 	if tab == "ai" and not hud.ai_debug:
 		tab = "overview"
 	(_tab_buttons["ai"] as Button).visible = hud.ai_debug and not mine
-	(_tab_buttons["actions"] as Button).visible = not mine
-	if tab == "actions" and mine:
+	var econ_ok := mine or hud.ai_debug
+	(_tab_buttons["economy"] as Button).visible = econ_ok
+	if tab == "economy" and not econ_ok:
 		tab = "overview"
 	for k: String in _tab_buttons:
 		(_tab_buttons[k] as Button).button_pressed = k == tab
@@ -123,7 +134,7 @@ func refresh(force: bool = false) -> void:
 			_body.add_child(UITheme.stat_row(tr("INFO_STATUS"), HudPanels.status_of(sim, id), UITheme.TEXT, "ui_flag"))
 			if not mine:
 				var ratio := st.o_troops[sim.player_id] / maxf(st.o_troops[id], 1.0)
-				_body.add_child(UITheme.stat_row(tr("INFO_POWER_RATIO"), "×%.2f" % ratio, UITheme.GOOD if ratio >= 1.0 else UITheme.BAD, "ui_swords"))
+				_body.add_child(UITheme.stat_row(tr("INFO_POWER_RATIO"), _ratio_text(ratio), UITheme.GOOD if ratio >= 1.0 else UITheme.BAD, "ui_swords"))
 		"economy":
 			if mine or hud.ai_debug:
 				HudPanels.economy_of(hud, _body, id)
@@ -159,8 +170,6 @@ func refresh(force: bool = false) -> void:
 				_body.add_child(r)
 			if rows.is_empty():
 				_body.add_child(UITheme.label(tr("NO_THREATS"), UITheme.T_BODY, UITheme.TEXT_FAINT))
-		"actions":
-			_actions(id)
 		"ai":
 			_ai(id)
 
@@ -172,20 +181,13 @@ func _hidden() -> void:
 	_body.add_child(l)
 
 
-func _actions(id: int) -> void:
-	var sim := hud.sim
-	var pid := sim.player_id
-	var send := floorf(sim.st.o_troops[pid] * hud.ctl.ratio)
-	_body.add_child(UITheme.label(tr("ACTIONS_SEND") % UITheme.num(send), UITheme.T_CAPTION, UITheme.TEXT_DIM))
-	var borders: bool = hud.ctl.borders(pid, id)
-	var atk := UITheme.accent_button(tr("ACTION_ATTACK"), func() -> void: hud.ctl.attack_owner(id), 0, "g_attack")
-	atk.disabled = not borders or sim.phase != Sim.Phase.PLAYING
-	atk.tooltip_text = "" if borders else tr("REJECT_NO_BORDER")
-	_body.add_child(atk)
-	var land := UITheme.button(tr("ACTION_LANDING"), func() -> void: hud.ctl.landing_on(id), 0, "g_landing")
-	land.disabled = sim.phase != Sim.Phase.PLAYING
-	_body.add_child(land)
-	_body.add_child(UITheme.button(tr("ACTION_FOCUS"), func() -> void: hud.ctl.select_owner(id, true), 0, "ui_target"))
+## "×0.42", "×3.5", "×120" — fewer digits the further the ratio is from 1.
+static func _ratio_text(r: float) -> String:
+	if r >= 10.0:
+		return "×%s" % UITheme.num(roundf(r))
+	if r >= 1.0:
+		return "×%.1f" % r
+	return "×%.2f" % r
 
 
 func _ai(id: int) -> void:
@@ -222,7 +224,7 @@ func _ai(id: int) -> void:
 		lines.append(DecisionLog.format(e, func(o: int) -> String: return st.o_name[o] if o > 0 else ""))
 	var t := UITheme.label("\n".join(lines), 11, UITheme.TEXT_DIM)
 	t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	t.custom_minimum_size.x = 310
+	t.custom_minimum_size.x = 270
 	_body.add_child(t)
 
 
@@ -241,13 +243,20 @@ func _structure_page() -> void:
 		c.queue_free()
 	_tabs.visible = false
 	var plate := PanelContainer.new()
-	plate.add_theme_stylebox_override("panel", UITheme.box(Color(1, 1, 1, 0.06), UITheme.R_M, sim.st.o_color[s.owner].lightened(0.2), 6))
+	plate.add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE_3, UITheme.R_M, Color.TRANSPARENT, 6))
 	plate.add_child(Icons.rect(Symbols.building_id(sim.rules, s.kind), 36))
 	_head.add_child(plate)
 	var nv := UITheme.vbox(2)
 	nv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	nv.add_child(UITheme.label(BuildingInfo.title(sim.rules, s.kind), UITheme.T_TITLE, UITheme.TEXT, true))
-	nv.add_child(UITheme.label(sim.st.o_name[s.owner], UITheme.T_CAPTION, sim.st.o_color[s.owner].lightened(0.35)))
+	var who := UITheme.hbox(6)
+	var sw := ColorRect.new()
+	sw.color = sim.st.o_color[s.owner]
+	sw.custom_minimum_size = Vector2(8, 8)
+	sw.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	who.add_child(sw)
+	who.add_child(UITheme.label(sim.st.o_name[s.owner], UITheme.T_CAPTION, UITheme.TEXT_DIM))
+	nv.add_child(who)
 	_head.add_child(nv)
 	var close := UITheme.icon_button("ui_close", "", func() -> void: hud.ctl.select_structure(-1), 30)
 	Hints.attach(close, {"title": tr("CLOSE"), "text": tr("PANEL_CLOSE_HINT")})
@@ -255,16 +264,18 @@ func _structure_page() -> void:
 	var d := BuildingInfo.structure_hint(sim, s)
 	var short := UITheme.label(String(d["text"]), UITheme.T_BODY, UITheme.TEXT_DIM)
 	short.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	short.custom_minimum_size.x = 310
+	short.custom_minimum_size.x = 270
 	_body.add_child(short)
 	_body.add_child(UITheme.section(tr("BI_EFFECT")))
 	for line in BuildingInfo.effects(sim.rules, s.kind):
 		var l := UITheme.label(line, UITheme.T_BODY, UITheme.TEXT)
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size.x = 310
+		l.custom_minimum_size.x = 270
 		_body.add_child(l)
 	_body.add_child(UITheme.separator())
 	for r: Array in d["rows"]:
+		if String(r[0]) == tr("BI_OWNER"):
+			continue  # the owner is already under the title
 		_body.add_child(UITheme.key_value(String(r[0]), String(r[1]), r[2] if r.size() > 2 else UITheme.TEXT))
 	if s.done_tick > 0:
 		var total := float(sim.rules.building_ticks(s.kind))

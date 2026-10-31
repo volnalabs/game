@@ -198,7 +198,6 @@ func _draw() -> void:
 		var ir := clampf(10.0 / z, 0.8, 14.0)
 		var pos: Vector2 = m["pos"] - Vector2(0, k * 12.0 / z)
 		var tex := Icons.tex(String(m["icon"]), maxi(16, int(ir * z * 2.0)))
-		draw_circle(pos, ir * 1.1, Color(0.04, 0.06, 0.09, 0.75 * (1.0 - k)))
 		if tex != null:
 			draw_texture_rect(tex, Rect2(pos - Vector2(ir, ir) * 0.8, Vector2(ir, ir) * 1.6), false, Color(m["c"], 1.0 - k * k))
 	for f: Dictionary in _floaters:

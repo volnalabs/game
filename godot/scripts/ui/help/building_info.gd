@@ -131,3 +131,17 @@ static func structure_hint(sim: Sim, s: StructureSystem.Structure) -> Dictionary
 		rows_.append([_t("BI_RADIUS"), _t("BI_TILES") % roundi(sim.rules.building_radius(s.kind))])
 	return {"title": title(sim.rules, s.kind), "icon": Symbols.building_id(sim.rules, s.kind), "text": short(sim.rules, s.kind),
 		"effect": "\n".join(effects(sim.rules, s.kind)), "rows": rows_}
+
+
+## Compact hover card: name, what it is for, one or two key figures.
+static func structure_brief(sim: Sim, s: StructureSystem.Structure) -> Dictionary:
+	var rows_: Array = []
+	var eff := effects(sim.rules, s.kind)
+	if s.done_tick > 0:
+		rows_.append([_t("BI_STATUS"), _t("BI_BUILDING_LEFT") % ceili(float(s.done_tick - sim.st.tick) / float(sim.rules.tick_rate)), UITheme.WARN])
+	elif s.level > 1:
+		rows_.append([_t("BI_LEVEL"), str(s.level)])
+	if s.owner != sim.player_id:
+		rows_.append([_t("BI_OWNER"), sim.st.o_name[s.owner]])
+	return {"title": title(sim.rules, s.kind), "icon": Symbols.building_id(sim.rules, s.kind),
+		"text": eff[0] if not eff.is_empty() else short(sim.rules, s.kind), "rows": rows_}

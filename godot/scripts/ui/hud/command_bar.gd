@@ -1,135 +1,328 @@
 class_name HudCommandBar
 extends PanelContainer
-## Bottom command bar: attack strength (what one click on a neighbour sends), quick build slots with
-## the buildings' symbols and prices, and labelled army / view actions.
+## The bottom bar shows only what the current situation needs:
+##   normal — attack strength, "Build", and "Retreat" while attacks are running;
+##   build  — building categories and tiles, one detail block for the chosen building, zones, close;
+##   attack — a foreign state is selected: target, strength, troops sent, attack / landing / cancel.
+
+const MODES := ["normal", "build", "attack"]
 
 var hud: GameHUD
+var mode: String = ""
+var category: String = "economy"
+var _boxes: Dictionary = {}
 var _ratio_buttons: Array[Button] = []
 var _send: Label
-var _build: Dictionary = {}
-var _build_cost: Dictionary = {}
+var _retreat: Button
+# build
+var _cat_buttons: Dictionary = {}
+var _tiles: HBoxContainer
+var _detail: VBoxContainer
 var _zones: Button
-var _bh: HBoxContainer
-var _quick: Array[int] = []
+var _tile_buttons: Dictionary = {}
+var _shown_kind: int = -2
+var _tiles_key: String = ""
+# attack
+var _target_flag: TextureRect
+var _target_name: Label
+var _target_line: Label
+var _attack_btn: Button
+var _landing_btn: Button
+var _attack_ratio: Array[Button] = []
 
 
 func _init(h: GameHUD) -> void:
 	hud = h
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 8))
-	var row := UITheme.hbox(14)
-	add_child(row)
-	var rv := UITheme.vbox(3)
-	var rh := UITheme.hbox(6)
-	rh.add_child(UITheme.caption(tr("HUD_ATTACK_SHARE")))
-	rh.add_child(UITheme.key_cap("Q"))
-	rh.add_child(UITheme.key_cap("E"))
-	rv.add_child(rh)
-	var seg := UITheme.hbox(2)
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, 10, Color.TRANSPARENT, 8))
+	var v := UITheme.vbox(0)
+	add_child(v)
+	_boxes["normal"] = _build_normal()
+	_boxes["build"] = _build_build()
+	_boxes["attack"] = _build_attack()
+	for m: String in MODES:
+		v.add_child(_boxes[m])
+	set_mode("normal")
+
+
+func _ratio_strip(into: Array[Button]) -> HBoxContainer:
+	var seg := UITheme.hbox(0)
 	for r: float in GameHUD.RATIOS:
 		var b := UITheme.ghost_button("%d%%" % int(r * 100.0), func() -> void: hud.ctl.set_ratio(r))
 		b.toggle_mode = true
 		b.focus_mode = Control.FOCUS_NONE
-		b.custom_minimum_size = Vector2(44, 28)
+		b.custom_minimum_size = Vector2(42, 28)
+		b.add_theme_font_size_override("font_size", 13)
 		Hints.attach(b, func() -> Dictionary: return Glossary.hint("attack_share",
 			[[tr("HUD_SENDS"), UITheme.num(floorf(hud.sim.st.o_troops[hud.sim.player_id] * r))]]))
-		_ratio_buttons.append(b)
+		into.append(b)
 		seg.add_child(b)
-	rv.add_child(seg)
-	_send = UITheme.label("", UITheme.T_CAPTION, UITheme.TEXT_DIM)
-	rv.add_child(_send)
-	row.add_child(rv)
-	row.add_child(VSeparator.new())
-	var bv := UITheme.vbox(3)
-	var bhh := UITheme.hbox(6)
-	bhh.add_child(UITheme.caption(tr("DOCK_BUILD")))
-	bhh.add_child(UITheme.key_cap("1–6"))
-	bv.add_child(bhh)
-	_bh = UITheme.hbox(4)
-	_rebuild_quick()
-	bv.add_child(_bh)
-	row.add_child(bv)
-	row.add_child(VSeparator.new())
-	var ah := UITheme.hbox(0)
-	var home := UITheme.rail_button("ui_home", tr("ACTION_HOME_SHORT"), func() -> void: hud.ctl.focus_home(), 62)
-	Hints.attach(home, {"title": tr("ACTION_HOME"), "text": tr("ACTION_HOME_HINT"), "hotkey": "Home"})
-	ah.add_child(home)
-	var back := UITheme.rail_button("ui_back", tr("ACTION_RETREAT_SHORT"), func() -> void: hud.ctl.retreat_all(), 62)
-	Hints.attach(back, {"title": tr("ACTION_RETREAT_ALL"), "text": tr("ACTION_RETREAT_HINT")})
-	ah.add_child(back)
-	_zones = UITheme.rail_button("ui_zones", tr("ACTION_ZONES_SHORT"), func() -> void: hud.ctl.toggle_zones(), 62, true)
-	Hints.attach(_zones, Glossary.hint("zones"))
-	ah.add_child(_zones)
-	var hide := UITheme.rail_button("ui_eye_off", tr("ACTION_HIDE_SHORT"), func() -> void: hud.set_ui_hidden(true), 62)
-	Hints.attach(hide, {"title": tr("ACTION_HIDE_UI"), "text": tr("ACTION_HIDE_HINT"), "hotkey": "Tab"})
-	ah.add_child(hide)
-	row.add_child(ah)
+	return seg
 
 
-## Quick build slots: the first unlocked buildable kinds (keys 1..n), rebuilt when research
-## unlocks more.
-func _rebuild_quick() -> void:
-	_quick = hud.quick_kinds()
-	for c in _bh.get_children():
-		_bh.remove_child(c)
-		c.queue_free()
-	_build.clear()
-	_build_cost.clear()
-	var keyn := 1
-	for k in _quick:
-		var kk := k
-		var key := keyn
-		var b := Button.new()
-		b.focus_mode = Control.FOCUS_NONE
+func _build_normal() -> Control:
+	var row := UITheme.hbox(16)
+	var av := UITheme.vbox(0)
+	var head := UITheme.hbox(6)
+	head.add_child(UITheme.label(tr("HUD_ATTACK_SHARE"), 12, UITheme.TEXT_DIM))
+	_send = UITheme.label("", 12, UITheme.TEXT_FAINT)
+	_send.add_theme_font_override("font", UITheme.font_numbers)
+	head.add_child(_send)
+	av.add_child(head)
+	av.add_child(_ratio_strip(_ratio_buttons))
+	row.add_child(av)
+	var build := UITheme.button(tr("BAR_BUILD"), func() -> void: hud.ctl.open_build_mode(), 0, "b_city")
+	build.custom_minimum_size.y = 40
+	build.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(build, {"title": tr("DOCK_BUILD_FULL"), "text": tr("BAR_BUILD_HINT"), "hotkey": "B"})
+	row.add_child(build)
+	_retreat = UITheme.button(tr("ACTION_RETREAT_SHORT"), func() -> void: hud.ctl.retreat_all(), 0, "ui_back")
+	_retreat.custom_minimum_size.y = 40
+	_retreat.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(_retreat, {"title": tr("ACTION_RETREAT_ALL"), "text": tr("ACTION_RETREAT_HINT")})
+	row.add_child(_retreat)
+	return row
+
+
+func _build_build() -> Control:
+	var v := UITheme.vbox(8)
+	var head := UITheme.hbox(4)
+	for cat: String in BuildingInfo.CATEGORIES:
+		var c := cat
+		var b := UITheme.ghost_button(tr("BCAT_" + cat.to_upper()), func() -> void:
+			category = c
+			_tiles_key = ""
+			refresh())
 		b.toggle_mode = true
-		b.custom_minimum_size = Vector2(58, 52)
-		b.add_theme_stylebox_override("normal", UITheme.box(Color(1, 1, 1, 0.04), UITheme.R_M, Color.TRANSPARENT, 4))
-		b.add_theme_stylebox_override("hover", UITheme.box(Color(1, 1, 1, 0.09), UITheme.R_M, Color.TRANSPARENT, 4))
-		b.add_theme_stylebox_override("pressed", UITheme.box(Color(UITheme.ACCENT, 0.18), UITheme.R_M, UITheme.ACCENT, 4))
-		b.add_theme_stylebox_override("disabled", UITheme.box(Color(1, 1, 1, 0.02), UITheme.R_M, Color.TRANSPARENT, 4))
-		var v := UITheme.vbox(1)
-		v.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		v.alignment = BoxContainer.ALIGNMENT_CENTER
-		var ic := Icons.rect(Symbols.building_id(hud.sim.rules, k), 26)
-		ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		v.add_child(ic)
-		var cl := UITheme.label("", 11, UITheme.GOLD)
-		cl.add_theme_font_override("font", UITheme.font_numbers)
-		cl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		v.add_child(cl)
-		b.add_child(v)
-		b.pressed.connect(func() -> void:
-			if hud.ctl.build_kind == kk:
-				hud.ctl.cancel_build()
-			else:
-				hud.ctl.begin_build(kk))
-		Hints.attach(b, func() -> Dictionary: return BuildingInfo.hint(hud.sim, kk, hud.sim.player_id, str(key)))
-		_build[k] = b
-		_build_cost[k] = cl
-		_bh.add_child(b)
-		keyn += 1
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size.y = 28
+		b.add_theme_font_size_override("font_size", 13)
+		Hints.attach(b, {"title": tr("BCAT_" + cat.to_upper()), "text": tr("BCAT_%s_HINT" % cat.to_upper())})
+		_cat_buttons[cat] = b
+		head.add_child(b)
+	head.add_child(UITheme.spacer())
+	_zones = UITheme.ghost_button(tr("ACTION_ZONES_SHORT"), func() -> void: hud.ctl.toggle_zones(), "ui_zones")
+	_zones.toggle_mode = true
+	_zones.focus_mode = Control.FOCUS_NONE
+	_zones.add_theme_font_size_override("font_size", 13)
+	Hints.attach(_zones, Glossary.hint("zones"))
+	head.add_child(_zones)
+	var close := UITheme.ghost_button(tr("BAR_CLOSE"), func() -> void: hud.ctl.close_build_mode(), "ui_close")
+	close.focus_mode = Control.FOCUS_NONE
+	close.add_theme_font_size_override("font_size", 13)
+	Hints.attach(close, {"title": tr("BAR_CLOSE"), "text": tr("BAR_CLOSE_HINT"), "hotkey": "Esc"})
+	head.add_child(close)
+	v.add_child(head)
+	var body := UITheme.hbox(14)
+	_tiles = UITheme.hbox(4)
+	body.add_child(_tiles)
+	_detail = UITheme.vbox(2)
+	_detail.custom_minimum_size = Vector2(260, 0)
+	body.add_child(_detail)
+	v.add_child(body)
+	return v
+
+
+func _build_attack() -> Control:
+	var row := UITheme.hbox(14)
+	_target_flag = UITheme.flag_rect(null, 34, 22)
+	_target_flag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(_target_flag)
+	var tv := UITheme.vbox(0)
+	_target_name = UITheme.label("", UITheme.T_BODY_L, UITheme.TEXT)
+	_target_name.add_theme_font_override("font", UITheme.font_medium)
+	tv.add_child(_target_name)
+	_target_line = UITheme.label("", 12, UITheme.TEXT_DIM)
+	_target_line.add_theme_font_override("font", UITheme.font_numbers)
+	tv.add_child(_target_line)
+	tv.custom_minimum_size.x = 190
+	row.add_child(tv)
+	var av := UITheme.vbox(0)
+	av.add_child(UITheme.label(tr("HUD_ATTACK_SHARE"), 12, UITheme.TEXT_DIM))
+	av.add_child(_ratio_strip(_attack_ratio))
+	row.add_child(av)
+	_attack_btn = UITheme.accent_button(tr("ACTION_ATTACK"), func() -> void: hud.ctl.attack_owner(hud.ctl.selected_owner), 0, "g_attack")
+	_attack_btn.custom_minimum_size.y = 40
+	_attack_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(_attack_btn, func() -> Dictionary: return {"title": tr("ACTION_ATTACK"), "text": tr("BAR_ATTACK_HINT"),
+		"reason": String(_attack_btn.get_meta("reason", ""))})
+	row.add_child(_attack_btn)
+	_landing_btn = UITheme.button(tr("ACTION_LANDING"), func() -> void: hud.ctl.landing_on(hud.ctl.selected_owner), 0, "g_landing")
+	_landing_btn.custom_minimum_size.y = 40
+	_landing_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(_landing_btn, Glossary.hint("transport"))
+	row.add_child(_landing_btn)
+	var cancel := UITheme.ghost_button(tr("CANCEL"), func() -> void: hud.ctl.select_owner(0), "ui_close")
+	cancel.focus_mode = Control.FOCUS_NONE
+	cancel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	Hints.attach(cancel, {"title": tr("CANCEL"), "text": tr("BAR_CANCEL_ATTACK_HINT"), "hotkey": "Esc"})
+	row.add_child(cancel)
+	return row
+
+
+func set_mode(m: String) -> void:
+	if m == mode:
+		return
+	mode = m
+	for k: String in _boxes:
+		(_boxes[k] as Control).visible = k == m
+	_tiles_key = ""
+	_shown_kind = -2
+	reset_size()
 
 
 func refresh() -> void:
-	if hud.quick_kinds() != _quick:
-		_rebuild_quick()
 	var sim := hud.sim
 	var pid := sim.player_id
-	for i in _ratio_buttons.size():
-		_ratio_buttons[i].button_pressed = is_equal_approx(GameHUD.RATIOS[i], hud.ctl.ratio)
-	_send.text = tr("ACTIONS_SEND") % UITheme.num(floorf(sim.st.o_troops[pid] * hud.ctl.ratio))
-	var playing := sim.phase == Sim.Phase.PLAYING and sim.is_player_alive()
-	if hud.ctl.get("zones") != null:
-		_zones.set_pressed_no_signal((hud.ctl.zones as ZoneLayer).show_all)
-	for k: int in _build:
-		var b: Button = _build[k]
-		var cost := sim.structures.cost(pid, k)
-		var cl: Label = _build_cost[k]
-		cl.text = UITheme.num(cost)
-		var reason := BuildingInfo.blocker(sim, k, pid) if playing else tr("REJECT_NOT_PLAYING")
-		cl.add_theme_color_override("font_color", UITheme.GOLD if reason == "" else UITheme.BAD)
-		# Unaffordable kinds can still be placed in preview (the ghost explains why it is refused).
-		b.disabled = not playing
+	if pid <= 0:
+		return
+	var st := sim.st
+	match mode:
+		"normal":
+			for i in _ratio_buttons.size():
+				_ratio_buttons[i].button_pressed = is_equal_approx(GameHUD.RATIOS[i], hud.ctl.ratio)
+			_send.text = "≈ " + UITheme.num(floorf(st.o_troops[pid] * hud.ctl.ratio))
+			_retreat.visible = sim.attacks.outgoing(pid).any(func(a: AttackSystem.Attack) -> bool: return a.retreat_at == 0)
+		"build":
+			_refresh_build()
+		"attack":
+			var o: int = hud.ctl.selected_owner
+			if o <= 0 or o > st.owner_count:
+				return
+			for i in _attack_ratio.size():
+				_attack_ratio[i].button_pressed = is_equal_approx(GameHUD.RATIOS[i], hud.ctl.ratio)
+			_target_flag.texture = hud.flag_of(o)
+			_target_name.text = st.o_name[o]
+			_target_line.text = tr("BAR_TARGET_LINE") % [UITheme.num(floorf(st.o_troops[pid] * hud.ctl.ratio)), UITheme.num(st.o_troops[o])]
+			var borders: bool = hud.ctl.borders(pid, o)
+			_attack_btn.visible = borders
+			_attack_btn.disabled = sim.phase != Sim.Phase.PLAYING or not sim.is_player_alive()
+			_landing_btn.visible = not borders
+	reset_size()
+
+
+func _refresh_build() -> void:
+	var sim := hud.sim
+	var pid := sim.player_id
+	for c: String in _cat_buttons:
+		(_cat_buttons[c] as Button).button_pressed = c == category
+	_zones.set_pressed_no_signal((hud.ctl.zones as ZoneLayer).show_all if hud.ctl.get("zones") != null else false)
+	var kinds: Array[int] = []
+	for k in GameHUD.build_kinds(sim.rules):
+		if BuildingInfo.category(sim.rules, k) == category:
+			kinds.append(k)
+	var key := category + str(kinds)
+	if key != _tiles_key:
+		_tiles_key = key
+		for c in _tiles.get_children():
+			_tiles.remove_child(c)
+			c.queue_free()
+		_tile_buttons.clear()
+		for k in kinds:
+			_tiles.add_child(_tile(k))
+	var quick := hud.quick_kinds()
+	for k: int in _tile_buttons:
+		var b: Button = _tile_buttons[k]
+		var reason := BuildingInfo.blocker(sim, k, pid)
+		var locked := not sim.structures.unlocked(pid, k)
+		b.disabled = locked or sim.phase != Sim.Phase.PLAYING
 		b.set_meta("reason", reason)
-		b.modulate.a = 1.0 if reason == "" else 0.7
 		b.button_pressed = hud.ctl.build_kind == k
+		b.modulate.a = 0.55 if locked else 1.0
+		var price: Label = b.get_meta("price")
+		price.text = UITheme.num(sim.structures.cost(pid, k))
+		price.add_theme_color_override("font_color", UITheme.TEXT_DIM if reason == "" or locked else UITheme.BAD)
+		(b.get_meta("key") as Control).visible = quick.has(k)
+	var shown: int = hud.ctl.build_kind if hud.ctl.build_kind >= 0 else (kinds[0] if not kinds.is_empty() else -1)
+	_fill_detail(shown)
+
+
+func _tile(k: int) -> Button:
+	var sim := hud.sim
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_NONE
+	b.toggle_mode = true
+	b.custom_minimum_size = Vector2(92, 74)
+	b.add_theme_stylebox_override("normal", UITheme.box(UITheme.SURFACE_2, UITheme.R_M, Color.TRANSPARENT, 4))
+	b.add_theme_stylebox_override("hover", UITheme.box(UITheme.SURFACE_3, UITheme.R_M, Color.TRANSPARENT, 4))
+	b.add_theme_stylebox_override("pressed", UITheme.box(Color(UITheme.ACCENT, 0.22), UITheme.R_M, Color.TRANSPARENT, 4))
+	b.add_theme_stylebox_override("disabled", UITheme.box(Color(UITheme.SURFACE_2, 0.6), UITheme.R_M, Color.TRANSPARENT, 4))
+	var v := UITheme.vbox(1)
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	v.alignment = BoxContainer.ALIGNMENT_CENTER
+	var ic := Icons.rect(Symbols.building_id(sim.rules, k), 28, Color("#f2efe8"))
+	ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	v.add_child(ic)
+	var title := BuildingInfo.title(sim.rules, k)
+	var n := UITheme.label(title, 12 if title.length() <= 12 else 11, UITheme.TEXT)
+	n.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	n.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	n.clip_text = true
+	n.custom_minimum_size.x = 82
+	v.add_child(n)
+	var ph := UITheme.hbox(3)
+	ph.alignment = BoxContainer.ALIGNMENT_CENTER
+	ph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var price := UITheme.label("", 11, UITheme.TEXT_DIM)
+	price.add_theme_font_override("font", UITheme.font_numbers)
+	ph.add_child(price)
+	v.add_child(ph)
+	b.add_child(v)
+	var quick_i := hud.quick_kinds().find(k)
+	var key := UITheme.key_cap(str(quick_i + 1) if quick_i >= 0 else "")
+	key.position = Vector2(4, 4)
+	b.add_child(key)
+	b.set_meta("price", price)
+	b.set_meta("key", key)
+	var kk := k
+	b.pressed.connect(func() -> void:
+		if hud.ctl.build_kind == kk:
+			hud.ctl.cancel_build()
+		else:
+			hud.ctl.begin_build(kk))
+	b.mouse_entered.connect(func() -> void: _fill_detail(kk))
+	b.mouse_exited.connect(func() -> void: _shown_kind = -2)
+	Hints.attach(b, func() -> Dictionary: return {"title": BuildingInfo.title(sim.rules, kk),
+		"text": BuildingInfo.short(sim.rules, kk), "reason": String(b.get_meta("reason", ""))})
+	_tile_buttons[k] = b
+	return b
+
+
+## The one detail block: what the building is for, its effect, price, time, radius, and the reason
+## when it cannot be built; placement keys while placing.
+func _fill_detail(k: int) -> void:
+	if k == _shown_kind:
+		return
+	_shown_kind = k
+	for c in _detail.get_children():
+		_detail.remove_child(c)
+		c.queue_free()
+	if k < 0:
+		return
+	var sim := hud.sim
+	var pid := sim.player_id
+	var r := sim.rules
+	_detail.add_child(UITheme.label(BuildingInfo.title(r, k), UITheme.T_BODY, UITheme.TEXT, true))
+	var eff := BuildingInfo.effects(r, k)
+	var d := UITheme.label(eff[0] if not eff.is_empty() else BuildingInfo.short(r, k), 12, UITheme.TEXT_DIM)
+	d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	d.custom_minimum_size.x = 250
+	_detail.add_child(d)
+	var facts := PackedStringArray()
+	facts.append("%s %s" % [UITheme.num(sim.structures.cost(pid, k)), tr("BAR_GOLD_SHORT")])
+	if r.building_supplies(k) > 0.0:
+		facts.append("%s %s" % [UITheme.num(r.building_supplies(k)), tr("BAR_SUPPLIES_SHORT")])
+	facts.append("%d %s" % [ceili(float(r.building_ticks(k)) / float(r.tick_rate)), tr("SEC_SHORT")])
+	if r.building_radius(k) > 0.0:
+		facts.append(tr("BI_TILES_R") % roundi(r.building_radius(k)))
+	var fl := UITheme.label(" · ".join(facts), 12, UITheme.TEXT_FAINT)
+	fl.add_theme_font_override("font", UITheme.font_numbers)
+	_detail.add_child(fl)
+	var reason := BuildingInfo.blocker(sim, k, pid)
+	if reason != "":
+		var rl := UITheme.label(reason, 12, UITheme.BAD)
+		rl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		rl.custom_minimum_size.x = 250
+		_detail.add_child(rl)
+	elif hud.ctl.build_kind == k:
+		_detail.add_child(UITheme.label(tr("BAR_PLACE_KEYS"), 12, UITheme.TEXT_FAINT))

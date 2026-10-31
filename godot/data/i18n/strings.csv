@@ -114,6 +114,23 @@ SETTINGS_EDGE_SCROLL,Прокрутка карты у края экрана,Scro
 SETTINGS_AI_DEBUG,Отладка AI (F3),AI debugging (F3)
 CREDITS_TITLE,Титры и лицензии,Credits & licences
 CREDITS_ICONS,Иконки,Icons
+BAR_BUILD,Строительство,Build
+DOCK_BUILD_FULL,Строительство,Construction
+BAR_BUILD_HINT,"Открыть здания: выберите категорию и здание, затем щёлкните по своей земле.","Open the buildings: pick a category and a building, then click your land."
+BCAT_ECONOMY_HINT,"Доход, лимит армии и снаряжение.","Income, army cap and supplies."
+BCAT_MILITARY_HINT,"Здания, усиливающие атаки и флот.",Buildings that strengthen attacks and the fleet.
+BCAT_DEFENSE_HINT,Укрепления и защита от десантов.,Fortifications and protection from landings.
+BCAT_SCIENCE_HINT,Исследования и рост армии.,Research and army growth.
+BAR_CLOSE,Закрыть,Close
+BAR_CLOSE_HINT,Выйти из строительства.,Leave construction.
+BAR_ATTACK_HINT,Отправить выбранную долю армии на это государство. Можно и просто щёлкнуть по его земле.,Send the chosen share of your army against this state. You can also just click its land.
+BAR_CANCEL_ATTACK_HINT,Снять выбор с государства.,Deselect the state.
+BAR_TARGET_LINE,Отправите ≈ %s · у них %s,You send ≈ %s · they have %s
+BAR_GOLD_SHORT,золота,gold
+BAR_SUPPLIES_SHORT,снаряжения,supplies
+BI_TILES_R,радиус %d,radius %d
+BAR_PLACE_KEYS,ЛКМ — поставить · Shift — ещё · ПКМ — отмена,LMB — place · Shift — more · RMB — cancel
+HUD_LB_PILL,Рейтинг · %d-е место,Ranking · #%d
 KEY_SPACE,Пробел,Space
 HUD_LB_ROW_HINT,"Щёлкните, чтобы выбрать это государство и показать его на карте.",Click to select this state and show it on the map.
 AI_NONE,—,—
@@ -473,8 +490,8 @@ RW_ALREADY_PAID,Уже выплачено при выходе,Already paid on le
 TOAST_LEVEL_UP,Новый уровень: %d,Level up: %d
 TOAST_ACHIEVEMENT,Достижение: %s,Achievement: %s
 MENU_GAME_STATS,Статистика,Statistics
-BUILD_TIP_OK,Можно строить здесь — щелчок ставит заказ (Shift — несколько),Can build here — click to place (Shift for several)
-BUILD_TIP_UPGRADE,Улучшение существующей постройки — щелчок подтверждает,Upgrades the existing building — click to confirm
+BUILD_TIP_OK,Можно строить здесь,Can build here
+BUILD_TIP_UPGRADE,Улучшит постройку на уровень,Upgrades the building by one level
 BUILD_TIP_LEVEL,ур. %d,lv. %d
 BUILD_TIP_RADIUS,радиус %d,radius %d
 BUILD_DETAIL_NO_COAST,Порт ставится только на своём побережье рядом с курсором,A port needs your own coast near the cursor
@@ -511,7 +528,7 @@ HUD_ATTACKS,Атаки,Attacks
 HUD_NO_ATTACKS,Нет активных атак,No active attacks
 HUD_RETREAT_TIP,Отступить: войска вернутся через 2 с (75%),Retreat: troops come home in 2 s (75%)
 HUD_RETREATING,отступление,retreating
-HUD_GOAL,Победа: %.1f%% суши из %.0f%%,"Victory: %.1f%% of land, need %.0f%%"
+HUD_GOAL,Победа · %.1f%% из %.0f%%,Victory · %.1f%% of %.0f%%
 HUD_DEFEATED,уничтожено,defeated
 HUD_SPEED_TIP,Пауза (пробел) и скорость (+ / −),Pause (space) and speed (+ / −)
 HUD_BUILD_KEY,"Клавиша %d, затем щелчок по своей земле","Key %d, then click your land"

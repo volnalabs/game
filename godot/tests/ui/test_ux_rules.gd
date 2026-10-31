@@ -71,29 +71,38 @@ func test_glossary_covers_every_hud_value() -> void:
 func test_every_hud_button_is_explained_and_disabled_ones_say_why() -> void:
 	var ctl: Node = await _match(Vector2i(1600, 900))
 	var hud: GameHUD = ctl.hud
-	for tab in ["state", "army", "economy", "build", "research", "log"]:
+	for tab in ["state", "army", "economy", "research", "log"]:
 		hud.dock.open(tab)
 		await _wait(2)
 		for b in hud.find_children("*", "BaseButton", true, false):
 			if (b as BaseButton).is_visible_in_tree():
 				check(_explained(b), "%s: button %s has a label or hint" % [tab, b.get_path()])
-	hud.dock.open("build")
-	await _wait(2)
-	var locked := 0
-	for b in hud.dock.panel.body.find_children("*", "Button", true, false):
-		var bb := b as Button
-		if bb.disabled:
-			locked += 1
-			check(String(bb.get_meta("reason", "")) != "", "disabled build entry explains why")
-	check(locked > 0, "locked buildings are listed with a reason")
 	hud.dock.open("")
+	ctl.open_build_mode()
+	var locked := 0
+	for cat in BuildingInfo.CATEGORIES:
+		hud.command.category = cat
+		hud.command._tiles_key = ""
+		hud.refresh()
+		await _wait(2)
+		for b in hud.command.find_children("*", "BaseButton", true, false):
+			if (b as BaseButton).is_visible_in_tree():
+				check(_explained(b), "build bar: button %s has a label or hint" % b.get_path())
+		for k: int in hud.command._tile_buttons:
+			var bb: Button = hud.command._tile_buttons[k]
+			if bb.disabled:
+				locked += 1
+				check(String(bb.get_meta("reason", "")) != "", "disabled building explains why")
+	check(locked > 0, "locked buildings are listed with a reason")
+	ctl.close_build_mode()
 
 
 func test_layout_fits_target_resolutions() -> void:
 	for size in [Vector2i(1280, 720), Vector2i(1366, 768), Vector2i(1600, 900), Vector2i(1920, 1080)]:
 		var ctl: Node = await _match(size)
 		var hud: GameHUD = ctl.hud
-		hud.dock.open("build")
+		hud.dock.open("research")
+		ctl.open_build_mode()
 		await _wait(4)
 		var rects := {"top": hud.top.get_global_rect(), "dock": hud.dock.get_global_rect(), "command": hud.command.get_global_rect(),
 			"board": hud.board.get_global_rect()}
@@ -184,6 +193,40 @@ func test_building_hover_and_selection() -> void:
 	check(ctl.hud.inspector.visible and ctl.hud.inspector.structure_id == s.id, "selection opens the building page")
 	ctl.select_structure(-1)
 	check_eq(ctl.hud.inspector.structure_id, -1, "deselected")
+
+
+func test_hud_shows_one_context_at_a_time() -> void:
+	var ctl: Node = await _match(Vector2i(1280, 720))
+	var hud: GameHUD = ctl.hud
+	var sim: Sim = ctl.sim
+	ctl.select_owner(0)
+	await _wait(1)
+	check_eq(hud.mode(), "normal", "nothing selected: normal mode")
+	check_eq(hud.command.mode, "normal", "normal bottom bar")
+	check(not hud.build_tip.visible, "no placement tip outside build mode")
+	hud.dock.open("economy")
+	ctl.open_build_mode()
+	await _wait(1)
+	check_eq(hud.command.mode, "build", "build bar replaces the normal bar")
+	check(not hud.dock.panel.visible, "build mode closes the side panel")
+	(hud.dock._buttons["economy"] as Button).pressed.emit()
+	await _wait(1)
+	check(hud.dock.panel.visible and ctl.build_open == false, "a side panel closes build mode")
+	hud.dock.open("")
+	var other := -1
+	for o in range(1, sim.st.owner_count + 1):
+		if o != sim.player_id and sim.st.o_alive[o] == 1:
+			other = o
+			break
+	if other > 0:
+		ctl.paused = true
+		ctl.select_owner(other)
+		await _wait(1)
+		check_eq(hud.command.mode, "attack", "a foreign state switches to the attack bar even while paused")
+		check(hud.board._rows.visible == false, "the ranking folds while the inspector is open")
+		ctl.select_owner(0)
+		await _wait(1)
+		check_eq(hud.command.mode, "normal", "deselecting returns to the normal bar")
 
 
 func test_cleanup() -> void:

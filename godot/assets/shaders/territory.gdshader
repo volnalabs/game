@@ -6,7 +6,7 @@ uniform sampler2D palette : filter_nearest;
 uniform int selected = 0;
 uniform int hovered = 0;
 uniform int player = 0;
-uniform float fill_alpha = 0.48;
+uniform float fill_alpha = 0.40;
 
 void fragment() {
 	vec4 o = texture(TEXTURE, UV);
@@ -17,20 +17,19 @@ void fragment() {
 		int flags = int(o.b * 255.0 + 0.5);
 		vec3 c = texelFetch(palette, ivec2(id % 512, 0), 0).rgb;
 		float a = fill_alpha;
+		// Hover and selection only lift the fill a little: the map stays readable underneath.
 		if (id == hovered) {
-			c = mix(c, vec3(1.0), 0.12);
-			a += 0.1;
+			c = mix(c, vec3(1.0), 0.08);
+			a += 0.05;
 		}
 		if (id == selected) {
-			c = mix(c, vec3(1.0), 0.2);
-			a += 0.16;
+			c = mix(c, vec3(1.0), 0.12);
+			a += 0.08;
 		}
 		if ((flags & 1) != 0) {
-			c *= (id == player) ? 0.55 : 0.68;
-			a = 0.96;
-			if (id == selected) {
-				c = mix(c, vec3(1.0), 0.6);
-			}
+			// A quiet edge: a darker shade of the owner's colour, not a contrasting outline.
+			c *= 0.72;
+			a = 0.78;
 		}
 		COLOR = vec4(c, a);
 	}

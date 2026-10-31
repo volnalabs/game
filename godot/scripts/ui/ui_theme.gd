@@ -6,25 +6,25 @@ extends RefCounted
 ## shares one visual language.
 
 # ---- colour tokens ----
-# v3 (Phase 2A.1): neutral, flat surfaces; secondary text kept above WCAG 4.5:1 / 3:1 on SURFACE.
-const BG := Color("#0b0f14")
-const SURFACE := Color(0.067, 0.085, 0.108, 0.94)
-const SURFACE_2 := Color(0.098, 0.12, 0.147, 0.97)
-const SURFACE_3 := Color(0.135, 0.16, 0.19, 0.99)
-const STROKE := Color(1, 1, 1, 0.08)
-const STROKE_STRONG := Color(1, 1, 1, 0.18)
-const TEXT := Color("#e8edf2")
-const TEXT_DIM := Color("#a6b1bd")
-const TEXT_FAINT := Color("#7d8996")
-const GOLD := Color("#f2c14e")
-const SUPPLY := Color("#7cc4ff")
-const ARMY := Color("#dfe7ef")
-const RESEARCH := Color("#b48cff")
-const CREDITS := Color("#ffd166")
-const XP := Color("#7ee0b8")
-const GOOD := Color("#4fd18b")
-const BAD := Color("#ff5d5d")
-const WARN := Color("#ffb547")
+# v4 (Phase 2A.2): warm neutral surfaces that sit calmly next to the map; one restrained accent.
+const BG := Color("#1b1a18")
+const SURFACE := Color(0.141, 0.133, 0.122, 0.95)
+const SURFACE_2 := Color("#2d2a26")
+const SURFACE_3 := Color("#38332d")
+const STROKE := Color("#464038")
+const STROKE_STRONG := Color("#5a5248")
+const TEXT := Color("#f2efe8")
+const TEXT_DIM := Color("#b5aea3")
+const TEXT_FAINT := Color("#948b7f")
+const GOLD := Color("#dcb46c")
+const SUPPLY := Color("#a9b89b")
+const ARMY := Color("#e8e0d4")
+const RESEARCH := Color("#b9a3cf")
+const CREDITS := Color("#e2c27a")
+const XP := Color("#a5c6a8")
+const GOOD := Color("#83a78a")
+const BAD := Color("#cf7770")
+const WARN := Color("#d2a45f")
 const ACCENT_2 := GOLD
 # Legacy names used by Phase 1 screens.
 const PANEL := SURFACE
@@ -53,7 +53,7 @@ const T_H1 := 34
 const T_DISPLAY := 56
 
 ## Current accent (switchable UI theme cosmetic).
-static var ACCENT: Color = Color("#3ec7d6")
+static var ACCENT: Color = Color("#d58b67")
 static var theme_id: String = "volna"
 
 static var _theme: Theme
@@ -104,10 +104,10 @@ static func theme() -> Theme:
 	t.set_color("font_disabled_color", "Button", TEXT_FAINT)
 	t.set_font("font", "Button", font_medium)
 	t.set_font_size("font_size", "Button", T_BODY)
-	t.set_stylebox("normal", "Button", box(SURFACE_2, R_M, STROKE, 10))
-	t.set_stylebox("hover", "Button", box(SURFACE_3, R_M, STROKE_STRONG, 10))
-	t.set_stylebox("pressed", "Button", box(ACCENT.darkened(0.55), R_M, ACCENT, 10))
-	t.set_stylebox("disabled", "Button", box(Color(0.07, 0.09, 0.12, 0.7), R_M, Color(1, 1, 1, 0.04), 10))
+	t.set_stylebox("normal", "Button", box(SURFACE_2, R_M, Color.TRANSPARENT, 10))
+	t.set_stylebox("hover", "Button", box(SURFACE_3, R_M, Color.TRANSPARENT, 10))
+	t.set_stylebox("pressed", "Button", box(Color(ACCENT, 0.22), R_M, Color.TRANSPARENT, 10))
+	t.set_stylebox("disabled", "Button", box(Color(SURFACE_2, 0.5), R_M, Color.TRANSPARENT, 10))
 	var focus := box(Color.TRANSPARENT, R_M, ACCENT, 10)
 	focus.set_border_width_all(2)
 	t.set_stylebox("focus", "Button", focus)
@@ -121,18 +121,18 @@ static func theme() -> Theme:
 	t.set_color("font_hover_pressed_color", "CheckBox", TEXT)
 	t.set_stylebox("panel", "PanelContainer", box(SURFACE, R_L, STROKE, 12))
 	t.set_stylebox("panel", "Panel", box(SURFACE, R_L, STROKE, 12))
-	t.set_stylebox("normal", "LineEdit", box(Color(0.05, 0.07, 0.1), R_S, STROKE_STRONG, 8))
-	t.set_stylebox("focus", "LineEdit", box(Color(0.05, 0.07, 0.1), R_S, ACCENT, 8))
+	t.set_stylebox("normal", "LineEdit", box(Color("#1f1d1a"), R_M, STROKE, 8))
+	t.set_stylebox("focus", "LineEdit", box(Color("#1f1d1a"), R_M, ACCENT, 8))
 	t.set_color("caret_color", "LineEdit", ACCENT)
 	t.set_color("font_placeholder_color", "LineEdit", TEXT_FAINT)
-	t.set_stylebox("normal", "OptionButton", box(SURFACE_2, R_S, STROKE_STRONG, 8))
-	t.set_stylebox("hover", "OptionButton", box(SURFACE_3, R_S, ACCENT.darkened(0.3), 8))
-	t.set_stylebox("pressed", "OptionButton", box(SURFACE_3, R_S, ACCENT, 8))
-	t.set_stylebox("focus", "OptionButton", box(Color.TRANSPARENT, R_S, ACCENT.darkened(0.3), 8))
+	t.set_stylebox("normal", "OptionButton", box(SURFACE_2, R_M, Color.TRANSPARENT, 8))
+	t.set_stylebox("hover", "OptionButton", box(SURFACE_3, R_M, Color.TRANSPARENT, 8))
+	t.set_stylebox("pressed", "OptionButton", box(SURFACE_3, R_M, Color.TRANSPARENT, 8))
+	t.set_stylebox("focus", "OptionButton", box(Color.TRANSPARENT, R_M, Color(ACCENT, 0.8), 8))
 	t.set_stylebox("panel", "PopupMenu", box(SURFACE_3, R_S, STROKE_STRONG, 6))
 	t.set_color("font_color", "PopupMenu", TEXT)
 	t.set_color("font_hover_color", "PopupMenu", Color.WHITE)
-	t.set_stylebox("hover", "PopupMenu", box(ACCENT.darkened(0.5), R_S, Color.TRANSPARENT, 4))
+	t.set_stylebox("hover", "PopupMenu", box(Color(ACCENT, 0.22), R_S, Color.TRANSPARENT, 4))
 	t.set_stylebox("panel", "TooltipPanel", box(SURFACE_2, R_S, STROKE_STRONG, 10))
 	t.set_color("font_color", "TooltipLabel", TEXT)
 	t.set_font_size("font_size", "TooltipLabel", T_BODY)
@@ -141,7 +141,7 @@ static func theme() -> Theme:
 	t.set_stylebox("grabber_area_highlight", "HSlider", box(ACCENT, 3, Color.TRANSPARENT, 2))
 	t.set_stylebox("background", "ProgressBar", box(Color(1, 1, 1, 0.07), 4, Color.TRANSPARENT, 0))
 	t.set_stylebox("fill", "ProgressBar", box(ACCENT, 4, Color.TRANSPARENT, 0))
-	t.set_stylebox("panel", "ItemList", box(Color(0.05, 0.07, 0.1), R_S, STROKE, 6))
+	t.set_stylebox("panel", "ItemList", box(Color("#1f1d1a"), R_S, STROKE, 6))
 	t.set_stylebox("panel", "ScrollContainer", StyleBoxEmpty.new())
 	t.set_stylebox("panel", "TabContainer", box(SURFACE, R_M, STROKE, 10))
 	t.set_stylebox("tab_selected", "TabContainer", box(SURFACE_3, R_S, Color.TRANSPARENT, 8))
@@ -225,11 +225,18 @@ static func button(text: String, cb: Callable = Callable(), min_w: int = 0, icon
 	return b
 
 
+## The one primary action of a view: solid accent with dark text.
 static func accent_button(text: String, cb: Callable = Callable(), min_w: int = 0, icon: String = "") -> Button:
 	var b := button(text, cb, min_w, icon)
-	b.add_theme_stylebox_override("normal", box(ACCENT.darkened(0.35), R_M, ACCENT, 10))
-	b.add_theme_stylebox_override("hover", box(ACCENT.darkened(0.2), R_M, ACCENT.lightened(0.3), 10))
-	b.add_theme_stylebox_override("pressed", box(ACCENT.darkened(0.5), R_M, ACCENT, 10))
+	b.add_theme_stylebox_override("normal", box(ACCENT, R_M, Color.TRANSPARENT, 10))
+	b.add_theme_stylebox_override("hover", box(ACCENT.lightened(0.1), R_M, Color.TRANSPARENT, 10))
+	b.add_theme_stylebox_override("pressed", box(ACCENT.darkened(0.12), R_M, Color.TRANSPARENT, 10))
+	b.add_theme_stylebox_override("disabled", box(Color(ACCENT, 0.35), R_M, Color.TRANSPARENT, 10))
+	for k in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		b.add_theme_color_override(k, Color("#1b1a18"))
+	b.add_theme_color_override("icon_normal_color", Color("#1b1a18"))
+	b.add_theme_color_override("icon_hover_color", Color("#1b1a18"))
+	b.add_theme_color_override("icon_pressed_color", Color("#1b1a18"))
 	return b
 
 
@@ -237,7 +244,7 @@ static func ghost_button(text: String, cb: Callable = Callable(), icon: String =
 	var b := button(text, cb, 0, icon)
 	b.add_theme_stylebox_override("normal", box(Color.TRANSPARENT, R_M, Color.TRANSPARENT, 8))
 	b.add_theme_stylebox_override("hover", box(Color(1, 1, 1, 0.06), R_M, Color.TRANSPARENT, 8))
-	b.add_theme_stylebox_override("pressed", box(ACCENT.darkened(0.6), R_M, Color.TRANSPARENT, 8))
+	b.add_theme_stylebox_override("pressed", box(Color(ACCENT, 0.2), R_M, Color.TRANSPARENT, 8))
 	return b
 
 
@@ -253,7 +260,7 @@ static func icon_button(icon: String, tooltip: String, cb: Callable = Callable()
 	b.toggle_mode = toggle
 	b.add_theme_stylebox_override("normal", box(Color.TRANSPARENT, R_M, Color.TRANSPARENT, 4))
 	b.add_theme_stylebox_override("hover", box(Color(1, 1, 1, 0.07), R_M, Color.TRANSPARENT, 4))
-	b.add_theme_stylebox_override("pressed", box(ACCENT.darkened(0.55), R_M, ACCENT.darkened(0.1), 4))
+	b.add_theme_stylebox_override("pressed", box(Color(ACCENT, 0.2), R_M, Color.TRANSPARENT, 4))
 	b.add_theme_color_override("icon_normal_color", TEXT_DIM)
 	b.add_theme_color_override("icon_hover_color", TEXT)
 	b.add_theme_color_override("icon_pressed_color", Color.WHITE)
@@ -316,7 +323,7 @@ static func rail_button(icon: String, text: String, cb: Callable = Callable(), w
 	b.custom_minimum_size = Vector2(w, 50)
 	b.add_theme_stylebox_override("normal", box(Color.TRANSPARENT, R_M, Color.TRANSPARENT, 4))
 	b.add_theme_stylebox_override("hover", box(Color(1, 1, 1, 0.06), R_M, Color.TRANSPARENT, 4))
-	b.add_theme_stylebox_override("pressed", box(Color(ACCENT, 0.16), R_M, Color(ACCENT, 0.7), 4))
+	b.add_theme_stylebox_override("pressed", box(Color(1, 1, 1, 0.08), R_M, Color.TRANSPARENT, 4))
 	b.add_theme_stylebox_override("disabled", box(Color.TRANSPARENT, R_M, Color.TRANSPARENT, 4))
 	var v := vbox(2)
 	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -325,7 +332,7 @@ static func rail_button(icon: String, text: String, cb: Callable = Callable(), w
 	var ic := Icons.rect(icon, 20, TEXT)
 	ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	v.add_child(ic)
-	var l := label(text, 11, TEXT_DIM)
+	var l := label(text, 12, TEXT_DIM)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(l)
 	b.add_child(v)

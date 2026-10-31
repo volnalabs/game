@@ -19,8 +19,8 @@ func _run() -> void:
 	var w := 200 + sizes.size() * cell * 2
 	var h := 30 + ids.size() * cell
 	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
-	img.fill(Color("#141b24"))
-	var plate := Color("#2a3644")
+	img.fill(Color("#24221f"))
+	var plate := Color("#38332d")
 	for i in ids.size():
 		var id: String = ids[i]
 		var y := 30 + i * cell

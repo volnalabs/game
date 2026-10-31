@@ -50,7 +50,7 @@ func _inside(c: Control, size: Vector2i, what: String) -> void:
 func test_dock_tabs_open_close_and_build() -> void:
 	var ctl: Node = await _match(Vector2i(1600, 900))
 	var hud: GameHUD = ctl.hud
-	for id in ["state", "army", "economy", "build", "log"]:
+	for id in ["state", "army", "economy", "research", "log"]:
 		hud.dock.open(id)
 		await _wait(2)
 		check(hud.dock.panel.visible, "%s panel visible" % id)
@@ -70,7 +70,7 @@ func test_inspector_tabs_for_player_and_bot() -> void:
 		ctl.select_owner(who)
 		await _wait(1)
 		check(hud.inspector.visible, "inspector opens for %d" % who)
-		for t in ["overview", "economy", "army", "buildings", "threats", "actions", "ai"]:
+		for t in ["overview", "economy", "army", "buildings", "threats", "ai"]:
 			hud.inspector.set_tab(t)
 			hud.inspector.refresh(true)
 			await _wait(1)
@@ -95,7 +95,8 @@ func test_hud_fits_small_and_large_windows() -> void:
 	for size in [Vector2i(1280, 720), Vector2i(1920, 1080)]:
 		var ctl: Node = await _match(size)
 		var hud: GameHUD = ctl.hud
-		hud.dock.open("build")
+		hud.dock.open("research")
+		ctl.open_build_mode()
 		await _wait(3)
 		_inside(hud.top, size, "top bar")
 		_inside(hud.command, size, "command bar")

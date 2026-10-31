@@ -5,7 +5,8 @@ extends Node2D
 ## the player's buildings when zones are on, for the selected state as well, and for the kind
 ## being placed.
 
-const KIND_COLORS := {"defense": Color("#6fb7ff"), "sam": Color("#ff7a7a"), "silo": Color("#ffb454")}
+const KIND_COLORS := {"defense": Color("#d2a45f"), "bunker": Color("#c9b79c"), "radar": Color("#a9b89b"),
+	"airbase": Color("#d58b67"), "sam": Color("#cf7770"), "silo": Color("#b9a3cf")}
 
 var sim: Sim
 var cam: MapCamera
@@ -36,8 +37,13 @@ func visible_zones() -> bool:
 	return show_all or focus_kind >= 0 or selected_structure >= 0
 
 
+var _drawn: bool = false
+
+
 func _process(_delta: float) -> void:
-	if visible_zones():
+	# Redraw while zones are shown, and once more after they are switched off (to clear them).
+	if visible_zones() or _drawn:
+		_drawn = visible_zones()
 		queue_redraw()
 
 
@@ -63,10 +69,11 @@ func _draw() -> void:
 			continue
 		var c := kind_color(sim.rules, s.kind)
 		if not mine:
-			c = c.lerp(UITheme.BAD, 0.5)
+			c = c.lerp(UITheme.BAD, 0.4)
 		var active := s.active_levels > 0
-		draw_circle(pos, r, Color(c, 0.10 if active else 0.05))
-		_dashed_circle(pos, r, Color(c, 0.85 if active else 0.45), lw, not active)
+		# Calm areas: a light wash and a thin edge, so the map stays readable underneath.
+		draw_circle(pos, r, Color(c, 0.08 if active else 0.04))
+		_dashed_circle(pos, r, Color(c, 0.45 if active else 0.3), lw * 0.8, not active)
 
 
 func _dashed_circle(p: Vector2, r: float, c: Color, w: float, dashed: bool) -> void:

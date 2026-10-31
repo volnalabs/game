@@ -128,6 +128,9 @@ func _run() -> void:
 	var hy: int = home / sim.map.width
 	for y in range(hy - 45, hy + 45):
 		for x in range(hx - 45, hx + 45):
+			# A round grab around the start (a square one drew an unnatural rectangular state).
+			if (x - hx) * (x - hx) + (y - hy) * (y - hy) > 45 * 45:
+				continue
 			var t := sim.map.tile_at(clampi(x, 0, sim.map.width - 1), clampi(y, 0, sim.map.height - 1))
 			if sim.map.land[t] == 1 and sim.st.struct_at[t] < 0:
 				sim.st.set_owner(t, sim.player_id)
@@ -179,10 +182,10 @@ func _run() -> void:
 	ctl.hud.dock.open("economy")
 	await _wait(5)
 	await _shot("07_economy_panel")
-	ctl.hud.dock.open("build")
+	ctl.open_build_mode()
 	await _wait(5)
 	await _shot("07b_build_panel")
-	ctl.hud.dock.open("")
+	ctl.close_build_mode()
 	sim.st.add_supplies(sim.player_id, 5000.0)
 	sim.st.add_gold(sim.player_id, 1000000.0)
 	sim.submit(Commands.build(sim.player_id, Rules.B_DEFENSE, sim.st.o_spawn_tile[sim.player_id]))

@@ -11,14 +11,15 @@ var _icon: TextureRect
 
 
 func _init(width: int = 360) -> void:
-	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_M, UITheme.STROKE, 12))
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, 10, Color.TRANSPARENT, 12))
 	custom_minimum_size.x = width
 	var v := UITheme.vbox(10)
 	add_child(v)
 	var head := UITheme.hbox(8)
 	_icon = Icons.rect("ui_info", 20, UITheme.TEXT_DIM)
 	head.add_child(_icon)
-	_title = UITheme.label("", UITheme.T_TITLE, UITheme.TEXT, true)
+	_title = UITheme.label("", UITheme.T_BODY_L, UITheme.TEXT)
+	_title.add_theme_font_override("font", UITheme.font_medium)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(_title)
 	var close := UITheme.icon_button("ui_close", "", func() -> void: closed.emit(), 30)

@@ -21,6 +21,8 @@ var paused: bool = false
 var menu_open: bool = false
 var ratio: float = 0.2
 var build_kind: int = -1
+## Build mode: the bottom bar shows the buildings; build_kind is the one being placed (-1 = none).
+var build_open: bool = false
 var selected_owner: int = 0
 var hover_owner: int = 0
 var hover_tile: int = -1
@@ -357,6 +359,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif mb.position.distance_to(_press_pos) < 5.0:
 				if build_kind >= 0:
 					cancel_build()
+				elif build_open:
+					close_build_mode()
 				else:
 					var t := tile_at_screen(mb.position)
 					select_owner(sim.st.owner[t] if t >= 0 else 0)
@@ -375,6 +379,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					hud.set_ui_hidden(false)
 				elif build_kind >= 0:
 					cancel_build()
+				elif build_open:
+					close_build_mode()
+				elif selected_owner > 0:
+					select_owner(0)
 				elif menu_open:
 					close_pause_menu()
 				else:
@@ -405,6 +413,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				open_encyclopedia()
 			KEY_Z:
 				toggle_zones()
+			KEY_B:
+				if build_open:
+					close_build_mode()
+				else:
+					open_build_mode()
 
 
 func _left_click(t: int) -> void:
@@ -501,8 +514,30 @@ func begin_build(kind: int) -> void:
 	if not GameHUD.build_kinds(sim.rules).has(kind):
 		return
 	build_kind = kind
+	build_open = true
 	select_structure(-1)
+	if selected_owner > 0 and selected_owner != sim.player_id:
+		select_owner(0)
+	hud.dock.open("")  # one context at a time: the build bar replaces side panels
 	hud.tip("build")
+	hud.refresh()
+
+
+## Opens the build bar (categories and buildings) without picking a building yet.
+func open_build_mode() -> void:
+	if sim.phase != Sim.Phase.PLAYING:
+		return
+	build_open = true
+	select_structure(-1)
+	if selected_owner > 0 and selected_owner != sim.player_id:
+		select_owner(0)
+	hud.dock.open("")  # one context at a time: the build bar replaces side panels
+	hud.refresh()
+
+
+func close_build_mode() -> void:
+	build_kind = -1
+	build_open = false
 	hud.refresh()
 
 
@@ -591,7 +626,7 @@ func _update_structure_hover() -> void:
 		return
 	var s: StructureSystem.Structure = sim.structures.structs[sid]
 	var r := structures.plate_radius() * cam.zoom.x
-	Hints.show_at(Rect2(_mouse_screen - Vector2(r, r), Vector2(r, r) * 2.0), BuildingInfo.structure_hint(sim, s))
+	Hints.show_at(Rect2(_mouse_screen - Vector2(r, r), Vector2(r, r) * 2.0), BuildingInfo.structure_brief(sim, s))
 
 
 func toggle_zones() -> void:

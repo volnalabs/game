@@ -1,8 +1,9 @@
 class_name BuildTip
 extends PanelContainer
-## Floating card next to the cursor while placing a building: name, cost in gold and supplies
-## (red when short), build time, effect radius, and whether / why the order can be placed —
-## everything from StructureSystem.preview.
+## Small label next to the cursor while placing a building: one line saying whether the order can
+## be placed here (or why not). Name, cost, time and radius are already in the bottom build bar, so
+## the cost row appears only when gold or supplies are short (in red). Data from
+## StructureSystem.preview.
 
 var _icon: TextureRect
 var _name: Label
@@ -13,22 +14,24 @@ var _radius: Label
 var _status: Label
 var _sup_row: Control
 var _radius_row: Control
+var _costs: Control
 
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_theme_stylebox_override("panel", UITheme.box(Color(UITheme.SURFACE, 0.96), UITheme.R_M, UITheme.STROKE_STRONG, 10))
-	var v := UITheme.vbox(4)
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE_2, UITheme.R_S, Color.TRANSPARENT, 7))
+	var v := UITheme.vbox(3)
 	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(v)
 	var h := UITheme.hbox(8)
 	_icon = TextureRect.new()
-	_icon.custom_minimum_size = Vector2(26, 26)
+	_icon.custom_minimum_size = Vector2(16, 16)
 	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	h.add_child(_icon)
-	_name = UITheme.label("", UITheme.T_BODY_L, UITheme.TEXT, true)
+	_name = UITheme.label("", UITheme.T_CAPTION, UITheme.TEXT_DIM)
 	h.add_child(_name)
+	h.visible = false
 	v.add_child(h)
 	var costs := UITheme.hbox(12)
 	var g := UITheme.hbox(4)
@@ -51,11 +54,12 @@ func _init() -> void:
 	_radius = UITheme.label("", UITheme.T_BODY, UITheme.TEXT_DIM)
 	_radius_row.add_child(_radius)
 	costs.add_child(_radius_row)
+	_costs = costs
 	v.add_child(costs)
 	_status = UITheme.label("", UITheme.T_CAPTION, UITheme.GOOD)
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_status.custom_minimum_size.x = 240
 	v.add_child(_status)
+	v.move_child(_status, 0)
 	for c in find_children("*", "Control", true, false):
 		(c as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
@@ -66,7 +70,7 @@ func show_preview(pv: Dictionary, sim: Sim, at: Vector2) -> void:
 	var pid := sim.player_id
 	var kind: int = pv["kind"]
 	var id := sim.rules.b_ids[kind]
-	_icon.texture = Icons.tex("b_" + id, 26)
+	_icon.texture = Icons.tex("b_" + id, 16)
 	_name.text = tr("B_" + id.to_upper())
 	if int(pv["upgrade"]) >= 0:
 		_name.text += "  " + tr("BUILD_TIP_LEVEL") % int(pv["level"])
@@ -79,7 +83,13 @@ func show_preview(pv: Dictionary, sim: Sim, at: Vector2) -> void:
 	_sup.add_theme_color_override("font_color", UITheme.TEXT if sim.st.o_supplies[pid] >= sup else UITheme.BAD)
 	_time.text = "%d %s" % [ceili(float(pv["ticks"]) / 10.0), tr("SEC_SHORT")]
 	var radius: float = pv["radius"]
-	_radius_row.visible = radius > 0.0
+	var short_gold: bool = sim.st.o_gold[pid] < gold
+	var short_sup: bool = sup > 0.0 and sim.st.o_supplies[pid] < sup
+	_costs.visible = short_gold or short_sup
+	_sup_row.visible = short_sup
+	(_gold.get_parent() as Control).visible = short_gold
+	(_time.get_parent() as Control).visible = false
+	_radius_row.visible = false
 	_radius.text = tr("BUILD_TIP_RADIUS") % roundi(radius)
 	if pv["ok"]:
 		_status.text = tr("BUILD_TIP_UPGRADE") if int(pv["upgrade"]) >= 0 else tr("BUILD_TIP_OK")
@@ -87,6 +97,10 @@ func show_preview(pv: Dictionary, sim: Sim, at: Vector2) -> void:
 	else:
 		_status.text = reason_text(pv, sim.rules)
 		_status.add_theme_color_override("font_color", UITheme.BAD)
+	# Short status stays on one line; long refusals wrap at a readable width.
+	var long := _status.text.length() > 34
+	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if long else TextServer.AUTOWRAP_OFF
+	_status.custom_minimum_size.x = 220.0 if long else 0.0
 	visible = true
 	reset_size()
 	var vs := get_viewport_rect().size

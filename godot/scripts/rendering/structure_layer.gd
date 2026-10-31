@@ -1,11 +1,9 @@
 class_name StructureLayer
 extends Node2D
-## Buildings on the map, drawn with the game's own symbols (Symbols) at a screen size that grows
-## with zoom, in three levels of detail so they never turn into identical dots:
-##   far  (< 14 px) — the building's silhouette in the owner's colour with a dark outline;
-##   full (14-30 px) — an owner-coloured plate with the symbol;
-##   near (> 30 px) — the detailed symbol, level pips and the construction ring.
-## Also: hover / selection highlight and a short pop when construction completes.
+## Buildings on the map, drawn with the game's own symbols (Symbols) as free-standing silhouettes —
+## no plates or rings: a pale tint of the owner's colour over a soft shadow, at a screen size that
+## grows gently with zoom, in three levels of detail (far silhouette / full / near with level dots).
+## Hover lifts a building slightly, selection adds a calm halo; a short pop when it completes.
 
 const POP_SECS := 0.6
 
@@ -36,7 +34,7 @@ func _process(delta: float) -> void:
 ## On-screen symbol size in pixels for the current zoom.
 func symbol_px() -> float:
 	var z := cam.zoom.x
-	return clampf(12.0 + (z - 1.0) * 4.5, 12.0, 44.0)
+	return clampf(13.0 + (z - 1.0) * 3.4, 13.0, 36.0)
 
 
 ## Plate radius in tiles (half the symbol size plus a margin).
@@ -94,50 +92,38 @@ func _draw() -> void:
 			var t := float(_pops[s.id]) / POP_SECS
 			k = 1.0 + 0.4 * sin(t * PI)
 			draw_arc(pos, r * (1.2 + t * 2.2), 0.0, TAU, 32, Color(oc.lightened(0.4), 1.0 - t), lw * 1.5)
-		if s.id == selected or s.id == hovered:
-			draw_arc(pos, r * 1.45, 0.0, TAU, 40, Color(1, 1, 1, 0.95 if s.id == selected else 0.55), lw * 1.6)
 		var sid := icon_id(sim.rules, s.kind)
-		if lod == "far":
-			_draw_silhouette(sid, pos, half * k, oc.lightened(0.25), building, z)
-		else:
-			_draw_plate(s, pos, r * k, oc, building, lw)
-			var tex := Symbols.tex_px(sid, int(px * 0.86), lod)
-			if tex != null:
-				var ir := half * 0.86 * k
-				draw_texture_rect(tex, Rect2(pos - Vector2(ir, ir), Vector2(ir, ir) * 2.0), false,
-					Color(1, 1, 1, 0.55) if building else Color(1, 1, 1, 0.97))
+		var tint := Color("#f2efe8").lerp(oc, 0.38)
+		if building:
+			tint = Color(tint, 0.55)
+		var hh := half * k * (1.12 if s.id == hovered else 1.0)
+		if s.id == selected:
+			draw_circle(pos + Vector2(0, hh * 0.15), hh * 1.25, Color(1, 1, 1, 0.10))
+			draw_arc(pos + Vector2(0, hh * 0.15), hh * 1.25, 0.0, TAU, 40, Color(1, 1, 1, 0.55), lw)
+		# The player's cosmetic building skin: a faint shape under their own buildings.
+		if s.owner == sim.player_id and player_shape != "circle":
+			var pts := PlateShape.points(player_shape, pos + Vector2(0, hh * 0.1), hh * 1.15)
+			if not pts.is_empty():
+				draw_colored_polygon(pts, Color(oc, 0.22))
+		_draw_symbol(sid, pos, hh, tint, lod, z)
 		if s.done_tick > 0:
 			var total := float(sim.rules.building_ticks(s.kind))
 			var prog := clampf(1.0 - float(s.done_tick - now) / maxf(total, 1.0), 0.0, 1.0)
-			draw_arc(pos, r * 1.2, -PI / 2.0, -PI / 2.0 + TAU * prog, 32, UITheme.ACCENT, lw * 2.0)
+			draw_arc(pos + Vector2(0, half * 0.15), half * 1.05, -PI / 2.0, -PI / 2.0 + TAU * prog, 32, Color(1, 1, 1, 0.7), lw * 1.4)
 		if s.level > 1 and lod == "near":
-			_pips(pos + Vector2(0, r * 1.5), s.level, r * 0.16, oc.lightened(0.5))
+			_pips(pos + Vector2(0, half * 1.35), s.level, half * 0.11, Color("#f2efe8"))
 
 
-## Far zoom: the building's own silhouette, owner-coloured, with a dark outline (no plate).
-func _draw_silhouette(sid: String, pos: Vector2, half: float, col: Color, building: bool, z: float) -> void:
+## The building's silhouette with a soft drop shadow (no outline, no plate).
+func _draw_symbol(sid: String, pos: Vector2, half: float, col: Color, lod: String, z: float) -> void:
 	var px := maxi(10, int(round(half * 2.0 * z)))
-	var tex := Symbols.tex_px(sid, px, "far")
+	var tex := Symbols.tex_px(sid, px, lod)
 	if tex == null:
 		return
 	var rect := Rect2(pos - Vector2(half, half), Vector2(half, half) * 2.0)
-	var o := 1.2 / z
-	for d: Vector2 in [Vector2(-o, 0), Vector2(o, 0), Vector2(0, -o), Vector2(0, o)]:
-		draw_texture_rect(tex, Rect2(rect.position + d, rect.size), false, Color(0.03, 0.05, 0.08, 0.9))
-	draw_texture_rect(tex, rect, false, Color(col, 0.6) if building else col)
-
-
-func _draw_plate(s: StructureSystem.Structure, pos: Vector2, r: float, oc: Color, building: bool, lw: float) -> void:
-	var fill := Color(0.10, 0.12, 0.15, 0.94) if not building else Color(0.16, 0.17, 0.19, 0.9)
-	var shape_pts := PlateShape.points(player_shape, pos, r) if s.owner == sim.player_id else PackedVector2Array()
-	if shape_pts.is_empty():
-		draw_circle(pos, r, fill)
-		draw_arc(pos, r, 0.0, TAU, 32, oc.lightened(0.2), lw * 1.6)
-	else:
-		draw_colored_polygon(shape_pts, fill)
-		var closed := shape_pts.duplicate()
-		closed.append(shape_pts[0])
-		draw_polyline(closed, oc.lightened(0.2), lw * 1.6)
+	var o := maxf(0.6, half * z * 0.09) / z
+	draw_texture_rect(tex, Rect2(rect.position + Vector2(o * 0.4, o), rect.size), false, Color(0.08, 0.07, 0.06, 0.55 * col.a))
+	draw_texture_rect(tex, rect, false, col)
 
 
 func _pips(at: Vector2, level: int, pr: float, c: Color) -> void:
