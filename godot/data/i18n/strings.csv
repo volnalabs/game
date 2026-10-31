@@ -1,3 +1,257 @@
 keys,ru,en
 PLAYER_DEFAULT_NAME,Игрок,Player
 FREE_LAND,ничья земля,free land
+GAME_SUBTITLE,Мировая стратегия,World Strategy
+FOOTER_COPYRIGHT,© OpenFront and Contributors · основано на RoWorld (© 2026 Snick Co.) · VolnaLabs · GNU AGPL v3,© OpenFront and Contributors · based on RoWorld (© 2026 Snick Co.) · VolnaLabs · GNU AGPL v3
+MENU_NEW_GAME,Новая игра,New game
+MENU_LOAD,Загрузить,Load game
+MENU_GENERATOR,Генератор миров,World generator
+MENU_SETTINGS,Настройки,Settings
+MENU_CREDITS,Титры и лицензии,Credits & licences
+MENU_QUIT,Выход,Quit
+BACK,Назад,Back
+NEXT,Далее,Next
+DELETE,Удалить,Delete
+LOADING,Загрузка мира…,Loading the world…
+GENERATING,Генерация мира…,Generating the world…
+SOON,скоро,soon
+PER_SEC,с,s
+MAP_SELECT_TITLE,Выбор карты,Choose a map
+RANDOM_WORLD,Случайный мир,Random world
+MAP_STATS,%d×%d · континентов: %d · островов: %d · государств: %d,%d×%d · continents: %d · islands: %d · states: %d
+MAP_LAND,Суша: %s тайлов,Land: %s tiles
+MAP_RECOMMENDED,Рекомендуется противников: %d–%d,Recommended opponents: %d–%d
+CATEGORY_REAL,реальная,real
+CATEGORY_FICTIONAL,вымышленная,fictional
+CATEGORY_REGIONAL,регион,regional
+CATEGORY_GENERATED,сгенерированная,generated
+FEATURE_CONTINENTS,континенты,continents
+FEATURE_OCEANS,океаны,oceans
+FEATURE_STRAITS,проливы,straits
+FEATURE_ISLANDS,острова,islands
+FEATURE_DENSE,плотные границы,dense borders
+FEATURE_PENINSULAS,полуострова,peninsulas
+FEATURE_INLAND_SEAS,внутренние моря,inland seas
+FEATURE_LARGE,большая карта,large map
+FEATURE_MOUNTAINS,горы,mountains
+FEATURE_LAND_WAR,сухопутная война,land war
+FEATURE_ARCTIC_ISLANDS,арктические острова,arctic islands
+FEATURE_CARIBBEAN,Карибы,Caribbean
+FEATURE_ARCHIPELAGO,архипелаг,archipelago
+FEATURE_NAVAL,важен флот,naval
+FEATURE_ISLAND_STATES,островные государства,island states
+FEATURE_SUPERCONTINENT,суперконтинент,supercontinent
+FEATURE_RIVERS,реки,rivers
+FEATURE_CLIMATE_ZONES,климатические зоны,climate zones
+FEATURE_ISTHMUS,перешеек,isthmus
+FEATURE_ISOLATED_REGIONS,изолированные регионы,isolated regions
+GEN_TITLE,Генератор миров,World generator
+GEN_PRESET,Пресет,Preset
+GEN_SEED,Seed,Seed
+GEN_SIZE,Размер,Size
+GEN_CONTINENTS,Континенты,Continents
+GEN_ISLANDS,Острова,Islands
+GEN_LAND,Доля суши,Land share
+GEN_INLAND_SEAS,Внутренние моря,Inland seas
+GEN_RIVERS,Реки,Rivers
+GEN_ROUGHNESS,Изрезанность,Roughness
+GEN_MOUNTAINS,Горы,Mountains
+GEN_STARTS,Стартовые позиции,Start positions
+GEN_SYMMETRY,Симметрия,Symmetry
+GEN_GENERATE,Сгенерировать,Generate
+GEN_PLAY,Играть на этой карте,Play this world
+GEN_HINT,Настройте параметры и нажмите «Сгенерировать». Один и тот же seed всегда даёт один и тот же мир.,Set the parameters and press Generate. The same seed always builds the same world.
+GEN_RESULT,Мир %d×%d · суша %s · континентов %d · островов %d · стартов %d · справедливость стартов %.0f%% · %d мс,World %d×%d · land %s · continents %d · islands %d · starts %d · start fairness %.0f%% · %d ms
+GEN_WORLD_NAME,Мир %d,World %d
+PRESET_CONTINENTS,Континенты,Continents
+PRESET_ARCHIPELAGO,Архипелаг,Archipelago
+PRESET_PANGAEA,Пангея,Pangaea
+PRESET_ISLAND_CHAINS,Цепи островов,Island chains
+PRESET_RING_WORLD,Мир-кольцо,Ring world
+PRESET_RANDOM,Случайный,Random
+SIZE_S,Малый,Small
+SIZE_M,Средний,Medium
+SIZE_L,Большой,Large
+SIZE_XL,Огромный,Huge
+SYM_NONE,Нет,None
+SYM_MIRROR,Зеркальная,Mirror
+SYM_ROTATE2,Поворот 180°,Rotate 180°
+SYM_ROTATE4,Четыре сектора,Four quarters
+SETUP_TITLE,Новая игра,New game
+SETUP_YOUR_STATE,Ваше государство,Your state
+SETUP_FREE_STATE,Новое государство (любая точка),New state (any tile)
+SETUP_NAME,Название,Name
+SETUP_NAME_HINT,необязательно,optional
+SETUP_BOTS,Противники (AI),Opponents (AI)
+SETUP_DIFFICULTY,Сложность,Difficulty
+SETUP_DIFF_HINT,"Сложность меняет качество решений ботов — точность оценки, скорость реакции, глубину прогноза. Ресурсы у всех одинаковые.","Difficulty changes how well bots decide — accuracy, reaction speed, forecast depth. Everybody gets the same resources."
+SETUP_PERSONALITIES,Характеры AI,AI personalities
+SETUP_TRIBES,Вольные племена,Free tribes
+SETUP_DOMINATION,Победа: доля суши,Win: land share
+SETUP_TIME_LIMIT,Лимит времени,Time limit
+SETUP_ELIMINATE_ALL,Победа при уничтожении всех государств,Win by eliminating every state
+SETUP_SEED,Seed партии,Match seed
+SETUP_START,Начать партию,Start the match
+TIME_NONE,Без лимита,No limit
+TIME_MIN,%d мин,%d min
+DIFF_EASY,Лёгкий,Easy
+DIFF_NORMAL,Обычный,Normal
+DIFF_HARD,Сложный,Hard
+PERS_MIXED,Смешанные,Mixed
+PERS_BALANCED,Сбалансированный,Balanced
+PERS_AGGRESSIVE,Агрессивный,Aggressive
+PERS_ECONOMIC,Экономический,Economic
+PERS_DEFENSIVE,Оборонительный,Defensive
+PERS_OPPORTUNISTIC,Оппортунист,Opportunistic
+LOAD_TITLE,Сохранённые партии,Saved matches
+LOAD_EMPTY,Сохранений пока нет.,No saves yet.
+LOAD_BUTTON,Загрузить,Load
+LOAD_INFO,%s · %s · %d тайлов · %d мин,%s · %s · %d tiles · %d min
+SETTINGS_TITLE,Настройки,Settings
+SETTINGS_LANGUAGE,Язык,Language
+SETTINGS_UI_SCALE,Масштаб интерфейса,UI scale
+SETTINGS_EDGE_SCROLL,Прокрутка карты у края экрана,Scroll the map at screen edges
+SETTINGS_AI_DEBUG,Отладка AI (F3),AI debugging (F3)
+CREDITS_TITLE,Титры и лицензии,Credits & licences
+CREDITS_ENGINE_PARTS,Сторонние компоненты Godot,Godot third-party components
+CREDITS_BODY,"Разработка: VolnaLabs.
+© OpenFront and Contributors — игра является модифицированной версией OpenFront через RoWorld (© 2026 Snick Co.) и распространяется под GNU AGPL v3 с дополнительными условиями (см. LICENSE).
+
+Карты Земли и регионов: Natural Earth и NOAA ETOPO1 (public domain).
+Шрифт Rubik © 2015 The Rubik Project Authors — SIL Open Font License 1.1.
+Флаги: Wikimedia Commons (public domain / CC0).
+Вымышленные карты, генератор, процедурные флаги и интерфейс — собственная работа VolnaLabs (AGPL-3.0).","Made by VolnaLabs.
+© OpenFront and Contributors — this game is a modified version of OpenFront through RoWorld (© 2026 Snick Co.), distributed under the GNU AGPL v3 with additional terms (see LICENSE).
+
+Earth and regional maps: Natural Earth and NOAA ETOPO1 (public domain).
+Rubik font © 2015 The Rubik Project Authors — SIL Open Font License 1.1.
+Flags: Wikimedia Commons (public domain / CC0).
+Fictional maps, the generator, procedural flags and the interface are VolnaLabs' own work (AGPL-3.0)."
+HUD_ARMY,Армия / вместимость,Army / capacity
+HUD_ARMY_TIP,Войска растут быстрее всего примерно при 40% вместимости. Войска сверх 60% вместимости требуют содержания.,Troops grow fastest around 40% of capacity. Troops above 60% of capacity cost upkeep.
+HUD_ATTACK_SHARE,Доля армии в атаку (Q / E),Share of the army per attack (Q / E)
+HUD_RATIO_TIP,Сколько войск отправить при щелчке по чужой земле,How many troops a click on foreign land sends
+HUD_GOLD,Золото,Gold
+HUD_GOLD_TIP,"Доход: территория, города, торговля портов, бонус фабрик. Расход: постройки и содержание армии.","Income: territory, cities, port trade, factory bonus. Spending: buildings and army upkeep."
+HUD_SUPPLIES,Снаряжение,Supplies
+HUD_SUPPLIES_TIP,"Военный ресурс от фабрик: нужен для оборонных постов, десантов, ПВО и ракет.","Military resource from factories: needed for defence posts, landings, SAMs and missiles."
+HUD_UPKEEP,Содержание армии: −%s/с,Army upkeep: −%s/s
+HUD_UPKEEP_TIP,"Если золото кончится, рост войск остановится и часть армии дезертирует.","If gold runs out, troop growth stops and part of the army deserts."
+HUD_LEADERBOARD,Рейтинг,Leaderboard
+HUD_ATTACKS,Атаки,Attacks
+HUD_NO_ATTACKS,Нет активных атак,No active attacks
+HUD_RETREAT_TIP,Отступить: войска вернутся через 2 с (75%),Retreat: troops come home in 2 s (75%)
+HUD_RETREATING,отступление,retreating
+HUD_GOAL,Господство: %.1f%% из %.0f%%,Domination: %.1f%% of %.0f%%
+HUD_DEFEATED,уничтожено,defeated
+HUD_SPEED_TIP,Пауза (пробел) и скорость (+ / −),Pause (space) and speed (+ / −)
+HUD_BUILD_KEY,"Клавиша %d, затем щелчок по своей земле","Key %d, then click your land"
+B_CITY,Город,City
+B_PORT,Порт,Port
+B_FACTORY,Фабрика,Factory
+B_DEFENSE,Пост,Def. post
+B_SAM,ПВО,SAM
+B_SILO,Ракеты,Silo
+B_CITY_TIP,Город: +250K к вместимости армии и +200 золота/с за уровень.,City: +250K army capacity and +200 gold/s per level.
+B_PORT_TIP,"Порт (на побережье): доход от морской торговли, больше — при чужих портах на той же акватории.","Port (on the coast): sea trade income, more with foreign ports on the same water."
+B_FACTORY_TIP,Фабрика: +10% дохода (до +50%) и +20 снаряжения/с за уровень.,Factory: +10% income (up to +50%) and +20 supplies/s per level.
+B_DEFENSE_TIP,Оборонный пост: в радиусе 30 атакующий теряет в 5 раз больше войск и продвигается втрое медленнее. Требует снаряжение.,Defence post: within 30 tiles attackers lose 5× the troops and advance 3× slower. Needs supplies.
+B_SAM_TIP,ПВО: перехват ракет. Появится в следующей версии.,SAM: intercepts missiles. Coming in the next version.
+B_SILO_TIP,Ракетная шахта. Появится в следующей версии.,Missile silo. Coming in the next version.
+BUILD_MODE,"Строительство: %s — щёлкните по своей земле (Esc — отмена, Shift — несколько)","Building: %s — click your land (Esc cancels, Shift places several)"
+TAB_OVERVIEW,Обзор,Overview
+TAB_ECONOMY,Экономика,Economy
+TAB_MILITARY,Армия,Military
+TAB_AI,AI,AI
+KIND_PLAYER,Ваше государство,Your state
+KIND_NATION,Государство (AI),State (AI)
+KIND_TRIBE,Племя,Tribe
+STATUS_DEAD,уничтожено,eliminated
+STATUS_PEACE,мир,at peace
+STATUS_AT_WAR,ведёт войн: %d,wars: %d
+STATUS_INVADED,под атакой: %d,invaded: %d
+INFO_LAND,Территория,Territory
+INFO_TROOPS,Армия,Army
+INFO_RANK,Место,Rank
+INFO_BUILDINGS,Постройки,Buildings
+INFO_STATUS,Статус,Status
+INFO_HIDDEN,Экономика других государств скрыта.,Other states' economies are hidden.
+ECO_GOLD,Казна,Treasury
+ECO_TERRITORY,Территория,Territory
+ECO_CITIES,Города,Cities
+ECO_TRADE,Морская торговля,Sea trade
+ECO_FACTORIES,Бонус фабрик,Factory bonus
+ECO_INCOME,Доход всего,Total income
+ECO_UPKEEP,Содержание армии,Army upkeep
+ECO_SUPPLIES,Снаряжение,Supplies
+ECO_EARNED,Заработано золота,Gold earned
+ECO_SPENT,Потрачено золота,Gold spent
+MIL_TROOPS,Войска дома,Troops at home
+MIL_CAP,Вместимость,Capacity
+MIL_GROWTH,Прирост,Growth
+MIL_IN_ATTACKS,Войска в атаках,Troops in attacks
+MIL_BOATS,Десанты в море,Landings at sea
+MIL_ATTACKS,Атак начато,Attacks launched
+MIL_CONQUERED,Захвачено тайлов,Tiles conquered
+MIL_LOST,Потери войск,Troops lost
+AI_DEBUG_ON,Отладка AI включена (F3),AI debugging on (F3)
+AI_DEBUG_OFF,Отладка AI выключена,AI debugging off
+AI_DEBUG_HINT,"Нажмите F3 и выберите государство AI (правый щелчок), чтобы увидеть его план, угрозы и причины решений.","Press F3 and select an AI state (right click) to see its plan, threats and the reasons behind its decisions."
+AI_THREAT,угроза,threat
+SPAWN_TITLE,Выберите стартовую позицию,Choose your start
+SPAWN_HINT,Щёлкните по свободной суше. Зелёный круг — можно начать здесь.,Click free land. A green circle means you can start there.
+SPAWN_COUNTDOWN,Начало через %.1f с,Starting in %.1f s
+PAUSE_TITLE,Пауза,Paused
+PAUSE_CONTINUE,Продолжить,Continue
+PAUSE_SAVE,Сохранить (F5),Save (F5)
+PAUSE_LOAD,Загрузить,Load
+PAUSE_RESTART,Начать заново,Restart
+PAUSE_MAIN_MENU,Главное меню,Main menu
+PAUSE_KEYS,"ЛКМ — атака / десант / постройка · ПКМ — информация, перетаскивание — камера · колесо — масштаб · WASD — камера · 1–4 — постройки · Q/E — доля атаки · пробел — пауза · +/− — скорость · F3 — отладка AI · F5 — сохранить · Home — к своей стране","LMB — attack / landing / build · RMB — info, drag — camera · wheel — zoom · WASD — camera · 1–4 — buildings · Q/E — attack share · space — pause · +/− — speed · F3 — AI debug · F5 — save · Home — your state"
+SAVED,Партия сохранена,Match saved
+SAVE_FAILED,Не удалось сохранить,Saving failed
+END_VICTORY,Победа!,Victory!
+END_DEFEAT,Поражение,Defeat
+END_WATCH,Наблюдать дальше,Keep watching
+END_NEW_GAME,Новая игра,New game
+END_TIME,Время партии,Match time
+END_LAND,Доля суши,Land share
+END_PEAK,Максимум территории,Peak territory
+END_WINNER,Победитель,Winner
+END_REASON_DOMINATION,Господство над миром.,World domination.
+END_REASON_ELIMINATION,Все соперники уничтожены.,Every rival was eliminated.
+END_REASON_TIME,Время вышло — побеждает крупнейшее государство.,Time is up — the largest state wins.
+END_REASON_PLAYER_LOST,Ваше государство уничтожено.,Your state was destroyed.
+END_REASON_NOBODY,Никто не выжил.,Nobody survived.
+LOG_WELCOME,Карта «%s». Выберите стартовую позицию.,Map '%s'. Choose your start.
+LOG_START,Партия началась! Расширяйтесь на свободные земли.,The match has begun! Expand into free land.
+LOG_ATTACKED,%s атакует вас (%s),%s attacks you (%s)
+LOG_ELIMINATED,%s уничтожено (%s),%s was eliminated (%s)
+LOG_ANNEXED,Вы присоединили %s,You annexed %s
+LOG_BOAT_INCOMING,Десант %s идёт к вашим берегам (%s),A landing of %s heads for your shores (%s)
+LOG_BOAT_SENT,Десант отправлен: %s,Landing sent: %s
+LOG_LANDED,Десант высадился,Your landing reached the shore
+LOG_BUILT,Построено: %s,Built: %s
+LOG_STRUCT_LOST,Потеряна постройка: %s,Building lost: %s
+LOG_STRUCT_TAKEN,Захвачена постройка: %s,Building captured: %s
+REJECT_NOT_PLAYING,Партия ещё не началась,The match has not started
+REJECT_DEAD,Государство уничтожено,State eliminated
+REJECT_NOT_LAND,Это не суша,Not land
+REJECT_OWN_LAND,Это ваша земля,That is your land
+REJECT_DEAD_TARGET,Цель уже уничтожена,Target already eliminated
+REJECT_NO_TROOPS,Недостаточно войск,Not enough troops
+REJECT_NO_BORDER,Нет общей границы — щёлкните по побережью для десанта,No shared border — click a coast to land troops
+REJECT_NOT_SPAWN_PHASE,Выбор старта уже завершён,The start choice is over
+REJECT_ALREADY_SPAWNED,Старт уже выбран,Start already chosen
+REJECT_BAD_TILE,Здесь начать нельзя — выберите свободную сушу,You cannot start here — choose free land
+REJECT_NO_GOLD,Недостаточно золота,Not enough gold
+REJECT_NO_SUPPLIES,Недостаточно снаряжения,Not enough supplies
+REJECT_NO_SITE,Нет места: нужна своя земля не ближе 15 тайлов к другим постройкам (порт — на берегу),No room: needs own land at least 15 tiles from other buildings (ports on the coast)
+REJECT_BAD_KIND,Неизвестная постройка,Unknown building
+REJECT_NOT_COAST,Десант возможен только на побережье,Landings need a coastal tile
+REJECT_TOO_MANY_BOATS,Слишком много десантов в море,Too many landings at sea
+REJECT_NO_COAST,Нет своего побережья на этой акватории,No own coast on this water
+REJECT_NO_ROUTE,Морской путь не найден,No sea route
+REJECT_NO_ATTACK,Атака не найдена,No such attack
+REJECT_UNKNOWN,Неизвестная команда,Unknown command
+REJECT_BUILD_OWN_LAND,Стройте на своей земле,Build on your own land

@@ -137,7 +137,10 @@ func refresh() -> void:
 	if free_contact > 0:
 		free_mag = fm / free_contact
 		free_cost = fc / free_contact
-	border_box = Rect2i(minx, miny, maxx - minx + 1, maxy - miny + 1).grow(40)
+	if steps == 0:
+		border_box = Rect2i()
+	else:
+		border_box = Rect2i(minx, miny, maxx - minx + 1, maxy - miny + 1).grow(40)
 	var now := st.tick
 	for o: int in neighbors:
 		var nv: NeighborView = neighbors[o]

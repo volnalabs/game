@@ -32,6 +32,8 @@ var next_naval: int = 0
 var last_war_end: int = -100000
 var state_ticks: Dictionary = {}
 var _noticed: Dictionary = {}
+## Attack id -> tick of our last counter (or hold decision) against it.
+var countered: Dictionary = {}
 var _started: bool = false
 
 
@@ -146,6 +148,8 @@ func _strategic_upkeep() -> void:
 			rel["tick_prev"] = st.tick
 	if _noticed.size() > 200:
 		_noticed.clear()
+	if countered.size() > 200:
+		countered.clear()
 
 
 func _wars() -> int:

@@ -6,7 +6,10 @@ extends RefCounted
 ## the personality's economy / defence weights. The best affordable one is built; otherwise the
 ## bot saves for it.
 
-const HORIZON := 3000.0
+const HORIZON := 6000.0
+## Gold has no other use than buildings: build whenever the best option pays back at least this
+## share of its cost over the horizon (the real choice is WHICH building, and saving for it).
+const MIN_RATIO := 0.08
 
 
 static func act(bot: StrategicAI) -> void:
@@ -69,7 +72,7 @@ static func act(bot: StrategicAI) -> void:
 			best_ratio = ratio
 			best = o
 			best["cost"] = c
-	if best.is_empty() or best_ratio < 0.6:
+	if best.is_empty() or best_ratio < MIN_RATIO:
 		return
 	var kind: int = best["kind"]
 	if gold - buffer < float(best["cost"]) or st.o_supplies[id] < r.building_supplies(kind):

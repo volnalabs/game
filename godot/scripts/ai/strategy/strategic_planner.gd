@@ -25,8 +25,8 @@ static func decide(bot: StrategicAI) -> void:
 	for e: Dictionary in p.incoming:
 		incoming += float(e["troops"])
 	var defend := incoming * 1.5
-	if top_threat > 0.9:
-		defend += top_threat * troops * 0.15 * float(bot.pers["defense"])
+	if top_threat > 1.2:
+		defend += (top_threat - 1.2) * troops * 0.1 * float(bot.pers["defense"])
 	scores[StrategicAI.S_DEFEND] = defend
 	# EXPAND: unclaimed land within reach.
 	var expand := 0.0

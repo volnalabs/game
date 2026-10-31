@@ -74,9 +74,15 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 			danger += ThreatAssessment.danger_from(bot, o)
 	var exposure := maxf(0.0, danger - home) * 0.6 * float(bot.diff["exposure_weight"]) * (1.0 - float(pers["risk_tolerance"]))
 	var u: float = (gain + weaken + annex_bonus + opp + grudge + coalition) * float(pers["war_appetite"]) - losses - exposure
+	var grace := false
+	if target == sim.player_id and sim.elapsed_seconds() * 10.0 < float(bot.diff["player_grace_ticks"]) and float(rel["grudge"]) <= 0.0:
+		u = u * 0.25 - 0.05 * troops if u > 0.0 else u
+		grace = true
 	var reason := "ok"
 	if u <= 0.0:
-		if exposure > losses * 0.5 and exposure > gain * 0.5:
+		if grace:
+			reason = "player_grace"
+		elif exposure > losses * 0.5 and exposure > gain * 0.5:
 			reason = "exposed_to_threats"
 		elif nv.defended_share > 0.4:
 			reason = "target_fortified"

@@ -15,8 +15,10 @@ static func site(bot: StrategicAI, kind: int, threat_owner: int = 0) -> int:
 
 static func _own_samples(bot: StrategicAI, want: int, tries: int) -> Array[int]:
 	var st := bot.sim.st
-	var box := bot.perception.border_box.intersection(Rect2i(0, 0, st.W, st.H))
 	var out: Array[int] = []
+	if bot.perception.border_box.size.x <= 0:
+		return out
+	var box := bot.perception.border_box.intersection(Rect2i(0, 0, st.W, st.H))
 	if box.size.x <= 0 or box.size.y <= 0:
 		return out
 	for _i in tries:

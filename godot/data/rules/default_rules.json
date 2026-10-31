@@ -73,8 +73,8 @@
 		"port_trade_base": 15.0,
 		"port_trade_partner": 5.0,
 		"port_trade_partner_max": 40.0,
-		"upkeep_free_share": 0.5,
-		"upkeep_per_troop": 0.0015,
+		"upkeep_free_share": 0.6,
+		"upkeep_per_troop": 0.001,
 		"desertion_rate": 0.001,
 		"conquest_gold_share": 0.5
 	},
