@@ -1,9 +1,21 @@
 {
 	"_comment": "Weapons and air defence (Phase 2E). Distances (range, radius, spread, speed) are in full-size tiles and are divided by the map's k_lin; troop kills per tile are multiplied by k_area. intercept = chance one SAM interceptor destroys the munition (0 = cannot be intercepted). cost in gold, supplies at launch. launch_delay = ticks on the launcher before take-off. Effects: blast (troops + building levels), cluster (bus splitting into bomblets), nuke (land, troops, buildings, fallout), mirv (bus splitting into nuclear warheads), emp (switches buildings off). Numbers inspired by RoWorld's Rules.luau (nukes, SAMs, artillery, air strikes).",
 	"launchers": {
-		"silo": {"building": "silo", "charges_per_level": 1, "reload_ticks": 120},
-		"airbase": {"building": "airbase", "charges_per_level": 1, "reload_ticks": 300},
-		"post": {"building": "defense", "charges_per_level": 1, "reload_ticks": 80}
+		"silo": {
+			"building": "silo",
+			"charges_per_level": 1,
+			"reload_ticks": 120
+		},
+		"airbase": {
+			"building": "airbase",
+			"charges_per_level": 1,
+			"reload_ticks": 300
+		},
+		"post": {
+			"building": "defense",
+			"charges_per_level": 1,
+			"reload_ticks": 80
+		}
 	},
 	"sam": {
 		"charges_per_level": 1,
@@ -15,35 +27,192 @@
 		"max_per_munition": 2,
 		"hit_cap": 0.97
 	},
-	"fallout": {"ticks": 1800, "value_mult": 0.2, "check_every": 20},
+	"fallout": {
+		"ticks": 1800,
+		"value_mult": 0.2,
+		"check_every": 20,
+		"capture_loss_mult": 6.0,
+		"color": "#a6ff2b"
+	},
 	"nuke_troop_exponent": 5.0,
 	"weapons": [
-		{"id": "missile", "launcher": "silo", "requires": "rocketry", "cost": 250000, "supplies": 250, "range": 0,
-			"radius": 6.0, "speed": 10.0, "flight": "arc", "launch_delay": 10, "intercept": 0.85, "threat": 1.0,
-			"effect": {"kind": "blast", "kill_frac": 0.05, "kill_per_tile": 60.0, "struct_levels": 1}},
-		{"id": "heavy_missile", "launcher": "silo", "requires": "rocketry", "cost": 700000, "supplies": 600, "range": 0,
-			"radius": 12.0, "speed": 8.0, "flight": "arc", "launch_delay": 15, "intercept": 0.7, "threat": 2.5,
-			"effect": {"kind": "blast", "kill_frac": 0.1, "kill_per_tile": 90.0, "struct_levels": 2}},
-		{"id": "cluster", "launcher": "silo", "requires": "guided_munitions", "cost": 900000, "supplies": 700, "range": 0,
-			"radius": 5.0, "speed": 9.0, "flight": "arc", "launch_delay": 15, "intercept": 0.55, "threat": 2.0,
-			"effect": {"kind": "cluster", "bomblets": 6, "spread": 18.0, "kill_frac": 0.03, "kill_per_tile": 50.0, "struct_levels": 1}},
-		{"id": "artillery", "launcher": "post", "requires": "combined_arms", "cost": 40000, "supplies": 120, "range": 45.0,
-			"radius": 4.0, "speed": 6.0, "flight": "flat", "launch_delay": 5, "intercept": 0.0, "threat": 0.3,
-			"effect": {"kind": "blast", "kill_frac": 0.025, "kill_per_tile": 40.0, "struct_levels": 0}},
-		{"id": "air_strike", "launcher": "airbase", "requires": "aviation", "cost": 150000, "supplies": 300, "range": 156.0,
-			"radius": 10.0, "speed": 8.0, "flight": "flat", "launch_delay": 10, "intercept": 0.35, "threat": 1.2,
-			"effect": {"kind": "blast", "kill_frac": 0.06, "kill_per_tile": 60.0, "struct_levels": 1}},
-		{"id": "emp", "launcher": "silo", "requires": "electronic_warfare", "cost": 800000, "supplies": 900, "range": 0,
-			"radius": 25.0, "speed": 10.0, "flight": "arc", "launch_delay": 15, "intercept": 0.8, "threat": 1.5,
-			"effect": {"kind": "emp", "disable_ticks": 300}},
-		{"id": "tactical_nuke", "launcher": "silo", "requires": "nuclear_program", "cost": 1500000, "supplies": 1500, "range": 0,
-			"radius": 30.0, "radius_inner": 12.0, "speed": 10.0, "flight": "arc", "launch_delay": 30, "intercept": 0.9, "threat": 6.0,
-			"effect": {"kind": "nuke"}},
-		{"id": "strategic_nuke", "launcher": "silo", "requires": "thermonuclear", "cost": 6000000, "supplies": 4000, "range": 0,
-			"radius": 90.0, "radius_inner": 60.0, "speed": 10.0, "flight": "arc", "launch_delay": 50, "intercept": 0.9, "threat": 20.0,
-			"effect": {"kind": "nuke"}},
-		{"id": "mirv", "launcher": "silo", "requires": "thermonuclear", "cost": 20000000, "supplies": 8000, "range": 0,
-			"radius": 160.0, "speed": 14.0, "flight": "arc", "launch_delay": 60, "intercept": 0.0, "threat": 30.0,
-			"effect": {"kind": "mirv", "warheads": 12, "warhead_inner": 10.0, "warhead_outer": 16.0, "warhead_speed": 20.0, "warhead_intercept": 0.8}}
+		{
+			"id": "missile",
+			"launcher": "silo",
+			"requires": "rocketry",
+			"cost": 250000,
+			"supplies": 250,
+			"range": 0,
+			"radius": 6.0,
+			"speed": 10.0,
+			"flight": "arc",
+			"launch_delay": 10,
+			"intercept": 0.85,
+			"threat": 1.0,
+			"effect": {
+				"kind": "blast",
+				"kill_frac": 0.05,
+				"kill_per_tile": 60.0,
+				"struct_levels": 1
+			}
+		},
+		{
+			"id": "heavy_missile",
+			"launcher": "silo",
+			"requires": "rocketry",
+			"cost": 700000,
+			"supplies": 600,
+			"range": 0,
+			"radius": 12.0,
+			"speed": 8.0,
+			"flight": "arc",
+			"launch_delay": 15,
+			"intercept": 0.7,
+			"threat": 2.5,
+			"effect": {
+				"kind": "blast",
+				"kill_frac": 0.1,
+				"kill_per_tile": 90.0,
+				"struct_levels": 2
+			}
+		},
+		{
+			"id": "cluster",
+			"launcher": "silo",
+			"requires": "guided_munitions",
+			"cost": 900000,
+			"supplies": 700,
+			"range": 0,
+			"radius": 5.0,
+			"speed": 9.0,
+			"flight": "arc",
+			"launch_delay": 15,
+			"intercept": 0.55,
+			"threat": 2.0,
+			"effect": {
+				"kind": "cluster",
+				"bomblets": 6,
+				"spread": 18.0,
+				"kill_frac": 0.03,
+				"kill_per_tile": 50.0,
+				"struct_levels": 1
+			}
+		},
+		{
+			"id": "artillery",
+			"launcher": "post",
+			"requires": "combined_arms",
+			"cost": 40000,
+			"supplies": 120,
+			"range": 45.0,
+			"radius": 4.0,
+			"speed": 6.0,
+			"flight": "flat",
+			"launch_delay": 5,
+			"intercept": 0.0,
+			"threat": 0.3,
+			"effect": {
+				"kind": "blast",
+				"kill_frac": 0.025,
+				"kill_per_tile": 40.0,
+				"struct_levels": 0
+			}
+		},
+		{
+			"id": "air_strike",
+			"launcher": "airbase",
+			"requires": "aviation",
+			"cost": 150000,
+			"supplies": 300,
+			"range": 156.0,
+			"radius": 10.0,
+			"speed": 8.0,
+			"flight": "flat",
+			"launch_delay": 10,
+			"intercept": 0.35,
+			"threat": 1.2,
+			"effect": {
+				"kind": "blast",
+				"kill_frac": 0.06,
+				"kill_per_tile": 60.0,
+				"struct_levels": 1
+			}
+		},
+		{
+			"id": "emp",
+			"launcher": "silo",
+			"requires": "electronic_warfare",
+			"cost": 800000,
+			"supplies": 900,
+			"range": 0,
+			"radius": 25.0,
+			"speed": 10.0,
+			"flight": "arc",
+			"launch_delay": 15,
+			"intercept": 0.8,
+			"threat": 1.5,
+			"effect": {
+				"kind": "emp",
+				"disable_ticks": 300
+			}
+		},
+		{
+			"id": "tactical_nuke",
+			"launcher": "silo",
+			"requires": "nuclear_program",
+			"cost": 1500000,
+			"supplies": 1500,
+			"range": 0,
+			"radius": 30.0,
+			"radius_inner": 12.0,
+			"speed": 10.0,
+			"flight": "arc",
+			"launch_delay": 30,
+			"intercept": 0.9,
+			"threat": 6.0,
+			"effect": {
+				"kind": "nuke"
+			}
+		},
+		{
+			"id": "strategic_nuke",
+			"launcher": "silo",
+			"requires": "thermonuclear",
+			"cost": 6000000,
+			"supplies": 4000,
+			"range": 0,
+			"radius": 90.0,
+			"radius_inner": 60.0,
+			"speed": 10.0,
+			"flight": "arc",
+			"launch_delay": 50,
+			"intercept": 0.9,
+			"threat": 20.0,
+			"effect": {
+				"kind": "nuke"
+			}
+		},
+		{
+			"id": "mirv",
+			"launcher": "silo",
+			"requires": "thermonuclear",
+			"cost": 20000000,
+			"supplies": 8000,
+			"range": 0,
+			"radius": 160.0,
+			"speed": 14.0,
+			"flight": "arc",
+			"launch_delay": 60,
+			"intercept": 0.0,
+			"threat": 30.0,
+			"effect": {
+				"kind": "mirv",
+				"warheads": 12,
+				"warhead_inner": 10.0,
+				"warhead_outer": 16.0,
+				"warhead_speed": 20.0,
+				"warhead_intercept": 0.8
+			}
+		}
 	]
 }

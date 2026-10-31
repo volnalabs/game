@@ -181,7 +181,7 @@ func _draw_munitions(z: float, now: int, t_ms: float) -> void:
 			draw_circle(pos, maxf(0.4, (3.0 + 2.0 * sin(t_ms * 8.0)) / z), Color(UITheme.WARN, 0.85))
 			continue
 		# Trail: past positions on the same path, fading.
-		var trail_col := Color(1.0, 0.85, 0.6) if not nuclear else Color(1.0, 0.55, 0.35)
+		var trail_col := Color(1.0, 0.85, 0.6) if not nuclear else SimState.RADIATION_COLOR
 		var prev_p := pos
 		var flying_since := m.launch_tick + m.delay
 		for i in range(1, 9):
@@ -206,7 +206,7 @@ func _draw_munitions(z: float, now: int, t_ms: float) -> void:
 		draw_texture_rect(tex, Rect2(Vector2(-half, -half), Vector2(size, size)), false, oc if not nuclear else Color(1.0, 0.85, 0.75))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		if nuclear:
-			draw_arc(pos, size * 0.7, 0.0, TAU, 20, Color(UITheme.BAD, 0.5 + 0.4 * sin(t_ms * 10.0)), maxf(0.12, 1.4 / z))
+			draw_arc(pos, size * 0.7, 0.0, TAU, 20, Color(SimState.RADIATION_COLOR, 0.5 + 0.4 * sin(t_ms * 10.0)), maxf(0.12, 1.4 / z))
 	for id: int in _shown.keys():
 		if not seen.has(id):
 			_shown.erase(id)
@@ -243,13 +243,17 @@ func _draw_fx(z: float) -> void:
 					var kk := fmod(k * 1.5 + i * 0.33, 1.0)
 					draw_arc(p, r * kk, 0.0, TAU, 64, Color(0.65, 0.85, 1.0, 0.8 * (1.0 - kk) * (1.0 - k)), lw * 1.6)
 			"nuke":
+				# Radiation green: white-green flash, acid fireball with a dark scorched rim, green shock wave.
 				var inner: float = f.get("inner", r * 0.4)
+				var rad := SimState.RADIATION_COLOR
 				if k < 0.12:
-					draw_circle(p, r * 1.15, Color(1, 1, 0.95, 0.85 * (1.0 - k / 0.12)))
-				draw_circle(p, inner * (0.6 + 0.4 * minf(k * 3.0, 1.0)), Color(1.0, 0.45 + 0.3 * (1.0 - k), 0.2, 0.75 * (1.0 - k)))
-				draw_circle(p, inner * 0.45, Color(1.0, 0.95, 0.75, 0.8 * maxf(0.0, 1.0 - k * 2.0)))
-				draw_arc(p, r * (0.3 + 1.1 * k), 0.0, TAU, 96, Color(1, 0.9, 0.75, 0.9 * (1.0 - k)), lw * 2.2)
-				draw_arc(p, r * (0.2 + 0.8 * k), 0.0, TAU, 96, Color(1, 0.6, 0.35, 0.6 * (1.0 - k)), lw * 1.4)
+					draw_circle(p, r * 1.15, Color(rad.lightened(0.7), 0.85 * (1.0 - k / 0.12)))
+				var fire := inner * (0.6 + 0.4 * minf(k * 3.0, 1.0))
+				draw_circle(p, fire * 1.08, Color(0.04, 0.05, 0.03, 0.55 * (1.0 - k)))
+				draw_circle(p, fire, Color(rad, 0.8 * (1.0 - k)))
+				draw_circle(p, inner * 0.45, Color(rad.lightened(0.55), 0.85 * maxf(0.0, 1.0 - k * 2.0)))
+				draw_arc(p, r * (0.3 + 1.1 * k), 0.0, TAU, 96, Color(rad.lightened(0.3), 0.9 * (1.0 - k)), lw * 2.2)
+				draw_arc(p, r * (0.2 + 0.8 * k), 0.0, TAU, 96, Color(0.04, 0.05, 0.03, 0.6 * (1.0 - k)), lw * 1.6)
 			"kill":
 				var rr := maxf(0.6, 10.0 / z) * (0.4 + k)
 				draw_circle(p, rr * 0.6, Color(1, 1, 0.9, 0.8 * (1.0 - k)))

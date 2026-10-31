@@ -111,6 +111,9 @@ var interceptors: Array[Interceptor] = []
 var ammo: Dictionary = {}
 ## Tile -> tick its fallout ends.
 var fallout: Dictionary = {}
+## Tile -> distance from its burst's centre as a share of the radius (0 centre .. 1 edge): the
+## charred rim of a crater is drawn from it.
+var fallout_edge: Dictionary = {}
 ## Tiles whose fallout appeared or cleared since the renderer last looked (capped: with no renderer
 ## draining it, fallout_resync tells a late renderer to repaint everything instead).
 var fallout_changed: PackedInt32Array = PackedInt32Array()
@@ -709,6 +712,8 @@ func _nuclear_burst(m: Munition, inner: float, outer: float) -> void:
 				st.o_killer[o] = m.owner
 	var until := st.tick + int(rules.w_fallout.get("ticks", 1800))
 	for t in (n["disc"] as PackedInt32Array):
+		var e := sqrt(float(st.map.dist2(t, c))) / maxf(outer, 0.001)
+		fallout_edge[t] = minf(float(fallout_edge.get(t, 1.0)), e)
 		_add_fallout(t, until)
 	events.emit(SimEvents.NUKE_DETONATED, {"id": m.id, "owner": m.owner, "weapon": String(rules.weapon(m.weapon)["id"]), "tile": c,
 		"radius": outer, "inner": inner, "killed": killed, "lost": lost, "structures": (n["structures"] as Array).size(),
@@ -767,6 +772,7 @@ func is_fallout(t: int) -> bool:
 
 func _add_fallout(t: int, until: int) -> void:
 	if not fallout.has(t):
+		st.fallout[t] = 1
 		_base_value[t] = st.tile_value[t]
 		_set_value(t, st.tile_value[t] * float(rules.w_fallout.get("value_mult", 0.2)))
 		_note_fallout(t)
@@ -788,6 +794,8 @@ func _decay_fallout() -> void:
 			gone.append(t)
 	for t in gone:
 		fallout.erase(t)
+		fallout_edge.erase(t)
+		st.fallout[t] = 0
 		_set_value(t, float(_base_value.get(t, st.tile_value[t])))
 		_base_value.erase(t)
 		_note_fallout(t)
@@ -825,7 +833,10 @@ func to_dict() -> Dictionary:
 		ft.append(t)
 		fe.append(int(fallout[t]))
 		fb.append(float(_base_value.get(t, st.tile_value[t])))
-	return {"next_id": next_id, "munitions": ms, "interceptors": xs, "ammo": ammo.duplicate(true), "fallout_t": ft,
+	var fx := PackedFloat32Array()
+	for t: int in fallout:
+		fx.append(float(fallout_edge.get(t, 1.0)))
+	return {"next_id": next_id, "munitions": ms, "interceptors": xs, "ammo": ammo.duplicate(true), "fallout_t": ft, "fallout_edge": fx,
 		"fallout_end": fe, "fallout_base": fb, "nukes_launched": nukes_launched.duplicate(), "last_nuke_tick": last_nuke_tick.duplicate()}
 
 
@@ -840,14 +851,20 @@ func from_dict(d: Dictionary) -> void:
 	for xd: Dictionary in d.get("interceptors", []):
 		interceptors.append(Interceptor.from_dict(xd))
 	ammo = (d.get("ammo", {}) as Dictionary).duplicate(true)
+	for t: int in fallout:
+		st.fallout[t] = 0
 	fallout.clear()
+	fallout_edge.clear()
 	_base_value.clear()
+	var fx: PackedFloat32Array = d.get("fallout_edge", PackedFloat32Array())
 	var ft: PackedInt32Array = d.get("fallout_t", PackedInt32Array())
 	var fe: PackedInt32Array = d.get("fallout_end", PackedInt32Array())
 	var fb: PackedFloat32Array = d.get("fallout_base", PackedFloat32Array())
 	for i in ft.size():
 		var t := ft[i]
 		fallout[t] = fe[i]
+		fallout_edge[t] = fx[i] if i < fx.size() else 1.0
+		st.fallout[t] = 1
 		_base_value[t] = fb[i]
 		st.tile_value[t] = fb[i] * float(rules.w_fallout.get("value_mult", 0.2))
 	fallout_resync = true

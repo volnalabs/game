@@ -22,6 +22,8 @@ var bnext: PackedInt32Array
 var bprev: PackedInt32Array
 var struct_at: PackedInt32Array
 var front_mark: PackedInt32Array
+## 1 where radioactive fallout lies (maintained by WeaponSystem; capturing it costs more).
+var fallout: PackedByteArray
 ## Economic value of each land tile (terrain value + river + coast).
 var tile_value: PackedFloat32Array
 
@@ -92,6 +94,7 @@ func _init(map_data: MapData, rules_: Rules) -> void:
 	bprev = _i32(N, -1)
 	struct_at = _i32(N, -1)
 	front_mark = _i32(N, 0)
+	fallout = _u8(N)
 	tile_value = PackedFloat32Array()
 	tile_value.resize(N)
 	for i in N:
@@ -171,6 +174,26 @@ static func _f64(n: int) -> PackedFloat64Array:
 # Owners
 # ---------------------------------------------------------------------------------------------
 
+## Acid green of radiation (nuclear bursts, fallout): reserved — no state may wear it.
+const RADIATION_COLOR := Color("#a6ff2b")
+const RADIATION_HUE_GAP := 0.08
+
+
+## `c`, moved away from the radiation green when it is too close (hue within the gap and bright /
+## saturated enough to be mistaken for fallout).
+static func radiation_safe(c: Color) -> Color:
+	var rh := RADIATION_COLOR.h
+	var dh := c.h - rh
+	if dh > 0.5:
+		dh -= 1.0
+	elif dh < -0.5:
+		dh += 1.0
+	if absf(dh) >= RADIATION_HUE_GAP or c.s < 0.55 or c.v < 0.7:
+		return c
+	var h := rh - RADIATION_HUE_GAP - 0.01 if dh < 0.0 else rh + RADIATION_HUE_GAP + 0.01
+	return Color.from_hsv(fposmod(h, 1.0), minf(c.s, 0.75), minf(c.v, 0.85), c.a)
+
+
 func add_owner(name: String, kind: int, color: Color, flag: String = "", nation: int = -1) -> int:
 	owner_count += 1
 	var id := owner_count
@@ -180,7 +203,7 @@ func add_owner(name: String, kind: int, color: Color, flag: String = "", nation:
 		return -1
 	o_name[id] = name
 	o_kind[id] = kind
-	o_color[id] = color
+	o_color[id] = radiation_safe(color)
 	o_flag[id] = flag
 	o_nation[id] = nation
 	o_alive[id] = 1
@@ -249,7 +272,7 @@ func stat_attack(id: int) -> void:
 
 ## Display colour (cosmetic; no rule reads colours).
 func set_display_color(id: int, c: Color) -> void:
-	o_color[id] = c
+	o_color[id] = radiation_safe(c)
 
 
 func stat_command(id: int, type: String) -> void:
@@ -282,7 +305,7 @@ func kill(id: int, killer: int) -> void:
 
 
 func set_color(id: int, c: Color) -> void:
-	o_color[id] = c
+	o_color[id] = radiation_safe(c)
 
 
 func set_struct_at(t: int, sid: int) -> void:

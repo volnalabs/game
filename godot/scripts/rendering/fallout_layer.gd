@@ -1,11 +1,11 @@
 class_name FalloutLayer
 extends Sprite2D
-## Radioactive fallout over the map: one texel per tile, a muted yellow-green veil with a fine
-## diagonal hatch, updated only for tiles whose fallout appeared or cleared
-## (WeaponSystem.drain_fallout_changes). Hidden while there is none.
+## Radioactive fallout over the map: one texel per tile in the reserved acid green of radiation
+## (SimState.RADIATION_COLOR, which no state may use), mottled, with black charred specks that
+## thicken towards the crater's rim (WeaponSystem.fallout_edge). Updated only for tiles whose
+## fallout appeared or cleared (WeaponSystem.drain_fallout_changes). Hidden while there is none.
 
-const COLOR_A := Color(0.66, 0.7, 0.28, 0.42)
-const COLOR_B := Color(0.5, 0.55, 0.2, 0.3)
+const CHAR := Color(0.04, 0.05, 0.03, 0.9)
 
 var sim: Sim
 var _img: Image
@@ -33,7 +33,20 @@ func setup(s: Sim) -> void:
 func _paint(t: int, on: bool) -> void:
 	var x := t % sim.map.width
 	var y := t / sim.map.width
-	_img.set_pixel(x, y, (COLOR_A if (x + y) % 3 != 0 else COLOR_B) if on else Color(0, 0, 0, 0))
+	if not on:
+		_img.set_pixel(x, y, Color(0, 0, 0, 0))
+		return
+	var edge := float(sim.weapons.fallout_edge.get(t, 1.0))
+	var h := WeaponSystem._h01(t, 7331)
+	# Charred specks: rare near ground zero, dense at the rim.
+	var char_p := 0.04 + 0.6 * smoothstep(0.45, 1.0, edge)
+	if h < char_p:
+		_img.set_pixel(x, y, CHAR)
+		return
+	var g := SimState.RADIATION_COLOR
+	var k := WeaponSystem._h01(t, 911)
+	var c := g.darkened(0.25 * k) if k > 0.5 else g.lightened(0.15 * k)
+	_img.set_pixel(x, y, Color(c, 0.58 - 0.18 * edge))
 
 
 func _process(_delta: float) -> void:

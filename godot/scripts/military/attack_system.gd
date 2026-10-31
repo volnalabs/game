@@ -335,6 +335,8 @@ func _process(a: Attack) -> void:
 		return
 	var tick := st.tick
 	var neutral := tg == 0
+	var fallout := st.fallout
+	var fallout_mult := float(rules.w_fallout.get("capture_loss_mult", 1.0))
 	if a.retreat_at > 0:
 		if tick >= a.retreat_at:
 			end_attack(a, true, 1.0 if neutral else minf(1.0, rules.retreat_keep + (mods.add("retreat_keep_add", at) if mods != null else 0.0)))
@@ -428,6 +430,9 @@ func _process(a: Attack) -> void:
 		var loss: float
 		var tf: float
 		var dloss := 0.0
+		if fallout[t] == 1:
+			# Contaminated ground: taking it costs many more troops.
+			mag *= fallout_mult
 		if neutral:
 			loss = mag * nl_per
 			tf = maxf(clampf(nc_scale * tc / maxf(a.troops, 1.0), nc_min, nc_max) / (border1 * 2.0), 1e-6)

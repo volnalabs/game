@@ -358,3 +358,69 @@ func test_save_in_flight_and_fallout_continue_identically() -> void:
 	check_eq(sc.weapons.fallout.size(), sa.weapons.fallout.size(), "fallout saved")
 	var ft: int = sa.weapons.fallout.keys()[0]
 	check(is_equal_approx(sc.st.tile_value[ft], sa.st.tile_value[ft]), "fallout land value restored on load")
+
+
+func _attack_loss(contaminate: bool) -> float:
+	# A strip of unclaimed land east of the player; optionally contaminated. Same order, same seed.
+	var m := TestMaps.rect(160, 60)
+	var sim := TestMaps.sim(m, 0, true, 9)
+	sim.apply_command(Commands.spawn(sim.player_id, m.tile_at(20, 30)))
+	sim._start_playing()
+	var pid := sim.player_id
+	for y in 60:
+		for x in 160:
+			var t := m.tile_at(x, y)
+			if m.land[t] == 1:
+				sim.st.set_owner(t, pid if x < 40 else 0)
+				if contaminate and x >= 40:
+					sim.weapons._add_fallout(t, 1 << 30)
+	sim.st.o_troops[pid] = 200000.0
+	var a := sim.attacks.start(pid, 0, 50000.0)
+	for i in 60:
+		sim.attacks.tick()
+	return a.lost / maxf(float(a.taken), 1.0)
+
+
+func test_contaminated_land_costs_many_more_troops_to_take() -> void:
+	var clean := _attack_loss(false)
+	var hot := _attack_loss(true)
+	print("      troops lost per tile: clean %.1f, contaminated %.1f" % [clean, hot])
+	check(hot > clean * 3.0, "taking fallout land costs several times more troops")
+
+
+func test_no_state_can_wear_the_radiation_green() -> void:
+	var rad := SimState.RADIATION_COLOR
+	var m := TestMaps.rect(300, 200)
+	var sim := TestMaps.sim(m, 60, true, 2, 40)
+	var near := func(c: Color) -> bool:
+		var dh := absf(fposmod(c.h - rad.h + 0.5, 1.0) - 0.5)
+		return dh < SimState.RADIATION_HUE_GAP and c.s >= 0.55 and c.v >= 0.7
+	for o in range(1, sim.st.owner_count + 1):
+		check(not near.call(sim.st.o_color[o]), "state %d is not radiation green" % o)
+	var pid := sim.player_id
+	for c: Color in [rad, Color("#b4ff40"), Color("#8cf03a"), Color("#c8ff00")]:
+		sim.st.set_display_color(pid, c)
+		check(not near.call(sim.st.o_color[pid]), "chosen colour %s is moved off the radiation green" % c.to_html(false))
+	sim.st.set_display_color(pid, Color("#5c9e4a"))
+	check(sim.st.o_color[pid].is_equal_approx(Color("#5c9e4a")), "a muted moss green stays as it is")
+
+
+func test_fallout_rim_is_saved() -> void:
+	var c := _setup(12)
+	var sim: Sim = c["sim"]
+	var m: MapData = c["map"]
+	_put(sim, c["pid"], Rules.B_SILO, m.tile_at(60, 60))
+	sim.submit(Commands.launch(c["pid"], "tactical_nuke", m.tile_at(180, 60)))
+	sim.step()
+	_run_until(sim, sim.weapons.munitions[0].impact_tick() + 1)
+	var rim := 0
+	for t: int in sim.weapons.fallout_edge:
+		if float(sim.weapons.fallout_edge[t]) > 0.8:
+			rim += 1
+	check(rim > 0, "tiles near the rim are marked")
+	var b := _setup(12)
+	var sb: Sim = b["sim"]
+	sb.from_dict(bytes_to_var(var_to_bytes(sim.to_dict())))
+	check_eq(sb.weapons.fallout_edge.size(), sim.weapons.fallout_edge.size(), "rim saved")
+	var t0: int = sim.weapons.fallout.keys()[0]
+	check_eq(int(sb.st.fallout[t0]), 1, "fallout flags restored for capture costs")
