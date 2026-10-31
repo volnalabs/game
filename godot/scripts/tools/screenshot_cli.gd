@@ -34,6 +34,11 @@ func _shot(name: String) -> void:
 
 func _run() -> void:
 	root.size = Vector2i(1600, 900)
+	# A demo profile in its own file (never the player's real one).
+	var prof := root.get_node_or_null("Profile")
+	if prof != null:
+		prof.store = ProfileStore.new("user://screenshot_profile.json")
+		prof.data = ProfileData.fresh()
 	main = (load("res://scenes/main/main.tscn") as PackedScene).instantiate()
 	root.add_child(main)
 	var app: Node = root.get_node("App")
@@ -145,4 +150,46 @@ func _run() -> void:
 	ctl.open_pause_menu()
 	await _wait(5)
 	await _shot("09_pause")
+	ctl.close_pause_menu()
+	# Meta progression screens with a demo profile.
+	prof = root.get_node("Profile")
+	var res := MatchResult.from_sim(sim, false)
+	res["won"] = true
+	res["minutes"] = maxf(float(res["minutes"]), 24.0)
+	res["actions"] = 90
+	res["difficulty"] = "hard"
+	prof.pay_match(res)
+	for id in ["avatar_lion", "emblem_eagle", "frame_gold", "title_marshal", "color_amber", "plate_hex", "capture_rings", "victory_fireworks", "theme_royal"]:
+		Inventory.grant(prof.data, id)
+	prof.data.data["cases"]["elite"] = 3
+	prof.data.data["credits"] = 5400
+	app.goto(app.State.RESULTS)
+	await _wait(140)
+	await _shot("10_results")
+	app.goto(app.State.PROFILE)
+	await _wait(10)
+	await _shot("11_profile")
+	app.goto(app.State.PROGRESS)
+	await _wait(10)
+	await _shot("12_progress")
+	app.goto(app.State.CASES)
+	await _wait(10)
+	await _shot("13_cases")
+	var cs: Node = main._current
+	cs.set("_selected", "elite")
+	cs.call("_rebuild")
+	cs.call("_open")
+	await _wait(150)
+	await _shot("13b_case_opened")
+	prof.equip("avatar_lion")
+	prof.equip("frame_gold")
+	app.goto(app.State.INVENTORY)
+	await _wait(10)
+	await _shot("14_inventory")
+	app.goto(app.State.ACHIEVEMENTS)
+	await _wait(10)
+	await _shot("15_achievements")
+	app.goto(app.State.MAIN_MENU)
+	await _wait(20)
+	await _shot("16_main_menu_profile")
 	quit()

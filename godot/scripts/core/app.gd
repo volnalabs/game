@@ -3,12 +3,15 @@ extends Node
 ## handed from one screen to the next. scenes/main/main.gd swaps screens on state_changed.
 
 signal state_changed(state: int)
+## The current screen should be rebuilt (e.g. after the UI theme changed).
+signal refresh_requested
 
 enum State { MAIN_MENU, MAP_SELECT, MAP_GENERATOR, MATCH_SETUP, LOADING, SPAWN_SELECT, PLAYING, PAUSED,
-	VICTORY, DEFEAT, LOAD_GAME, SETTINGS, CREDITS }
+	VICTORY, DEFEAT, LOAD_GAME, SETTINGS, CREDITS, PROFILE, PROGRESS, CASES, INVENTORY, ACHIEVEMENTS, RESULTS }
 
 const STATE_NAMES := ["main_menu", "map_select", "map_generator", "match_setup", "loading", "spawn_select",
-	"playing", "paused", "victory", "defeat", "load_game", "settings", "credits"]
+	"playing", "paused", "victory", "defeat", "load_game", "settings", "credits", "profile", "progress", "cases",
+	"inventory", "achievements", "results"]
 
 var state: int = State.MAIN_MENU
 ## Selected map for the next match (registry map or a generated world).
@@ -27,6 +30,15 @@ var menu_cards: Array[Callable] = []
 
 func add_menu_entry(section: String, icon: String, label: String, state: int) -> void:
 	menu_extras.append({"section": section, "icon": icon, "label": label, "action": func() -> void: goto(state)})
+
+
+## Unique id of a new match (rewards are paid once per id).
+static func new_match_id() -> String:
+	return "%x-%x-%x" % [int(Time.get_unix_time_from_system()), Time.get_ticks_usec() & 0xffffff, randi()]
+
+
+func refresh_screen() -> void:
+	refresh_requested.emit()
 
 
 func goto(new_state: int) -> void:
@@ -49,6 +61,7 @@ func select_map(def: MapDefinition, data: MapData = null) -> void:
 
 func start_new_match() -> void:
 	load_path = ""
+	config.match_id = new_match_id()
 	goto(State.LOADING)
 
 

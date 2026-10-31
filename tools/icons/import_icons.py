@@ -35,6 +35,17 @@ GAME = {
     "m_new_game": "planet-conquest", "m_profile": "person", "m_progress": "laurels", "m_cases": "locked-chest",
     "m_case_open": "open-treasure-chest", "m_inventory": "backpack", "m_research": "skills", "m_achievements": "trophy-cup",
     "m_encyclopedia": "open-book", "m_quests": "scroll-unfurled", "m_perks": "upgrade",
+    # cosmetics: avatars (a_*), emblems (e_*), effects (fx_*)
+    "a_recruit": "visored-helm", "a_soldier": "brodie-helmet", "a_knight": "black-knight-helm", "a_wolf": "wolf-head",
+    "a_eagle": "eagle-head", "a_lion": "lion", "a_bear": "bear-head", "a_fox": "fox-head", "a_owl": "owl",
+    "a_dragon": "dragon-head", "a_overlord": "overlord-helm", "a_astronaut": "astronaut-helmet", "a_skull": "crowned-skull",
+    "a_spartan": "spartan-helmet",
+    "e_eagle": "eagle-emblem", "e_hawk": "hawk-emblem", "e_swords": "swords-emblem", "e_wings": "winged-emblem",
+    "e_stars": "star-formation", "e_laurel": "laurel-crown", "e_crown": "crown", "e_anchor": "anchor", "e_castle": "castle",
+    "e_tower": "tower-flag", "e_banner": "knight-banner", "e_trident": "trident", "e_dragon": "dragon-spiral",
+    "e_sun": "sun", "e_snow": "snowflake-2", "e_lightning": "lightning-trio", "e_flame": "flame", "e_oak": "oak",
+    "e_compass": "compass", "e_rook": "chess-rook", "e_steelwing": "steelwing-emblem", "e_condor": "condor-emblem",
+    "fx_firework": "firework-rocket", "fx_party": "party-flags", "fx_medal": "ribbon-medal", "fx_gem": "diamond-hard",
     # game concepts
     "g_attack": "crossed-swords", "g_defense": "checked-shield", "g_alliance": "shaking-hands", "g_peace": "peace-dove",
     "g_war": "crossed-sabres", "g_landing": "sailboat", "g_target": "on-target", "g_explosion": "spiky-explosion",

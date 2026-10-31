@@ -8,6 +8,11 @@ func _init() -> void:
 
 
 func _run() -> void:
+	# Tests never touch the player's real profile.
+	var prof := root.get_node_or_null("Profile")
+	if prof != null:
+		prof.store = ProfileStore.new("user://test_profile.json")
+		prof.data = ProfileData.fresh()
 	var filter := ""
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:

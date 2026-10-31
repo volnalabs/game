@@ -22,6 +22,8 @@ var material_shared: ShaderMaterial
 var terrain_sprite: Sprite2D
 ## Milliseconds spent uploading chunks in the last frame (profiling).
 var last_upload_ms: float = 0.0
+## Cosmetic terrain style (profile item), "" = standard.
+var map_style: String = ""
 
 
 func setup(sim_: Sim) -> void:
@@ -31,7 +33,7 @@ func setup(sim_: Sim) -> void:
 	ch = ceili(float(map.height) / CHUNK)
 	terrain_sprite = Sprite2D.new()
 	terrain_sprite.centered = false
-	terrain_sprite.texture = ImageTexture.create_from_image(TerrainColors.terrain_image(map))
+	terrain_sprite.texture = ImageTexture.create_from_image(TerrainColors.terrain_image(map, map_style))
 	terrain_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(terrain_sprite)
 	palette_img = Image.create(512, 1, false, Image.FORMAT_RGBA8)

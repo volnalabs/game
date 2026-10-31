@@ -15,6 +15,7 @@ var _army: Label
 var _army_rate: Label
 var _goal: ProgressBar
 var _goal_l: Label
+var _title: String = ""
 
 
 func _init(h: GameHUD) -> void:
@@ -22,6 +23,10 @@ func _init(h: GameHUD) -> void:
 	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 8))
 	var row := UITheme.hbox(14)
 	add_child(row)
+	var av := Cosmetics.avatar_widget(34)
+	av.tooltip_text = tr("MENU_PROFILE")
+	row.add_child(av)
+	_title = Cosmetics.title()
 	_flag = UITheme.flag_rect(null, 40, 26)
 	row.add_child(_flag)
 	var nv := UITheme.vbox(0)
@@ -96,6 +101,8 @@ func refresh() -> void:
 	_flag.texture = hud.flag_of(pid)
 	_name.text = st.o_name[pid]
 	_rank.text = (tr("HUD_RANK") % hud.rank_of(pid)) if sim.is_player_alive() else tr("HUD_DEFEATED")
+	if _title != "":
+		_rank.text = _title + "  ·  " + _rank.text
 	var secs := int(sim.elapsed_seconds())
 	_time.text = "%02d:%02d" % [secs / 60, secs % 60]
 	for s: float in _speed:

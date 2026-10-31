@@ -9,6 +9,12 @@ const SCREENS := {
 	App.State.LOAD_GAME: "res://scenes/menus/load_game.tscn",
 	App.State.SETTINGS: "res://scenes/menus/settings.tscn",
 	App.State.CREDITS: "res://scenes/menus/credits.tscn",
+	App.State.PROFILE: "res://scripts/ui/screens/profile_screen.gd",
+	App.State.PROGRESS: "res://scripts/ui/screens/progress_screen.gd",
+	App.State.CASES: "res://scripts/ui/screens/cases_screen.gd",
+	App.State.INVENTORY: "res://scripts/ui/screens/inventory_screen.gd",
+	App.State.ACHIEVEMENTS: "res://scripts/ui/screens/achievements_screen.gd",
+	App.State.RESULTS: "res://scripts/ui/screens/results_screen.gd",
 }
 const MATCH_SCENE := "res://scenes/gameplay/match.tscn"
 
@@ -23,7 +29,15 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = UITheme.theme()
 	App.state_changed.connect(_on_state)
+	App.refresh_requested.connect(_refresh)
 	_on_state(App.state)
+
+
+func _refresh() -> void:
+	theme = UITheme.theme()
+	if not App.is_match_state(App.state):
+		_current_path = ""
+		_on_state(App.state)
 
 
 func _on_state(s: int) -> void:
@@ -32,6 +46,8 @@ func _on_state(s: int) -> void:
 		return
 	if _current != null:
 		_current.queue_free()
-	_current = (load(path) as PackedScene).instantiate()
+	# Newer screens are plain scripts (no scene file needed).
+	var res: Resource = load(path)
+	_current = (res as GDScript).new() if res is GDScript else (res as PackedScene).instantiate()
 	_current_path = path
 	add_child(_current)

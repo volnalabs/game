@@ -67,6 +67,9 @@ var o_st_gold_earned: PackedFloat64Array
 var o_st_gold_spent: PackedFloat64Array
 var o_st_peak_tiles: PackedInt32Array
 var o_st_upkeep_paid: PackedFloat64Array
+## Accepted commands (player activity for anti-AFK rewards) and buildings ordered.
+var o_st_commands: PackedInt32Array
+var o_st_built: PackedInt32Array
 
 ## Tiles whose owner changed since the renderer last drained them.
 var changed_tiles: PackedInt32Array = PackedInt32Array()
@@ -140,6 +143,8 @@ func _init(map_data: MapData, rules_: Rules) -> void:
 	o_st_gold_spent = _f64(m)
 	o_st_peak_tiles = _i32(m, 0)
 	o_st_upkeep_paid = _f64(m)
+	o_st_commands = _i32(m, 0)
+	o_st_built = _i32(m, 0)
 
 
 static func _i32(n: int, v: int) -> PackedInt32Array:
@@ -240,6 +245,18 @@ func mark_attacked(id: int) -> void:
 
 func stat_attack(id: int) -> void:
 	o_st_attacks[id] += 1
+
+
+## Display colour (cosmetic; no rule reads colours).
+func set_display_color(id: int, c: Color) -> void:
+	o_color[id] = c
+
+
+func stat_command(id: int, type: String) -> void:
+	if id > 0 and id < o_st_commands.size():
+		o_st_commands[id] += 1
+		if type == "build":
+			o_st_built[id] += 1
 
 
 func stat_troops_lost(id: int, v: float) -> void:
@@ -474,7 +491,7 @@ const OWNER_FIELDS := ["o_name", "o_kind", "o_alive", "o_spawned", "o_color", "o
 	"o_supply_income", "o_port_trade", "o_growth", "o_border_head", "o_border_count", "o_sx", "o_sy",
 	"o_spawn_tile", "o_boats", "o_attacked_tick", "o_killer", "o_elim_tick", "o_blevels", "o_bowned",
 	"o_st_attacks", "o_st_conquered", "o_st_lost_tiles", "o_st_troops_lost", "o_st_gold_earned",
-	"o_st_gold_spent", "o_st_peak_tiles", "o_st_upkeep_paid"]
+	"o_st_gold_spent", "o_st_peak_tiles", "o_st_upkeep_paid", "o_st_commands", "o_st_built"]
 const TILE_FIELDS := ["owner", "in_border", "bnext", "bprev", "struct_at", "front_mark"]
 
 

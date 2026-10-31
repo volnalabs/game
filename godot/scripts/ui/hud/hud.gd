@@ -245,6 +245,16 @@ func show_end(victory: bool, reason: String) -> void:
 	var w := int(sim.result.get("winner", 0))
 	if w > 0:
 		_end_body.add_child(UITheme.stat_row(tr("END_WINNER"), st.o_name[w], st.o_color[w].lightened(0.3), "g_victory"))
+	var prof := get_node_or_null("/root/Profile")
+	if prof != null and not (prof.last_report as Dictionary).is_empty() and prof.last_report.get("match_id", "") == sim.config.match_id:
+		var rep: Dictionary = prof.last_report
+		var rw := UITheme.hbox(16)
+		rw.add_child(UITheme.icon_label("r_xp", "+" + UITheme.num(float(rep["match_xp"])), UITheme.XP, UITheme.T_BODY_L))
+		rw.add_child(UITheme.icon_label("r_credits", "+" + UITheme.num(float(rep["match_credits"])), UITheme.CREDITS, UITheme.T_BODY_L))
+		if not (rep["levels"] as Array).is_empty():
+			rw.add_child(UITheme.icon_label("ui_star", tr("TOAST_LEVEL_UP") % int(rep["level_after"]), UITheme.XP, UITheme.T_BODY_L))
+		_end_body.add_child(UITheme.separator())
+		_end_body.add_child(rw)
 	for c in _end_actions.get_children():
 		c.queue_free()
 	_end_actions.add_child(UITheme.button(tr("END_WATCH"), func() -> void: ctl.continue_watching(), 0, "ui_eye"))

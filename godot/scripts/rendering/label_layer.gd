@@ -5,6 +5,10 @@ extends Control
 
 var sim: Sim
 var cam: MapCamera
+## Fronts are read from the effects layer (same smoothed positions as the arrows).
+var effects: EffectsLayer
+## Equipped emblem drawn next to the player's name.
+var player_emblem: String = ""
 var font: Font
 var _centroids: Dictionary = {}
 var _timer: float = 0.0
@@ -63,6 +67,11 @@ func _draw() -> void:
 		var name := st.o_name[id]
 		var col := Color.WHITE if id != sim.player_id else Color("#bfe6ff")
 		_text_c(name, sp, int(size), col)
+		if id == sim.player_id and player_emblem != "":
+			var tex := Icons.tex(player_emblem, int(size * 1.3))
+			var w := font.get_string_size(name, HORIZONTAL_ALIGNMENT_LEFT, -1, int(size)).x
+			if tex != null:
+				draw_texture_rect(tex, Rect2(sp + Vector2(-w * 0.5 - size * 1.5, -size * 1.05), Vector2(size, size) * 1.3), false, col)
 		_text_c(UITheme.num(st.o_troops[id]), sp + Vector2(0, size * 0.95), int(size * 0.75), Color(1, 1, 1, 0.85))
 	# Attack fronts involving the player.
 	var W := sim.map.width
@@ -71,7 +80,8 @@ func _draw() -> void:
 			continue
 		if a.attacker != sim.player_id and a.target != sim.player_id:
 			continue
-		var p := _to_screen(Vector2(a.last_tile % W + 0.5, a.last_tile / W + 0.5))
+		var fp: Vector2 = effects._fronts.get(a.id, {}).get("p", Vector2(a.last_tile % W + 0.5, a.last_tile / W + 0.5)) if effects != null else Vector2(a.last_tile % W + 0.5, a.last_tile / W + 0.5)
+		var p := _to_screen(fp)
 		var c := UITheme.GOOD if a.attacker == sim.player_id else UITheme.BAD
 		_badge(UITheme.num(a.troops), p, c)
 	for b in sim.naval.boats:

@@ -1,0 +1,55 @@
+{
+	"_comment": "Match rewards (RewardCalculator). XP and Credits scale with real participation: time played and actions per minute (anti-AFK); repeated short matches and repeated identical wins give less (anti-restart farming). Abandoned matches give partial XP and no Credits.",
+	"xp": {
+		"complete": 150,
+		"victory": 300,
+		"per_minute": 12,
+		"per_minute_cap": 40,
+		"per_1k_tiles_conquered": 18,
+		"conquered_cap": 400,
+		"per_elimination": 25,
+		"elimination_cap": 10,
+		"loss_mult": 1.0,
+		"abandon_mult": 0.4
+	},
+	"credits": {
+		"complete": 60,
+		"victory": 160,
+		"per_minute": 3,
+		"per_minute_cap": 40,
+		"per_1k_tiles_conquered": 4,
+		"conquered_cap": 120,
+		"per_elimination": 6,
+		"elimination_cap": 10,
+		"loss_mult": 0.6
+	},
+	"difficulty_mult": {
+		"easy": 0.8,
+		"normal": 1.0,
+		"hard": 1.35
+	},
+	"bots_mult": {
+		"per_bot": 0.006,
+		"max": 1.2
+	},
+	"participation": {
+		"full_minutes": 6.0,
+		"min_minutes": 1.5,
+		"actions_per_minute_full": 1.5,
+		"activity_floor": 0.25
+	},
+	"anti_farm": {
+		"window_minutes": 120,
+		"short_minutes": 5.0,
+		"short_penalty": 0.5,
+		"repeat_window_hours": 24,
+		"repeat_penalty": 0.5,
+		"repeat_floor": 0.2,
+		"history_keep": 40
+	},
+	"first_win_of_day": {
+		"xp": 200,
+		"credits": 100
+	},
+	"fair_mode_mult": 1.1
+}

@@ -10,6 +10,8 @@ var sim: Sim
 var cam: MapCamera
 ## Structure id -> seconds since its construction finished (completion pop).
 var _pops: Dictionary = {}
+## Plate shape of the player's buildings (cosmetic item), "circle" by default.
+var player_shape: String = "circle"
 
 
 ## Plays the completion pop of structure `id` (called on BUILD_DONE).
@@ -58,9 +60,18 @@ func _draw() -> void:
 			var k := float(_pops[s.id]) / POP_SECS
 			rr = r * (1.0 + 0.45 * sin(k * PI))
 			draw_arc(pos, r * (1.2 + k * 2.2), 0.0, TAU, 32, Color(oc.lightened(0.4), 1.0 - k), lw * 1.5)
-		draw_circle(pos, rr * 1.18, Color(0.04, 0.06, 0.09, 0.9))
-		draw_circle(pos, rr, Color(0.16, 0.18, 0.22) if building and s.active_levels == 0 else oc.darkened(0.35))
-		draw_arc(pos, rr, 0.0, TAU, 32, oc.lightened(0.15), lw)
+		var fill := Color(0.16, 0.18, 0.22) if building and s.active_levels == 0 else oc.darkened(0.35)
+		var shape_pts := PlateShape.points(player_shape, pos, rr) if s.owner == sim.player_id else PackedVector2Array()
+		if shape_pts.is_empty():
+			draw_circle(pos, rr * 1.18, Color(0.04, 0.06, 0.09, 0.9))
+			draw_circle(pos, rr, fill)
+			draw_arc(pos, rr, 0.0, TAU, 32, oc.lightened(0.15), lw)
+		else:
+			draw_colored_polygon(PlateShape.points(player_shape, pos, rr * 1.18), Color(0.04, 0.06, 0.09, 0.9))
+			draw_colored_polygon(shape_pts, fill)
+			var closed := shape_pts.duplicate()
+			closed.append(shape_pts[0])
+			draw_polyline(closed, oc.lightened(0.15), lw)
 		var tex := Icons.tex(icon_id(sim.rules, s.kind), px)
 		if tex != null:
 			var ir := rr * 0.68

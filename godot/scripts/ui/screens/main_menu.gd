@@ -1,26 +1,30 @@
 extends ScreenBase
 ## Main menu over a living world map: navigation on the left, profile and last match on the right.
 
+var _compact: bool = false
+
+
 func _ready() -> void:
+	_compact = get_viewport_rect().size.y < 820.0
 	build_backdrop(true, 0.62)
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 56 if side in ["left", "right"] else 44)
+		margin.add_theme_constant_override("margin_" + side, 56 if side in ["left", "right"] else (24 if _compact else 44))
 	add_child(margin)
 	var row := UITheme.hbox(40)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(row)
-	var nav := UITheme.vbox(6)
+	var nav := UITheme.vbox(2 if _compact else 6)
 	nav.custom_minimum_size.x = 380
 	row.add_child(nav)
-	var logo := UITheme.title("VOLNA", UITheme.T_DISPLAY)
+	var logo := UITheme.title("VOLNA", UITheme.T_H1 if _compact else UITheme.T_DISPLAY)
 	nav.add_child(logo)
 	var sub := UITheme.caption(tr("GAME_SUBTITLE"), UITheme.ACCENT)
 	sub.add_theme_font_size_override("font_size", UITheme.T_BODY)
 	nav.add_child(sub)
-	nav.add_child(_gap(18))
+	nav.add_child(_gap(6 if _compact else 18))
 	var cont := _continue_path()
 	_section(nav, tr("MENU_SEC_PLAY"))
 	_item(nav, "m_new_game", tr("MENU_NEW_GAME"), func() -> void: App.goto(App.State.MAP_SELECT), true)
@@ -70,15 +74,15 @@ func _gap(h: int) -> Control:
 
 
 func _section(nav: VBoxContainer, text: String) -> void:
-	nav.add_child(_gap(8))
+	nav.add_child(_gap(2 if _compact else 8))
 	nav.add_child(UITheme.caption(text, UITheme.TEXT_FAINT))
 
 
 func _item(nav: VBoxContainer, icon: String, text: String, cb: Callable, primary: bool = false) -> void:
 	var b := UITheme.accent_button(text, cb, 0, icon) if primary else UITheme.ghost_button(text, cb, icon)
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.custom_minimum_size = Vector2(340, 44 if primary else 38)
-	b.add_theme_font_size_override("font_size", UITheme.T_BODY_L + (2 if primary else 0))
+	b.custom_minimum_size = Vector2(340, (36 if primary else 30) if _compact else (44 if primary else 38))
+	b.add_theme_font_size_override("font_size", (UITheme.T_BODY if _compact else UITheme.T_BODY_L) + (2 if primary else 0))
 	nav.add_child(b)
 
 

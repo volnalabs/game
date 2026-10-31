@@ -140,6 +140,8 @@ func _process_commands() -> void:
 		var reason := apply_command(c)
 		if reason != "":
 			events.emit(SimEvents.COMMAND_REJECTED, {"owner": c.get("owner", 0), "cmd": c.get("type", ""), "reason": reason})
+		else:
+			st.stat_command(int(c.get("owner", 0)), String(c.get("type", "")))
 
 
 ## Validates and applies one command. Returns "" or the rejection reason.

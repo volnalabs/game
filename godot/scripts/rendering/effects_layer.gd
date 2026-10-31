@@ -32,6 +32,8 @@ var _floaters: Array = []
 var _marks: Array = []
 var _sparks: Array = []
 var _font: Font
+## Equipped capture effect of the player ({} = default): {"color", "rainbow", "style"}.
+var player_capture: Dictionary = {}
 var _boat_prev: Dictionary = {}
 var _boat_dir: Dictionary = {}
 
@@ -126,7 +128,12 @@ func _track_fronts(delta: float) -> void:
 			f["p"] = (f["p"] as Vector2).lerp(_c(a.last_tile), k)
 			f["spark"] = float(f["spark"]) - delta
 			if a.last_tile != int(f["last"]) and float(f["spark"]) <= 0.0 and quality > 0 and _sparks.size() < MAX_SPARKS:
-				_sparks.append({"pos": _c(a.last_tile), "c": sim.st.o_color[a.attacker].lightened(0.5), "t": 0.0})
+				var sc: Color = sim.st.o_color[a.attacker].lightened(0.5)
+				var ring_style := false
+				if a.attacker == sim.player_id and not player_capture.is_empty():
+					sc = Color.from_hsv(fmod(Time.get_ticks_msec() / 1500.0, 1.0), 0.6, 1.0) if player_capture["rainbow"] else player_capture["color"]
+					ring_style = player_capture["style"] == "rings"
+				_sparks.append({"pos": _c(a.last_tile), "c": sc, "t": 0.0, "ring": ring_style})
 				f["spark"] = 0.12
 			f["last"] = a.last_tile
 		f["acc"] = float(f["acc"]) + delta
@@ -153,7 +160,10 @@ func _draw() -> void:
 	for s: Dictionary in _sparks:
 		var k := float(s["t"]) / 0.5
 		var sz := maxf(0.6, 3.0 / z) * (1.0 + k)
-		draw_rect(Rect2(s["pos"] - Vector2(sz, sz) * 0.5, Vector2(sz, sz)), Color(s["c"], 1.0 - k))
+		if s.get("ring", false):
+			draw_arc(s["pos"], sz * 1.4, 0.0, TAU, 16, Color(s["c"], 1.0 - k), maxf(0.15, 1.2 / z))
+		else:
+			draw_rect(Rect2(s["pos"] - Vector2(sz, sz) * 0.5, Vector2(sz, sz)), Color(s["c"], 1.0 - k))
 	for b in sim.naval.boats:
 		if not b.alive:
 			continue

@@ -40,6 +40,9 @@ var spawn_pending: int = -1
 var spawn_info_pending: Dictionary = {}
 var spawn_info_hover: Dictionary = {}
 var _advisor: SpawnAdvisor
+## Reward bookkeeping: paid once at the end (or as abandoned when leaving early).
+var _paid: bool = false
+var _min_share_late: float = 1.0
 
 
 func _ready() -> void:
@@ -49,6 +52,7 @@ func _ready() -> void:
 	if not _create_sim():
 		App.goto(App.State.MAIN_MENU)
 		return
+	_apply_cosmetics()
 	_build_world()
 	_loading.queue_free()
 	speed = Settings.default_speed
@@ -99,8 +103,16 @@ func _create_sim() -> bool:
 	return true
 
 
+## Equipped cosmetics that touch the match view (display colour of the player's state).
+func _apply_cosmetics() -> void:
+	var c := Cosmetics.player_color()
+	if c.a > 0.0 and sim.player_id > 0 and sim.st.tick == 0:
+		sim.st.set_display_color(sim.player_id, c)
+
+
 func _build_world() -> void:
 	renderer = MapRenderer.new()
+	renderer.map_style = Cosmetics.map_style()
 	add_child(renderer)
 	renderer.setup(sim)
 	zones = ZoneLayer.new()
@@ -118,11 +130,13 @@ func _build_world() -> void:
 	cam.setup(Vector2(sim.map.width, sim.map.height))
 	structures.sim = sim
 	structures.cam = cam
+	structures.player_shape = Cosmetics.plate_shape()
 	zones.sim = sim
 	zones.cam = cam
 	zones.show_all = Settings.show_zones
 	ghost.sim = sim
 	ghost.cam = cam
+	effects.player_capture = Cosmetics.capture_effect()
 	effects.sim = sim
 	effects.cam = cam
 	var ui := CanvasLayer.new()
@@ -131,6 +145,8 @@ func _build_world() -> void:
 	labels = LabelLayer.new()
 	labels.sim = sim
 	labels.cam = cam
+	labels.effects = effects
+	labels.player_emblem = Cosmetics.emblem_icon()
 	ui.add_child(labels)
 	hud = GameHUD.new()
 	ui.add_child(hud)
@@ -173,6 +189,7 @@ func _process(delta: float) -> void:
 	renderer.set_highlight(selected_owner, hover_owner)
 	_update_ghost(delta)
 	_handle_events()
+	_track_for_rewards()
 	_check_end()
 
 
@@ -227,16 +244,46 @@ func _handle_events() -> void:
 					hud.log_line(tr("LOG_START"), UITheme.ACCENT)
 
 
+func _track_for_rewards() -> void:
+	if sim.phase == Sim.Phase.PLAYING and sim.is_player_alive() and sim.elapsed_seconds() > 600.0 and sim.st.tick % 10 == 0:
+		_min_share_late = minf(_min_share_late, sim.st.land_share(sim.player_id))
+
+
+## Pays the match to the profile once (RewardManager is idempotent per match_id as well).
+func _pay(abandoned: bool) -> Dictionary:
+	if _paid or sim == null or sim.player_id <= 0 or sim.config.match_id == "":
+		return {}
+	if sim.st.o_spawned[sim.player_id] == 0:
+		return {}
+	_paid = true
+	var prof := get_node_or_null("/root/Profile")
+	if prof == null:
+		return {}
+	return prof.pay_match(MatchResult.from_sim(sim, abandoned, {"min_share_late": _min_share_late}))
+
+
+func _exit_tree() -> void:
+	# Leaving a running match (menu, new game, load, restart) counts as abandoned.
+	if not _paid and sim != null and sim.phase == Sim.Phase.PLAYING:
+		_pay(true)
+
+
+func show_results() -> void:
+	App.goto(App.State.RESULTS)
+
+
 func _check_end() -> void:
 	if _ended:
 		return
 	if sim.phase == Sim.Phase.OVER:
 		_ended = true
+		_pay(false)
 		var won := int(sim.result.get("winner", 0)) == sim.player_id and sim.player_id > 0
 		App.goto(App.State.VICTORY if won else App.State.DEFEAT)
 		hud.show_end(won, String(sim.result.get("reason", "domination")) if won else ("player_lost" if not sim.is_player_alive() else String(sim.result.get("reason", "domination"))))
 	elif sim.phase == Sim.Phase.PLAYING and sim.player_id > 0 and not sim.is_player_alive() and not watching:
 		_ended = true
+		_pay(false)
 		App.goto(App.State.DEFEAT)
 		hud.show_end(false, "player_lost")
 

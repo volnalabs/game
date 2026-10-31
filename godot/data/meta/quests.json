@@ -1,0 +1,260 @@
+{
+	"_comment": "Offline challenges. weekly: 3 chosen from the pool by the ISO week of the computer clock (same week = same set), progress summed over matches that week. chain: permanent steps unlocked one after another. once: one-time. Rewards through RewardManager.",
+	"weekly_count": 3,
+	"quests": [
+		{
+			"id": "w_play3",
+			"kind": "weekly",
+			"name": {
+				"ru": "Сыграйте 3 партии",
+				"en": "Play 3 matches"
+			},
+			"condition": {
+				"scope": "count",
+				"key": "matches",
+				"min": 3
+			},
+			"reward": {
+				"credits": 250,
+				"xp": 200
+			}
+		},
+		{
+			"id": "w_win2",
+			"kind": "weekly",
+			"name": {
+				"ru": "Выиграйте 2 партии",
+				"en": "Win 2 matches"
+			},
+			"condition": {
+				"scope": "count",
+				"key": "wins",
+				"min": 2
+			},
+			"reward": {
+				"credits": 350,
+				"xp": 300
+			}
+		},
+		{
+			"id": "w_conquer50k",
+			"kind": "weekly",
+			"name": {
+				"ru": "Захватите 50 000 тайлов",
+				"en": "Conquer 50,000 tiles"
+			},
+			"condition": {
+				"scope": "sum",
+				"key": "conquered",
+				"min": 50000
+			},
+			"reward": {
+				"credits": 300,
+				"xp": 250
+			}
+		},
+		{
+			"id": "w_build20",
+			"kind": "weekly",
+			"name": {
+				"ru": "Постройте 20 зданий",
+				"en": "Build 20 buildings"
+			},
+			"condition": {
+				"scope": "sum",
+				"key": "built",
+				"min": 20
+			},
+			"reward": {
+				"credits": 250,
+				"xp": 200
+			}
+		},
+		{
+			"id": "w_gold20m",
+			"kind": "weekly",
+			"name": {
+				"ru": "Заработайте 20 млн золота",
+				"en": "Earn 20M gold"
+			},
+			"condition": {
+				"scope": "sum",
+				"key": "gold_earned",
+				"min": 20000000
+			},
+			"reward": {
+				"credits": 300,
+				"xp": 250
+			}
+		},
+		{
+			"id": "w_hard",
+			"kind": "weekly",
+			"name": {
+				"ru": "Сыграйте на «Сложном»",
+				"en": "Play on Hard"
+			},
+			"condition": {
+				"scope": "count",
+				"key": "matches",
+				"min": 1,
+				"where": {
+					"difficulty": "hard"
+				}
+			},
+			"reward": {
+				"credits": 300,
+				"xp": 300
+			}
+		},
+		{
+			"id": "w_elim8",
+			"kind": "weekly",
+			"name": {
+				"ru": "Уничтожьте 8 государств",
+				"en": "Eliminate 8 states"
+			},
+			"condition": {
+				"scope": "sum",
+				"key": "eliminations",
+				"min": 8
+			},
+			"reward": {
+				"credits": 300,
+				"xp": 250
+			}
+		},
+		{
+			"id": "w_fictional",
+			"kind": "weekly",
+			"name": {
+				"ru": "Выиграйте на вымышленной карте",
+				"en": "Win on a fictional map"
+			},
+			"condition": {
+				"scope": "count",
+				"key": "wins",
+				"min": 1,
+				"where": {
+					"category": "fictional"
+				}
+			},
+			"reward": {
+				"credits": 350,
+				"xp": 300
+			}
+		},
+		{
+			"id": "c_win_maps_2",
+			"kind": "chain",
+			"name": {
+				"ru": "Победы на разных картах I",
+				"en": "Wins on different maps I"
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "maps_won",
+				"min": 2
+			},
+			"reward": {
+				"credits": 300,
+				"cases": {
+					"starter": 1
+				}
+			},
+			"next": "c_win_maps_5"
+		},
+		{
+			"id": "c_win_maps_5",
+			"kind": "chain",
+			"name": {
+				"ru": "Победы на разных картах II",
+				"en": "Wins on different maps II"
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "maps_won",
+				"min": 5
+			},
+			"reward": {
+				"credits": 700,
+				"cases": {
+					"national": 1
+				}
+			},
+			"next": "c_win_maps_9"
+		},
+		{
+			"id": "c_win_maps_9",
+			"kind": "chain",
+			"name": {
+				"ru": "Победы на разных картах III",
+				"en": "Wins on different maps III"
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "maps_won",
+				"min": 9
+			},
+			"reward": {
+				"credits": 1500,
+				"cases": {
+					"legendary": 1
+				}
+			}
+		},
+		{
+			"id": "c_hard_1",
+			"kind": "chain",
+			"name": {
+				"ru": "Испытание I: сложный ИИ",
+				"en": "Trial I: hard AI"
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "hard_wins",
+				"min": 1
+			},
+			"reward": {
+				"credits": 400
+			},
+			"next": "c_hard_5"
+		},
+		{
+			"id": "c_hard_5",
+			"kind": "chain",
+			"name": {
+				"ru": "Испытание II: 5 побед на сложном",
+				"en": "Trial II: 5 hard wins"
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "hard_wins",
+				"min": 5
+			},
+			"reward": {
+				"credits": 1200,
+				"cases": {
+					"elite": 1
+				}
+			}
+		},
+		{
+			"id": "o_tutorial",
+			"kind": "once",
+			"name": {
+				"ru": "Закажите 2 постройки в одной партии",
+				"en": "Order 2 buildings in one match"
+			},
+			"condition": {
+				"scope": "match",
+				"key": "built",
+				"min": 2
+			},
+			"reward": {
+				"credits": 150,
+				"xp": 150
+			}
+		}
+	]
+}
