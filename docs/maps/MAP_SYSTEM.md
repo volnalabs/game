@@ -43,9 +43,9 @@
 |---|---|---|---|
 | `earth` | реальная | 2000×1000, 71 нация | экспорт `src/shared/Data/Maps/World.luau` (Natural Earth + NOAA ETOPO1, public domain) |
 | `europe`, `asia`, `africa`, `north_america`, `south_america` | региональные | ~1200–1650 px | экспорт `src/server/MapData/*.luau` (те же источники) |
-| `pelagia` | вымышленная | архипелаг | авторская спецификация `tools/map_specs/pelagia.json` → генератор |
-| `avaris` | вымышленная | суперконтинент | `tools/map_specs/avaris.json` → генератор |
-| `shattered_worlds` | вымышленная | 4–5 континентов + острова | `tools/map_specs/shattered_worlds.json` → генератор |
+| `pelagia` | вымышленная | архипелаг | авторская спецификация `godot/data/map_specs/pelagia.json` → генератор |
+| `avaris` | вымышленная | суперконтинент | `godot/data/map_specs/avaris.json` → генератор |
+| `shattered_worlds` | вымышленная | 4–5 континентов + острова | `godot/data/map_specs/shattered_worlds.json` → генератор |
 
 Экспорт реальных карт: `python3 tools/export_luau_maps.py` (декодирует `base64(zstd)` из Luau,
 переводит байт-формат оригинала в коды рельефа: высота < 10 → равнина, 10–19 → холмы, ≥ 20 → горы,
@@ -83,7 +83,7 @@ Ring World, Random World** — наборы параметров и тип «м�
 Генерированные карты в сохранениях хранятся как параметры + seed + хеш.
 
 ## 4. Вымышленные карты
-Спецификация (`tools/map_specs/*.json`) задаёт крупные формы вручную: массы суши (центр, радиусы,
+Спецификация (`godot/data/map_specs/*.json`) задаёт крупные формы вручную: массы суши (центр, радиусы,
 вытянутость, поворот, сила искажения), хребты (полилинии), внутренние моря, проливы (каналы), а также
 пресет климата и seed. `scripts/tools/bake_maps.gd` прогоняет их через тот же генератор и записывает
 `data/maps/<id>/terrain.png`, `preview.png`, `stats` и старты. Формы — оригинальные.

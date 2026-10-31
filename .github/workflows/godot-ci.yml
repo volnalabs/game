@@ -1,0 +1,31 @@
+name: Godot game (headless checks)
+
+on:
+  push:
+    paths: ["godot/**", "tools/get_godot.sh", ".github/workflows/godot-ci.yml"]
+  pull_request:
+    paths: ["godot/**", "tools/get_godot.sh", ".github/workflows/godot-ci.yml"]
+
+jobs:
+  headless:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/godot
+          key: godot-4.7.2
+      - name: Install Godot
+        run: echo "GODOT=$(tools/get_godot.sh)" >> "$GITHUB_ENV"
+      - name: Import project
+        run: $GODOT --headless --path godot --import
+      - name: Smoke-run the main scene
+        run: |
+          $GODOT --headless --path godot --quit-after 300 2>&1 | tee smoke.log
+          ! grep -E "SCRIPT ERROR|Parse Error" smoke.log
+      - name: Unit, integration and AI tests
+        run: $GODOT --headless --path godot -s res://tests/run_tests.gd
+      - name: Short AI simulation
+        run: $GODOT --headless --path godot -s res://scripts/tools/ai_sim_cli.gd -- --games 4 --map gen:continents:S --bots 8 --mode strategic_vs_legacy --seed 1 --ticks 6000

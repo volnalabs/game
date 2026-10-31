@@ -21,7 +21,7 @@
 | Флаги стран (SVG) | `godot/assets/flags/*.svg` | копия нужных файлов из `assets/flags/` — Wikimedia Commons, по `assets/flags/SOURCE.txt` | Public domain / CC0 (по файлу, см. `SOURCE.txt`; многие — «insignia»: официальные символы, свободны от авторского права, но их использование может ограничиваться иными законами) |
 | Карта Земли и региональные карты | `godot/data/maps/{earth,europe,asia,africa,north_america,south_america}/` | экспорт из `src/shared/Data/Maps/World.luau`, `src/server/MapData/*.luau`, построенных `tools/maps/make_maps.py` из Natural Earth (1:10m/1:50m) и NOAA ETOPO1 | Public domain (Natural Earth — public domain; ETOPO1 — U.S. Government work). Атрибуция в титрах: «Made with Natural Earth. NOAA ETOPO1.» |
 | Названия стран/регионов | `map.json` реальных карт | Natural Earth + ручной перевод на русский | Public domain / собственный перевод |
-| Вымышленные карты (Pelagia, Avaris, Shattered Worlds) | `godot/data/maps/{pelagia,avaris,shattered_worlds}/` | собственные спецификации `tools/map_specs/*.json`, выпечка генератором проекта | AGPL-3.0 (собственная работа) |
+| Вымышленные карты (Pelagia, Avaris, Shattered Worlds) | `godot/data/maps/{pelagia,avaris,shattered_worlds}/` | собственные спецификации `godot/data/map_specs/*.json`, выпечка генератором проекта | AGPL-3.0 (собственная работа) |
 | Процедурные флаги, иконки построек, эффекты | генерируются кодом (`flag_gen.gd`, `_draw()` в слоях рендера) | собственная работа | AGPL-3.0 |
 | Тексты интерфейса | `godot/data/i18n/strings.csv` | собственная работа | AGPL-3.0 |
 

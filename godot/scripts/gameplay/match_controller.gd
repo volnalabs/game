@@ -384,6 +384,8 @@ func select_owner(id: int, focus: bool = false) -> void:
 
 
 func open_pause_menu() -> void:
+	if _ended and not watching:
+		return
 	menu_open = true
 	hud.show_pause(true)
 	App.goto(App.State.PAUSED)
