@@ -1,5 +1,5 @@
 extends ScreenBase
-## Credits and licences: OpenFront (AGPL §7 notice), RoWorld, map data, font, flags, Godot (MIT).
+## Credits and licences: OpenFront (AGPL §7 notice), RoWorld, map data, font, flags, icons, Godot (MIT).
 
 
 func _ready() -> void:
@@ -10,6 +10,10 @@ func _ready() -> void:
 	text.scroll_active = true
 	var s := "[b]VolnaLabs: World Strategy[/b] %s\n\n" % ProjectSettings.get_setting("application/config/version", "")
 	s += tr("CREDITS_BODY") + "\n\n"
+	s += "[b]%s[/b]\n" % tr("CREDITS_ICONS")
+	for line in Icons.attribution():
+		s += "• %s\n" % line
+	s += "\n"
 	s += "[b]Godot Engine[/b]\n" + Engine.get_license_text() + "\n\n"
 	s += "[b]%s[/b]\n" % tr("CREDITS_ENGINE_PARTS")
 	for info: Dictionary in Engine.get_copyright_info():

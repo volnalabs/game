@@ -8,6 +8,7 @@ var ui_scale: float = 1.0
 var edge_scroll: bool = true
 var default_speed: float = 1.0
 var show_ai_debug: bool = false
+var ui_animations: bool = true
 var last_difficulty: String = "normal"
 var last_bots: int = 20
 

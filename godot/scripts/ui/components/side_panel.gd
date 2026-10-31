@@ -1,0 +1,45 @@
+class_name SidePanel
+extends PanelContainer
+## A titled, collapsible panel used by the HUD docks: header (icon, title, close button) and a
+## scrollable body that panel builders fill.
+
+signal closed
+
+var body: VBoxContainer
+var _title: Label
+var _icon: TextureRect
+
+
+func _init(width: int = 360) -> void:
+	add_theme_stylebox_override("panel", UITheme.box(UITheme.SURFACE, UITheme.R_L, UITheme.STROKE, 14))
+	custom_minimum_size.x = width
+	var v := UITheme.vbox(10)
+	add_child(v)
+	var head := UITheme.hbox(8)
+	_icon = Icons.rect("ui_info", 20, UITheme.ACCENT)
+	head.add_child(_icon)
+	_title = UITheme.title("", UITheme.T_TITLE)
+	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(_title)
+	head.add_child(UITheme.icon_button("ui_close", tr("CLOSE"), func() -> void: closed.emit(), 30))
+	v.add_child(head)
+	v.add_child(UITheme.separator())
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size.y = 120
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	v.add_child(scroll)
+	body = UITheme.vbox(8)
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(body)
+
+
+func set_header(icon: String, title: String) -> void:
+	_icon.texture = Icons.tex(icon, 20)
+	_title.text = title
+
+
+func clear() -> void:
+	for c in body.get_children():
+		body.remove_child(c)
+		c.queue_free()

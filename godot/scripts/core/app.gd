@@ -18,6 +18,15 @@ var map_data: MapData
 var config: MatchConfig = MatchConfig.new()
 ## Path of a save to load when entering LOADING (empty = new match).
 var load_path: String = ""
+## Extra main-menu entries registered by optional systems: {section: play|progress|info, icon,
+## label (translation key), action: Callable}. Keeps the menu free of hard-coded screens.
+var menu_extras: Array[Dictionary] = []
+## Callables returning a Control for the right column of the main menu (profile card...).
+var menu_cards: Array[Callable] = []
+
+
+func add_menu_entry(section: String, icon: String, label: String, state: int) -> void:
+	menu_extras.append({"section": section, "icon": icon, "label": label, "action": func() -> void: goto(state)})
 
 
 func goto(new_state: int) -> void:

@@ -1,0 +1,12 @@
+{
+	"_comment": "UI themes (accent colours). 'volna' is the default; others are cosmetic items unlocked through the profile (data/meta/items.json).",
+	"themes": {
+		"volna":    {"accent": "#3ec7d6"},
+		"ember":    {"accent": "#ff7a45"},
+		"verdant":  {"accent": "#4fd18b"},
+		"royal":    {"accent": "#8c7bff"},
+		"gilded":   {"accent": "#f2c14e"},
+		"crimson":  {"accent": "#ff4d6d"},
+		"glacier":  {"accent": "#8fd3ff"}
+	}
+}

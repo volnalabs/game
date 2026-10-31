@@ -113,6 +113,7 @@ SETTINGS_UI_SCALE,Масштаб интерфейса,UI scale
 SETTINGS_EDGE_SCROLL,Прокрутка карты у края экрана,Scroll the map at screen edges
 SETTINGS_AI_DEBUG,Отладка AI (F3),AI debugging (F3)
 CREDITS_TITLE,Титры и лицензии,Credits & licences
+CREDITS_ICONS,Иконки,Icons
 CREDITS_ENGINE_PARTS,Сторонние компоненты Godot,Godot third-party components
 CREDITS_BODY,"Разработка: VolnaLabs.
 © OpenFront and Contributors — игра является модифицированной версией OpenFront через RoWorld (© 2026 Snick Co.) и распространяется под GNU AGPL v3 с дополнительными условиями (см. LICENSE).
@@ -207,7 +208,7 @@ PAUSE_SAVE,Сохранить (F5),Save (F5)
 PAUSE_LOAD,Загрузить,Load
 PAUSE_RESTART,Начать заново,Restart
 PAUSE_MAIN_MENU,Главное меню,Main menu
-PAUSE_KEYS,"ЛКМ — атака / десант / постройка · ПКМ — информация, перетаскивание — камера · колесо — масштаб · WASD — камера · 1–4 — постройки · Q/E — доля атаки · пробел — пауза · +/− — скорость · F3 — отладка AI · F5 — сохранить · Home — к своей стране","LMB — attack / landing / build · RMB — info, drag — camera · wheel — zoom · WASD — camera · 1–4 — buildings · Q/E — attack share · space — pause · +/− — speed · F3 — AI debug · F5 — save · Home — your state"
+PAUSE_KEYS,"ЛКМ — атака / десант / постройка · ПКМ — информация, перетаскивание — камера · колесо — масштаб · WASD — камера · 1–9 — постройки · Q/E — доля атаки · пробел — пауза · +/− — скорость · Tab — скрыть интерфейс · F3 — отладка AI · F5 — сохранить · Home — к своей стране","LMB — attack / landing / build · RMB — info, drag — camera · wheel — zoom · WASD — camera · 1–9 — buildings · Q/E — attack share · space — pause · +/− — speed · Tab — hide UI · F3 — AI debug · F5 — save · Home — your state"
 SAVED,Партия сохранена,Match saved
 SAVE_FAILED,Не удалось сохранить,Saving failed
 END_VICTORY,Победа!,Victory!
@@ -255,3 +256,47 @@ REJECT_NO_ROUTE,Морской путь не найден,No sea route
 REJECT_NO_ATTACK,Атака не найдена,No such attack
 REJECT_UNKNOWN,Неизвестная команда,Unknown command
 REJECT_BUILD_OWN_LAND,Стройте на своей земле,Build on your own land
+CLOSE,Закрыть,Close
+COLLAPSE,Свернуть,Collapse
+DOCK_STATE,Государство,State
+DOCK_ARMY,Армия,Army
+DOCK_ECONOMY,Экономика,Economy
+DOCK_BUILD,Строительство,Construction
+DOCK_LOG,Журнал событий,Event log
+HUD_RANK,Место №%d,Rank #%d
+HUD_GOAL_TIP,"Доля суши, нужная для победы господством",Land share needed for a domination victory
+SEC_TERRITORY,Территория,Territory
+SEC_BUILDINGS,Постройки,Buildings
+NO_BUILDINGS,Построек нет,No buildings
+SEC_ARMY,Армия,Army
+SEC_TOTALS,Итоги партии,Match totals
+SEC_TREASURY,Казна,Treasury
+SEC_INCOME,Доходы и расходы,Income and spending
+ATTACK_LINE,%s войск · захвачено %d,%s troops · %d tiles taken
+INCOMING_LINE,%s атакует: %s,%s attacks: %s
+OUTGOING_LINE,атакует %s: %s,attacks %s: %s
+BOAT_LINE,Десант в море: %s,Landing at sea: %s
+ECO_NET,Баланс,Balance
+SEC_SHORT,с,s
+BUILD,Строить,Build
+LOG_EMPTY,Событий пока нет,No events yet
+TAB_BUILDINGS,Постройки,Buildings
+TAB_THREATS,Угрозы,Threats
+TAB_ACTIONS,Действия,Actions
+INFO_POWER_RATIO,Ваша армия к их армии,Your army vs theirs
+NO_THREATS,Нет активных войн,No active wars
+ACTIONS_SEND,Щелчок отправит: %s войск,A click sends: %s troops
+ACTION_ATTACK,Атаковать,Attack
+ACTION_LANDING,Морской десант,Naval landing
+ACTION_FOCUS,Показать на карте,Show on map
+HUD_ACTIONS,Действия,Actions
+ACTION_HOME,К своей стране (Home),Your state (Home)
+ACTION_RETREAT_ALL,Отступить всеми атаками,Retreat all attacks
+ACTION_HIDE_UI,Скрыть интерфейс (Tab / Esc — вернуть),Hide the interface (Tab / Esc to restore)
+PAUSE_SETTINGS,Настройки,Settings
+MENU_CONTINUE,Продолжить,Continue
+MENU_SEC_PLAY,Игра,Play
+MENU_SEC_PROGRESS,Прогресс,Progress
+MENU_SEC_GAME,Прочее,More
+MENU_LAST_MATCH,Последняя партия,Last match
+END_RESULTS,Итоги и награды,Results and rewards

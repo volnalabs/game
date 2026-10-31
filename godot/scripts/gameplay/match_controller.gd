@@ -255,7 +255,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		var k := (event as InputEventKey).keycode
 		match k:
 			KEY_ESCAPE:
-				if build_kind >= 0:
+				if hud.ui_hidden:
+					hud.set_ui_hidden(false)
+				elif build_kind >= 0:
 					cancel_build()
 				elif menu_open:
 					close_pause_menu()
@@ -263,8 +265,12 @@ func _unhandled_input(event: InputEvent) -> void:
 					open_pause_menu()
 			KEY_SPACE:
 				set_speed(0.0 if not paused else maxf(speed, 1.0))
-			KEY_1, KEY_2, KEY_3, KEY_4:
-				begin_build(GameHUD.BUILD_KINDS[k - KEY_1])
+			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9:
+				var kinds := GameHUD.build_kinds(sim.rules)
+				if k - KEY_1 < kinds.size():
+					begin_build(kinds[k - KEY_1])
+			KEY_TAB:
+				hud.set_ui_hidden(not hud.ui_hidden)
 			KEY_Q:
 				_step_ratio(-1)
 			KEY_E:
@@ -278,9 +284,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_MINUS, KEY_KP_SUBTRACT:
 				set_speed(maxf(speed * 0.5, 0.5))
 			KEY_HOME:
-				var sp := sim.st.o_spawn_tile[sim.player_id] if sim.player_id > 0 else -1
-				if sp >= 0:
-					cam.focus(Vector2(sp % sim.map.width, sp / sim.map.width))
+				focus_home()
 
 
 func _left_click(t: int) -> void:
@@ -315,7 +319,7 @@ func _left_click(t: int) -> void:
 	if o == pid:
 		select_owner(pid)
 		return
-	if _borders(pid, o):
+	if borders(pid, o):
 		sim.submit(Commands.attack_tile(pid, t, ratio))
 	elif sim.map.coastal[t] == 1:
 		sim.submit(Commands.boat_ratio(pid, t, ratio))
@@ -324,7 +328,7 @@ func _left_click(t: int) -> void:
 		hud.toast(tr("REJECT_NO_BORDER"))
 
 
-func _borders(a: int, b: int) -> bool:
+func borders(a: int, b: int) -> bool:
 	var st := sim.st
 	var owner := st.owner
 	var land := sim.map.land
@@ -363,11 +367,10 @@ func set_ratio(r: float) -> void:
 
 
 func begin_build(kind: int) -> void:
-	if String(sim.rules.b_kinds[kind].get("phase", "")) != "":
-		hud.toast(tr("SOON"))
+	if not GameHUD.build_kinds(sim.rules).has(kind):
 		return
 	build_kind = kind
-	hud.toast(tr("BUILD_MODE") % tr("B_" + sim.rules.b_ids[kind].to_upper()))
+	hud.toast(tr("BUILD_MODE") % tr("B_" + sim.rules.b_ids[kind].to_upper()), UITheme.ACCENT, "b_" + sim.rules.b_ids[kind])
 	hud.refresh()
 
 
@@ -378,6 +381,65 @@ func cancel_build() -> void:
 
 func retreat(aid: int) -> void:
 	sim.submit(Commands.retreat(sim.player_id, aid))
+
+
+func retreat_all() -> void:
+	for a in sim.attacks.outgoing(sim.player_id):
+		if a.retreat_at == 0:
+			retreat(a.id)
+
+
+func focus_home() -> void:
+	var pid := sim.player_id
+	if pid <= 0 or sim.st.o_tiles[pid] <= 0:
+		return
+	cam.focus(sim.st.centroid(pid))
+
+
+## Attack state `id` from the inspector with the current share (a tile on the shared border).
+func attack_owner(id: int) -> void:
+	var st := sim.st
+	var pid := sim.player_id
+	var t := st.o_border_head[pid]
+	var W := st.W
+	while t >= 0:
+		var x := t % W
+		for nb: int in [t - 1 if x > 0 else -1, t + 1 if x < W - 1 else -1, t - W, t + W]:
+			if nb >= 0 and nb < st.N and st.owner[nb] == id and sim.map.land[nb] == 1:
+				sim.submit(Commands.attack_tile(pid, nb, ratio))
+				return
+		t = st.bnext[t]
+	hud.toast(tr("REJECT_NO_BORDER"))
+
+
+## Naval landing on state `id`'s coast nearest to our own coast.
+func landing_on(id: int) -> void:
+	var st := sim.st
+	var pid := sim.player_id
+	var c := st.centroid(pid)
+	var best := -1
+	var bd := INF
+	for t in sim.map.coast_tiles:
+		if st.owner[t] == id:
+			var d := Vector2(t % st.W, t / st.W).distance_squared_to(c)
+			if d < bd:
+				bd = d
+				best = t
+	if best < 0:
+		hud.toast(tr("REJECT_NOT_COAST"))
+		return
+	sim.submit(Commands.boat_ratio(pid, best, ratio))
+	hud.log_line(tr("LOG_BOAT_SENT") % st.o_name[id], UITheme.ACCENT)
+
+
+func open_settings() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 5
+	add_child(layer)
+	var s: Control = (load("res://scenes/menus/settings.tscn") as PackedScene).instantiate()
+	s.set("overlay", true)
+	layer.add_child(s)
+	s.tree_exited.connect(layer.queue_free)
 
 
 func select_owner(id: int, focus: bool = false) -> void:

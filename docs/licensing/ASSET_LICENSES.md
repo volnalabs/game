@@ -22,7 +22,10 @@
 | Карта Земли и региональные карты | `godot/data/maps/{earth,europe,asia,africa,north_america,south_america}/` | экспорт из `src/shared/Data/Maps/World.luau`, `src/server/MapData/*.luau`, построенных `tools/maps/make_maps.py` из Natural Earth (1:10m/1:50m) и NOAA ETOPO1 | Public domain (Natural Earth — public domain; ETOPO1 — U.S. Government work). Атрибуция в титрах: «Made with Natural Earth. NOAA ETOPO1.» |
 | Названия стран/регионов | `map.json` реальных карт | Natural Earth + ручной перевод на русский | Public domain / собственный перевод |
 | Вымышленные карты (Pelagia, Avaris, Shattered Worlds) | `godot/data/maps/{pelagia,avaris,shattered_worlds}/` | собственные спецификации `godot/data/map_specs/*.json`, выпечка генератором проекта | AGPL-3.0 (собственная работа) |
-| Процедурные флаги, иконки построек, эффекты | генерируются кодом (`flag_gen.gd`, `_draw()` в слоях рендера) | собственная работа | AGPL-3.0 |
+| Иконки Game-icons.net (построек, оружия, ресурсов, меню) | `godot/data/ui/icons.json` (SVG-пути, id `b_*`, `w_*`, `r_*`, `m_*`, `g_*`) | npm-пакет `@iconify-json/game-icons@1.2.4` (сборка Iconify из https://game-icons.net); авторы Lorc, Delapouite и другие участники game-icons.net. Импорт: `tools/icons/import_icons.py` | CC BY 3.0 (`godot/assets/licenses/game-icons_LICENSE.txt`). Атрибуция в титрах: «Icons by Lorc, Delapouite and contributors, https://game-icons.net (CC BY 3.0)». Изменения: перекрашены в белый для тонирования в игре |
+| Интерфейсные иконки Tabler | `godot/data/ui/icons.json` (id `ui_*`) | npm-пакет `@tabler/icons@3.50.0`, © Paweł Kuna | MIT (`godot/assets/licenses/tabler-icons_LICENSE.txt`). Атрибуция в титрах: «Tabler Icons (c) Pawel Kuna, MIT» |
+| Темы интерфейса | `godot/data/ui/themes.json` | собственная работа | AGPL-3.0 |
+| Процедурные флаги, эффекты | генерируются кодом (`flag_gen.gd`, `_draw()` в слоях рендера) | собственная работа | AGPL-3.0 |
 | Тексты интерфейса | `godot/data/i18n/strings.csv` | собственная работа | AGPL-3.0 |
 
 Звуков и музыки в первой версии нет.
@@ -50,4 +53,5 @@
 - «Карты: Natural Earth, NOAA ETOPO1 (public domain)»;
 - «Шрифт Rubik — SIL Open Font License 1.1»;
 - «Флаги — Wikimedia Commons (public domain / CC0)»;
+- раздел «Иконки» — строки атрибуции из `_sources` в `data/ui/icons.json` (Game-icons.net CC BY 3.0, Tabler MIT);
 - «Godot Engine — MIT License» + полный текст лицензии движка и его сторонних компонентов.

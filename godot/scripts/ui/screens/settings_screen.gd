@@ -16,8 +16,9 @@ func _ready() -> void:
 		Settings.locale = "ru" if i == 0 else "en"
 		Settings.apply()
 		Settings.save_settings()
-		App.goto(App.State.SETTINGS)
-		get_tree().reload_current_scene())
+		if not overlay:
+			App.goto(App.State.MAIN_MENU)
+			App.goto(App.State.SETTINGS))
 	form.add_child(_row(tr("SETTINGS_LANGUAGE"), lang))
 	var scale := HSlider.new()
 	scale.min_value = 0.75

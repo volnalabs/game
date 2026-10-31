@@ -63,12 +63,16 @@ func _run() -> void:
 		await _wait(5)
 	await _shot("05_spawn")
 	var sim: Sim = ctl.sim
+	# Valid start closest to the map centre (keeps the camera inside the map).
 	var start := -1
-	for i in 20000:
+	var best := INF
+	var mid := Vector2(sim.map.width, sim.map.height) * 0.5
+	for i in 4000:
 		var t := sim.map.land_tiles[(i * 7919) % sim.map.land_count]
-		if sim.spawn.is_valid_start(t):
+		var d := Vector2(t % sim.map.width, t / sim.map.width).distance_squared_to(mid)
+		if d < best and sim.spawn.is_valid_start(t):
+			best = d
 			start = t
-			break
 	sim.submit(Commands.spawn(sim.player_id, start))
 	for i in 40:
 		sim.step()
@@ -82,14 +86,17 @@ func _run() -> void:
 	ctl.cam.focus(Vector2(start % sim.map.width, start / sim.map.width), ctl.cam.min_zoom * 3.0)
 	await _wait(10)
 	await _shot("06_playing")
-	ctl.select_owner(sim.player_id)
-	ctl.hud._info_tab = "economy"
+	ctl.hud.dock.open("economy")
 	await _wait(5)
 	await _shot("07_economy_panel")
-	ctl.hud._ai_debug = true
+	ctl.hud.dock.open("build")
+	await _wait(5)
+	await _shot("07b_build_panel")
+	ctl.hud.dock.open("")
+	ctl.hud.ai_debug = true
 	var bot := sim.ai.brains[0].id
-	ctl.hud._info_tab = "ai"
 	ctl.select_owner(bot, true)
+	ctl.hud.inspector.set_tab("ai")
 	await _wait(10)
 	await _shot("08_ai_debug")
 	ctl.cam.fit()
