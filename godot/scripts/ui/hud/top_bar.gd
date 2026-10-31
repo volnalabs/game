@@ -16,6 +16,7 @@ var _army_rate: Label
 var _goal: ProgressBar
 var _goal_l: Label
 var _title: String = ""
+var _res: Label
 
 
 func _init(h: GameHUD) -> void:
@@ -59,6 +60,7 @@ func _init(h: GameHUD) -> void:
 	_sup = _pill(row, "r_supplies", UITheme.SUPPLY, tr("HUD_SUPPLIES_TIP"))
 	_army = _pill(row, "r_army", UITheme.ARMY, tr("HUD_ARMY_TIP"))
 	_army_rate = _rate(row)
+	_res = _pill(row, "r_research", UITheme.RESEARCH, tr("HUD_RESEARCH_TIP"))
 	row.add_child(VSeparator.new())
 	var gv := UITheme.vbox(3)
 	_goal_l = UITheme.label("", UITheme.T_CAPTION, UITheme.TEXT_DIM)
@@ -114,6 +116,9 @@ func refresh() -> void:
 	_sup.text = UITheme.num(st.o_supplies[pid])
 	_army.text = "%s / %s" % [UITheme.num(st.o_troops[pid]), UITheme.num(maxf(st.o_cap[pid], 1.0))]
 	_army_rate.text = "%s%s/%s" % ["+" if st.o_growth[pid] >= 0.0 else "", UITheme.num(st.o_growth[pid] * 10.0), tr("PER_SEC")]
+	var cur := sim.research.current(pid)
+	_res.text = ("%d%%" % int(100.0 * sim.research.progress(pid, cur) / float(ResearchSystem.tech(cur)["cost"]))) if cur != "" else tr("RESEARCH_NONE_SHORT")
+	_res.add_theme_color_override("font_color", UITheme.TEXT if cur != "" else UITheme.WARN)
 	var goal := sim.config.victory.domination_share
 	var share := st.land_share(pid)
 	_goal_l.text = tr("HUD_GOAL") % [share * 100.0, goal * 100.0]

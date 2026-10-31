@@ -6,9 +6,9 @@ extends RefCounted
 
 static func site(bot: StrategicAI, kind: int, threat_owner: int = 0) -> int:
 	match kind:
-		Rules.B_PORT:
+		Rules.B_PORT, Rules.B_NAVAL_BASE:
 			return _coast_site(bot)
-		Rules.B_DEFENSE:
+		Rules.B_DEFENSE, Rules.B_BUNKER, Rules.B_AIRBASE:
 			return _border_site(bot, threat_owner)
 	return _interior_site(bot)
 

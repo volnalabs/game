@@ -62,10 +62,16 @@ static func act(bot: StrategicAI) -> void:
 		if posts < 2 + st.o_border_count[id] / 400:
 			var def_v := minf(top_t, 2.0) * float(bot.pers["defense"]) * 220000.0
 			options.append({"kind": Rules.B_DEFENSE, "value": def_v, "threat": top})
+	_phase2_options(bot, options, top, top_t)
 	var best: Dictionary = {}
 	var best_ratio := 0.0
 	for o: Dictionary in options:
 		var k: int = o["kind"]
+		if not sim.structures.unlocked(id, k):
+			continue
+		# Phase 2 buildings are surplus spending: only with money to spare.
+		if k >= Rules.B_RESEARCH and gold < 2.5 * sim.structures.cost(id, k):
+			continue
 		var c := sim.structures.cost(id, k)
 		var ratio: float = float(o["value"]) / maxf(c, 1.0)
 		if ratio > best_ratio:
@@ -86,3 +92,50 @@ static func act(bot: StrategicAI) -> void:
 	bot.submit(Commands.build(id, kind, t))
 	bot.log.add(st.tick, "build", -1, {"building": r.b_ids[kind], "u": best_ratio})
 	bot.plan_note = ""
+
+
+## Phase 2 buildings, valued in the same "gain over the horizon" units as the classic ones.
+static func _phase2_options(bot: StrategicAI, options: Array, top: int, top_t: float) -> void:
+	var sim := bot.sim
+	var st := sim.st
+	var r := sim.rules
+	var id := bot.id
+	var econ: float = bot.pers["economy"]
+	var war: float = bot.pers.get("war_appetite", 1.0)
+	# Only once the classic economy stands (cities and factories pay back fastest).
+	if st.blevel(id, Rules.B_CITY) < 3 or st.blevel(id, Rules.B_FACTORY) < 1:
+		if top > 0 and top_t > 0.8:
+			options.append({"kind": Rules.B_BUNKER, "value": minf(top_t, 2.0) * float(bot.pers["defense"]) * 100000.0, "threat": top})
+		return
+	var n0 := options.size()
+	# Research centre: worth it while there is something left to research.
+	var left := 0
+	for t: Dictionary in ResearchSystem.techs():
+		if not sim.research.has_tech(id, String(t["id"])):
+			left += 1
+	if left > 3 and st.bowned(id, Rules.B_RESEARCH) < 3:
+		options.append({"kind": Rules.B_RESEARCH, "value": 90000.0 * econ * minf(float(left) / 8.0, 1.5)})
+	# Academy: cheaper attacks for a warlike state.
+	if st.bowned(id, Rules.B_ACADEMY) < 3:
+		options.append({"kind": Rules.B_ACADEMY, "value": bot.troops() * 0.04 * 6.0 * war})
+	# Logistics hub: faster troop growth.
+	if st.bowned(id, Rules.B_LOGISTICS) < 4:
+		options.append({"kind": Rules.B_LOGISTICS, "value": maxf(st.o_growth[id], 0.0) * 0.05 * HORIZON * 0.5})
+	# Power plant: factories produce more supplies.
+	if st.blevel(id, Rules.B_FACTORY) > 0 and st.bowned(id, Rules.B_POWER) < 3:
+		options.append({"kind": Rules.B_POWER, "value": float(r.e["supplies_factory"]) * st.blevel(id, Rules.B_FACTORY) * 0.2 * HORIZON * 2.0})
+	# Command centre: keeps troops on retreat, faster attacks.
+	if st.bowned(id, Rules.B_COMMAND) < 2:
+		options.append({"kind": Rules.B_COMMAND, "value": bot.troops() * 0.06 * 4.0 * war})
+	# Bunker on the threatened border; radar against landings.
+	if top > 0 and top_t > 0.5:
+		options.append({"kind": Rules.B_BUNKER, "value": minf(top_t, 2.0) * float(bot.pers["defense"]) * 140000.0, "threat": top})
+	if bot.has_coast and st.bowned(id, Rules.B_RADAR) < 2 and top_t > 0.3:
+		options.append({"kind": Rules.B_RADAR, "value": 60000.0 * float(bot.pers["defense"])})
+	# Airbase for an attacking state; naval base for a seafaring one.
+	if st.bowned(id, Rules.B_AIRBASE) < 2:
+		options.append({"kind": Rules.B_AIRBASE, "value": bot.troops() * 0.1 * 3.0 * war})
+	if bot.has_coast and st.bowned(id, Rules.B_NAVAL_BASE) < 2:
+		options.append({"kind": Rules.B_NAVAL_BASE, "value": 70000.0 * float(bot.pers.get("naval", 1.0))})
+	for i in range(n0, options.size()):
+		options[i]["value"] = float(options[i]["value"]) * 0.5

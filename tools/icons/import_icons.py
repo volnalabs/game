@@ -23,7 +23,7 @@ GAME = {
     "b_city": "modern-city", "b_port": "harbor-dock", "b_factory": "factory", "b_defense": "military-fort",
     "b_sam": "missile-pod", "b_silo": "rocket", "b_research_center": "round-bottom-flask", "b_radar": "radar-dish",
     "b_airbase": "jet-fighter", "b_military_academy": "graduate-cap", "b_logistics_hub": "truck",
-    "b_command_center": "radio-tower", "b_bunker": "bunker", "b_power_plant": "power-generator",
+    "b_command_center": "radio-tower", "b_bunker": "bunker", "b_power_plant": "power-generator", "b_naval_base": "battleship",
     # weapons
     "w_missile": "incoming-rocket", "w_heavy_missile": "rocket-flight", "w_cluster": "cluster-bomb",
     "w_mirv": "missile-swarm", "w_tactical_nuke": "nuclear-bomb", "w_strategic_nuke": "mushroom-cloud",

@@ -9,6 +9,8 @@ var _send: Label
 var _build: Dictionary = {}
 var _build_cost: Dictionary = {}
 var _zones: Button
+var _bh: HBoxContainer
+var _quick: Array[int] = []
 
 
 func _init(h: GameHUD) -> void:
@@ -33,10 +35,36 @@ func _init(h: GameHUD) -> void:
 	row.add_child(VSeparator.new())
 	var bv := UITheme.vbox(4)
 	bv.add_child(UITheme.section(tr("DOCK_BUILD"), "ui_building"))
-	var bh := UITheme.hbox(4)
+	_bh = UITheme.hbox(4)
+	_rebuild_quick()
+	bv.add_child(_bh)
+	row.add_child(bv)
+	row.add_child(VSeparator.new())
+	var av := UITheme.vbox(4)
+	av.add_child(UITheme.section(tr("HUD_ACTIONS"), "ui_adjust"))
+	var ah := UITheme.hbox(2)
+	ah.add_child(UITheme.icon_button("ui_home", tr("ACTION_HOME"), func() -> void: hud.ctl.focus_home(), 36))
+	ah.add_child(UITheme.icon_button("ui_back", tr("ACTION_RETREAT_ALL"), func() -> void: hud.ctl.retreat_all(), 36))
+	_zones = UITheme.icon_button("ui_zones", tr("ACTION_ZONES"), func() -> void: hud.ctl.toggle_zones(), 36, true)
+	ah.add_child(_zones)
+	ah.add_child(UITheme.icon_button("ui_eye_off", tr("ACTION_HIDE_UI"), func() -> void: hud.set_ui_hidden(true), 36))
+	av.add_child(ah)
+	row.add_child(av)
+
+
+
+## Quick build slots: the first unlocked buildable kinds (keys 1..n), rebuilt when research
+## unlocks more.
+func _rebuild_quick() -> void:
+	_quick = hud.quick_kinds()
+	for c in _bh.get_children():
+		_bh.remove_child(c)
+		c.queue_free()
+	_build.clear()
+	_build_cost.clear()
 	var keyn := 1
-	for k in GameHUD.build_kinds(h.sim.rules):
-		var id := h.sim.rules.b_ids[k]
+	for k in _quick:
+		var id := hud.sim.rules.b_ids[k]
 		var kk := k
 		var b := Button.new()
 		b.focus_mode = Control.FOCUS_NONE
@@ -65,24 +93,13 @@ func _init(h: GameHUD) -> void:
 				hud.ctl.begin_build(kk))
 		_build[k] = b
 		_build_cost[k] = cl
-		bh.add_child(b)
+		_bh.add_child(b)
 		keyn += 1
-	bv.add_child(bh)
-	row.add_child(bv)
-	row.add_child(VSeparator.new())
-	var av := UITheme.vbox(4)
-	av.add_child(UITheme.section(tr("HUD_ACTIONS"), "ui_adjust"))
-	var ah := UITheme.hbox(2)
-	ah.add_child(UITheme.icon_button("ui_home", tr("ACTION_HOME"), func() -> void: hud.ctl.focus_home(), 36))
-	ah.add_child(UITheme.icon_button("ui_back", tr("ACTION_RETREAT_ALL"), func() -> void: hud.ctl.retreat_all(), 36))
-	_zones = UITheme.icon_button("ui_zones", tr("ACTION_ZONES"), func() -> void: hud.ctl.toggle_zones(), 36, true)
-	ah.add_child(_zones)
-	ah.add_child(UITheme.icon_button("ui_eye_off", tr("ACTION_HIDE_UI"), func() -> void: hud.set_ui_hidden(true), 36))
-	av.add_child(ah)
-	row.add_child(av)
 
 
 func refresh() -> void:
+	if hud.quick_kinds() != _quick:
+		_rebuild_quick()
 	var sim := hud.sim
 	var pid := sim.player_id
 	for i in _ratio_buttons.size():

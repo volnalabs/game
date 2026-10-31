@@ -154,10 +154,15 @@ static func build(hud: GameHUD, body: VBoxContainer) -> void:
 			price.add_child(UITheme.icon_label("r_supplies", UITheme.num(sup), UITheme.SUPPLY if st.o_supplies[pid] >= sup else UITheme.BAD, UITheme.T_CAPTION))
 		price.add_child(UITheme.icon_label("ui_clock", "%d %s" % [sim.rules.building_ticks(k) / 10, tr_("SEC_SHORT")], UITheme.TEXT_DIM, UITheme.T_CAPTION))
 		v.add_child(price)
+		var unlocked := sim.structures.unlocked(pid, k)
+		if not unlocked:
+			var req := ResearchSystem.tech(sim.rules.building_requires(k))
+			v.add_child(UITheme.icon_label("ui_lock", tr_("BUILD_REQUIRES") % MetaData.text(req.get("name", {})), UITheme.WARN, UITheme.T_CAPTION))
+			c.modulate.a = 0.7
 		h.add_child(v)
 		var kk := k
 		var b := UITheme.button(tr_("BUILD"), func() -> void: hud.ctl.begin_build(kk), 0, "ui_plus")
-		b.disabled = not playing or not afford
+		b.disabled = not playing or not afford or not unlocked
 		h.add_child(b)
 		body.add_child(c)
 
@@ -194,3 +199,78 @@ static func status_of(sim: Sim, id: int) -> String:
 
 static func tr_(k: String) -> String:
 	return TranslationServer.translate(k)
+
+
+## Research: the current research with its progress, RP per second, then every branch with its
+## technologies (researched / available / locked by prerequisites) and what each one does.
+static func research(hud: GameHUD, body: VBoxContainer) -> void:
+	var sim := hud.sim
+	var pid := sim.player_id
+	if pid <= 0:
+		return
+	var rs := sim.research
+	var rate := rs.rate(pid) * float(sim.rules.tick_rate)
+	var head := UITheme.card(10)
+	var hv := UITheme.vbox(4)
+	head.add_child(hv)
+	hv.add_child(UITheme.stat_row(tr_("RESEARCH_RATE"), "%.1f %s" % [rate, tr_("RESEARCH_PER_SEC")], UITheme.RESEARCH, "r_research"))
+	var cur := rs.current(pid)
+	if cur != "":
+		var t := ResearchSystem.tech(cur)
+		var p := rs.progress(pid, cur)
+		hv.add_child(UITheme.label(MetaData.text(t["name"]), UITheme.T_BODY_L, UITheme.TEXT, true))
+		hv.add_child(UITheme.progress(p / float(t["cost"]), UITheme.RESEARCH, 6))
+		var left := (float(t["cost"]) - p) / maxf(rate, 0.01)
+		hv.add_child(UITheme.label(tr_("RESEARCH_ETA") % [int(p), int(t["cost"]), int(left / 60.0), int(left) % 60], UITheme.T_CAPTION, UITheme.TEXT_DIM))
+	else:
+		hv.add_child(UITheme.label(tr_("RESEARCH_IDLE"), UITheme.T_BODY, UITheme.WARN))
+	body.add_child(head)
+	for br: String in ResearchSystem.tree()["branches"]:
+		body.add_child(UITheme.section(tr_("BRANCH_" + br.to_upper()), _branch_icon(br)))
+		for t: Dictionary in ResearchSystem.techs():
+			if t["branch"] != br:
+				continue
+			body.add_child(_tech_card(hud, t))
+
+
+static func _branch_icon(br: String) -> String:
+	return {"economy": "g_economy", "military": "g_military", "defense": "g_defense", "logistics": "g_logistics",
+		"strategic": "g_strategic", "intelligence": "g_intel", "diplomacy": "g_diplomacy"}.get(br, "r_research")
+
+
+static func _tech_card(hud: GameHUD, t: Dictionary) -> Control:
+	var sim := hud.sim
+	var pid := sim.player_id
+	var rs := sim.research
+	var id := String(t["id"])
+	var done := rs.has_tech(pid, id)
+	var avail := rs.available(pid, id)
+	var cur := rs.current(pid) == id
+	var c := UITheme.card(8, UITheme.RESEARCH if cur else (UITheme.GOOD if done else Color.TRANSPARENT))
+	var v := UITheme.vbox(3)
+	c.add_child(v)
+	var h := UITheme.hbox(6)
+	h.add_child(Icons.rect("ui_check" if done else ("r_research" if avail else "ui_lock"), 16,
+		UITheme.GOOD if done else (UITheme.RESEARCH if avail else UITheme.TEXT_FAINT)))
+	var n := UITheme.label(MetaData.text(t["name"]), UITheme.T_BODY, UITheme.TEXT if done or avail else UITheme.TEXT_DIM, true)
+	n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(n)
+	if not done:
+		h.add_child(UITheme.label("%d RP" % int(t["cost"]), UITheme.T_CAPTION, UITheme.RESEARCH))
+	v.add_child(h)
+	var d := UITheme.label(MetaData.text(t["desc"]), UITheme.T_CAPTION, UITheme.TEXT_DIM)
+	d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	d.custom_minimum_size.x = 280
+	v.add_child(d)
+	if not done and not avail:
+		var names := PackedStringArray()
+		for r: String in t["requires"]:
+			if not rs.has_tech(pid, r):
+				names.append(MetaData.text(ResearchSystem.tech(r)["name"]))
+		v.add_child(UITheme.label(tr_("RESEARCH_NEEDS") % ", ".join(names), UITheme.T_CAPTION, UITheme.WARN))
+	var p := rs.progress(pid, id)
+	if p > 0.0 and not done:
+		v.add_child(UITheme.progress(p / float(t["cost"]), UITheme.RESEARCH, 4))
+	if avail and not cur and sim.phase == Sim.Phase.PLAYING and sim.is_player_alive():
+		v.add_child(UITheme.button(tr_("RESEARCH_START"), func() -> void: hud.ctl.start_research(id), 0, "r_research"))
+	return c

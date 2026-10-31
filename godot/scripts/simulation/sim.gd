@@ -21,6 +21,8 @@ var naval: NavalSystem
 var spawn: SpawnSystem
 var victory: Victory
 var ai: AIDirector
+var mods: Modifiers
+var research: ResearchSystem
 
 var phase: int = Phase.SPAWN
 var player_id: int = 0
@@ -42,15 +44,25 @@ func _init(cfg: MatchConfig, map_def: MapDefinition, map_data: MapData) -> void:
 	st = SimState.new(map, rules)
 	events = SimEvents.new()
 	attacks = AttackSystem.new(st, rules, rng, events)
+	mods = Modifiers.new(st, rules)
+	research = ResearchSystem.new(st, rules, events, mods)
+	mods.techs_of = research.done
 	structures = StructureSystem.new(st, rules, events)
+	structures.mods = mods
+	structures.research = research
 	attacks.structures = structures
+	attacks.mods = mods
 	economy = EconomySystem.new(st, rules, structures)
+	economy.mods = mods
 	naval = NavalSystem.new(st, rules, events, attacks)
+	naval.mods = mods
+	naval.structures = structures
 	spawn = SpawnSystem.new(st, rules, rng)
 	victory = Victory.new(st, cfg.victory, rules.tick_rate)
 	_create_owners()
 	ai = AIDirector.new(self)
 	ai.setup()
+	_assign_perks()
 	if not cfg.has_player:
 		_start_playing()
 
@@ -58,6 +70,22 @@ func _init(cfg: MatchConfig, map_def: MapDefinition, map_data: MapData) -> void:
 # ---------------------------------------------------------------------------------------------
 # Setup
 # ---------------------------------------------------------------------------------------------
+
+## Perks: the player's loadout from the profile and each bot's personality perks; nobody has any in
+## Fair mode. Tribes never have perks.
+func _assign_perks() -> void:
+	mods.perks.clear()
+	if config.fair_mode:
+		return
+	if player_id > 0:
+		mods.perks[player_id] = config.player_perks.duplicate()
+	for b in ai.brains:
+		if st.o_kind[b.id] == Rules.KIND_TRIBE:
+			continue
+		mods.perks[b.id] = AIProfile.personality(b.personality_id).get("perks", [])
+	mods.mark_all()
+	mods.update()
+
 
 func _create_owners() -> void:
 	var name_rng := rng.fork(17)
@@ -166,6 +194,8 @@ func apply_command(c: Dictionary) -> String:
 			return "" if r["ok"] else String(r["reason"])
 		Commands.RETREAT:
 			return "" if attacks.retreat(who, int(c.get("attack", -1))) else "no_attack"
+		Commands.RESEARCH:
+			return research.start(who, String(c.get("tech", "")))
 	return "unknown"
 
 
@@ -233,7 +263,9 @@ func step() -> void:
 	var t0 := 0
 	if profiling:
 		t0 = Time.get_ticks_usec()
+	mods.update()
 	economy.tick()
+	research.tick()
 	_lap("economy", t0)
 	_process_commands()
 	structures.tick()
@@ -304,7 +336,7 @@ func to_dict() -> Dictionary:
 		"play_start_tick": play_start_tick, "result": result, "rng": rng.get_state(),
 		"state": st.to_dict(), "attacks": attacks.to_dict(), "structures": structures.to_dict(),
 		"naval": naval.to_dict(), "spawn_starts": spawn.starts, "victory_start": victory.start_tick,
-		"commands": _commands, "ai": ai.to_dict(),
+		"commands": _commands, "ai": ai.to_dict(), "research": research.to_dict(),
 	}
 
 
@@ -324,6 +356,10 @@ func from_dict(d: Dictionary) -> void:
 	victory.start_tick = d["victory_start"]
 	_commands.assign(d["commands"])
 	ai.from_dict(d["ai"])
+	research.from_dict(d.get("research", {}))
+	structures.invalidate_caches()
+	mods.mark_all()
+	mods.update()
 
 
 ## Deterministic fingerprint of the match state (tests: replays, save/load).

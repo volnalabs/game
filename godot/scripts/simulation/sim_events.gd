@@ -20,6 +20,7 @@ const PHASE := "phase"
 const GAME_OVER := "game_over"
 const CAPITULATED := "capitulated"
 const COMMAND_REJECTED := "command_rejected"
+const RESEARCH_DONE := "research_done"
 
 var tick: int = 0
 var _queue: Array[Dictionary] = []

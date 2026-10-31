@@ -139,6 +139,13 @@ func _run() -> void:
 	await _shot("07c_build_ghost")
 	ctl.cancel_build()
 	ctl.toggle_zones()
+	sim.research.state[sim.player_id] = {"done": ["trade_routes", "fortification", "doctrine"], "current": "electrification",
+		"progress": {"electrification": 70.0}}
+	sim.mods.mark(sim.player_id)
+	ctl.hud.dock.open("research")
+	await _wait(8)
+	await _shot("07d_research")
+	ctl.hud.dock.open("")
 	ctl.hud.dock.open("")
 	ctl.hud.ai_debug = true
 	var bot := sim.ai.brains[0].id
@@ -189,6 +196,15 @@ func _run() -> void:
 	app.goto(app.State.ACHIEVEMENTS)
 	await _wait(10)
 	await _shot("15_achievements")
+	prof.data.data["level"] = 12
+	prof.data.data["skill_points"] = 9
+	for id in ["eco_tax", "eco_industry", "mil_drill", "def_walls"]:
+		SkillTree.unlock(prof.data, id)
+	for id in ["eco_tax", "mil_drill"]:
+		SkillTree.equip(prof.data, id)
+	app.goto(app.State.SKILLS)
+	await _wait(10)
+	await _shot("15b_skill_tree")
 	app.goto(app.State.MAIN_MENU)
 	await _wait(20)
 	await _shot("16_main_menu_profile")

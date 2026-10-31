@@ -24,7 +24,7 @@ func _run() -> void:
 	var failed := 0
 	var t0 := Time.get_ticks_msec()
 	for path in files:
-		if filter != "" and not path.contains(filter):
+		if filter != "" and not path.contains(filter.get_slice(":", 0)):
 			continue
 		var script: GDScript = load(path)
 		if script == null:

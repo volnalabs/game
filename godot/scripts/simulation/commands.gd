@@ -8,6 +8,12 @@ const ATTACK := "attack"
 const BOAT := "boat"
 const BUILD := "build"
 const RETREAT := "retreat"
+const RESEARCH := "research"
+
+
+## Start (or switch to) researching `tech`.
+static func research(owner: int, tech: String) -> Dictionary:
+	return {"type": RESEARCH, "owner": owner, "tech": tech}
 
 
 static func spawn(owner: int, tile: int) -> Dictionary:

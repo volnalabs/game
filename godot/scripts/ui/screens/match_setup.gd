@@ -141,6 +141,33 @@ func _ready() -> void:
 	elim.button_pressed = cfg.victory.eliminate_all
 	elim.toggled.connect(func(on: bool) -> void: cfg.victory.eliminate_all = on)
 	form.add_child(elim)
+	# Profile perks of the loadout, or Fair mode (no perks for anyone, +10% rewards).
+	var fair := CheckBox.new()
+	for st_name in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
+		fair.add_theme_stylebox_override(st_name, StyleBoxEmpty.new())
+	fair.text = tr("SETUP_FAIR")
+	fair.tooltip_text = tr("SETUP_FAIR_TIP")
+	fair.button_pressed = cfg.fair_mode
+	var perks_l := UITheme.label("", UITheme.T_CAPTION, UITheme.TEXT_DIM)
+	var show_perks := func() -> void:
+		var lo: Array = Profile.data.data["perks"]["loadout"]
+		if cfg.fair_mode:
+			perks_l.text = tr("SETUP_PERKS_OFF")
+		elif lo.is_empty():
+			perks_l.text = tr("SETUP_PERKS_NONE")
+		else:
+			var perk_names := PackedStringArray()
+			for id: String in lo:
+				perk_names.append(MetaData.text(MetaPerks.perk(id).get("name", {})))
+			perks_l.text = tr("SETUP_PERKS") % ", ".join(perk_names)
+	fair.toggled.connect(func(on: bool) -> void:
+		cfg.fair_mode = on
+		show_perks.call())
+	show_perks.call()
+	var fr := UITheme.hbox(12)
+	fr.add_child(fair)
+	fr.add_child(perks_l)
+	form.add_child(fr)
 	var seed_edit := LineEdit.new()
 	seed_edit.text = str(cfg.seed)
 	seed_edit.text_changed.connect(func(t: String) -> void: cfg.seed = int(t) if t.is_valid_int() else hash(t) % 1000000)

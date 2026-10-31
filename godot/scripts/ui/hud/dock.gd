@@ -33,6 +33,7 @@ func _init(h: GameHUD) -> void:
 	register("army", "r_army", "DOCK_ARMY", HudPanels.army)
 	register("economy", "g_economy", "DOCK_ECONOMY", HudPanels.economy)
 	register("build", "ui_building", "DOCK_BUILD", HudPanels.build)
+	register("research", "r_research", "DOCK_RESEARCH", HudPanels.research)
 	register("log", "ui_book", "DOCK_LOG", HudPanels.events)
 
 
@@ -55,6 +56,10 @@ func open(id: String) -> void:
 		_dirty = true
 		refresh()
 		Anim.slide_in(panel, Vector2(-16, 0), 0.16)
+
+
+func mark_dirty() -> void:
+	_dirty = true
 
 
 func log_changed() -> void:

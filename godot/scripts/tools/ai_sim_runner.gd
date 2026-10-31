@@ -53,6 +53,9 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 	cfg.victory.domination_share = domination
 	cfg.victory.eliminate_all = true
 	cfg.bot_overrides = overrides_for(mode, bots)
+	# Difficulty comparisons measure decision quality only: no perks on either side
+	# (VL_FAIR_MODE=1 forces Fair mode for any series, to measure the effect of perks).
+	cfg.fair_mode = mode == "hard_vs_easy" or OS.has_environment("VL_FAIR_MODE")
 	var t0 := Time.get_ticks_msec()
 	var sim := Sim.new(cfg, def, map)
 	var groups := {}
@@ -103,7 +106,7 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 
 static func _levels(st: SimState, id: int) -> int:
 	var n := 0
-	for k in Rules.BUILDING_KINDS:
+	for k in Rules.MAX_BUILDING_KINDS:
 		n += st.blevel(id, k)
 	return n
 

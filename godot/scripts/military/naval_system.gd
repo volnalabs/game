@@ -53,8 +53,12 @@ func _init(state: SimState, rules_: Rules, ev: SimEvents, atk: AttackSystem) -> 
 	nav = WaterNav.for_map(st.map, int(rules.n["nav_cell"]))
 
 
-func max_boats() -> int:
-	return int(rules.n["max_boats"])
+var mods: Modifiers
+var structures: StructureSystem
+
+
+func max_boats(who: int = 0) -> int:
+	return int(rules.n["max_boats"]) + (int(mods.add("boat_limit_add", who)) if mods != null and who > 0 else 0)
 
 
 ## The owner's coastal tile on target's water body nearest the target, or -1.
@@ -91,7 +95,7 @@ func launch(who: int, target: int, troops: float) -> String:
 		return "not_coast"
 	if st.owner[target] == who:
 		return "own_land"
-	if st.o_boats[who] >= max_boats():
+	if st.o_boats[who] >= max_boats(who):
 		return "too_many_boats"
 	var sup: float = rules.n["boat_supplies"]
 	if st.o_supplies[who] < sup:
@@ -138,7 +142,7 @@ func tick() -> void:
 		if not st.is_alive(b.owner):
 			_finish(b)
 			continue
-		b.progress += speed
+		b.progress += speed * (mods.mult("boat_speed_mult", b.owner) if mods != null else 1.0)
 		if b.progress >= b.length:
 			_land(b)
 	var j := 0
@@ -163,9 +167,16 @@ func _land(b: Boat) -> void:
 		st.add_troops(who, b.troops * float(rules.n["own_landing_keep"]))
 		events.emit(SimEvents.BOAT_FAILED, {"id": b.id, "owner": who, "reason": "own_coast"})
 		return
+	# Radar coverage of the defender: the landing is spotted early and loses part of its troops.
+	var spotted := prev > 0 and structures != null and structures.in_zone(prev, Rules.B_RADAR, t)
+	var troops := b.troops
+	if spotted:
+		var lost := troops * float(rules.building_effect(Rules.B_RADAR).get("landing_loss", 0.0))
+		troops -= lost
+		st.stat_troops_lost(who, lost)
 	st.set_owner(t, who)
-	events.emit(SimEvents.BOAT_LANDED, {"id": b.id, "owner": who, "target_owner": prev, "tile": t, "troops": b.troops})
-	attacks.start(who, prev, b.troops, t)
+	events.emit(SimEvents.BOAT_LANDED, {"id": b.id, "owner": who, "target_owner": prev, "tile": t, "troops": troops, "spotted": spotted})
+	attacks.start(who, prev, troops, t)
 
 
 func remove_owner(who: int) -> void:

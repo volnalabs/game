@@ -105,6 +105,7 @@ func _apply_cosmetics() -> void:
 func _register_menu() -> void:
 	App.add_menu_entry("progress", "m_profile", "MENU_PROFILE", App.State.PROFILE)
 	App.add_menu_entry("progress", "m_quests", "MENU_PROGRESS", App.State.PROGRESS)
+	App.add_menu_entry("progress", "m_perks", "MENU_SKILLS", App.State.SKILLS)
 	App.add_menu_entry("progress", "m_cases", "MENU_CASES", App.State.CASES)
 	App.add_menu_entry("progress", "m_inventory", "MENU_INVENTORY", App.State.INVENTORY)
 	App.add_menu_entry("progress", "m_achievements", "MENU_ACHIEVEMENTS", App.State.ACHIEVEMENTS)

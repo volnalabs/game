@@ -38,6 +38,10 @@ var events: SimEvents
 var structs: Array[Structure] = []
 var _grid: Dictionary = {}
 var _posts_cache: Dictionary = {}
+## owner -> {kind -> PackedInt32Array of tiles of finished buildings} (zone checks).
+var _tiles_cache: Dictionary = {}
+var mods: Modifiers
+var research: ResearchSystem
 
 
 func _init(state: SimState, rules_: Rules, ev: SimEvents) -> void:
@@ -116,7 +120,57 @@ func defense_posts_of(who: int) -> PackedInt32Array:
 
 
 func cost(who: int, kind: int) -> float:
-	return rules.building_cost(kind, st.bowned(who, kind))
+	var c := rules.building_cost(kind, st.bowned(who, kind))
+	return c * mods.mult("build_cost_mult", who) if mods != null else c
+
+
+## Tiles of `who`'s finished buildings of `kind` (cached).
+func active_tiles_of(who: int, kind: int) -> PackedInt32Array:
+	var per: Dictionary = _tiles_cache.get(who, {})
+	if per.has(kind):
+		return per[kind]
+	var out := PackedInt32Array()
+	for s in structs:
+		if s.alive and s.owner == who and s.kind == kind and s.active_levels > 0:
+			out.append(s.tile)
+	per[kind] = out
+	_tiles_cache[who] = per
+	return out
+
+
+## Whether tile t lies in the effect zone of one of `who`'s finished buildings of `kind`.
+func in_zone(who: int, kind: int, t: int) -> bool:
+	var tiles := active_tiles_of(who, kind)
+	if tiles.is_empty():
+		return false
+	var r := rules.building_radius(kind)
+	var r2 := r * r
+	var W := st.W
+	var tx := t % W
+	var ty := t / W
+	for p in tiles:
+		var dx := (p % W) - tx
+		var dy := (p / W) - ty
+		if dx * dx + dy * dy <= r2:
+			return true
+	return false
+
+
+## Whether `who` has researched what `kind` needs.
+func unlocked(who: int, kind: int) -> bool:
+	return research == null or research.has_tech(who, rules.building_requires(kind))
+
+
+func _changed(who: int) -> void:
+	_posts_cache.erase(who)
+	_tiles_cache.erase(who)
+	if mods != null:
+		mods.mark(who)
+
+
+func invalidate_caches() -> void:
+	_posts_cache.clear()
+	_tiles_cache.clear()
 
 
 func can_afford(who: int, kind: int) -> bool:
@@ -181,7 +235,7 @@ func find_site(who: int, kind: int, t: int) -> Dictionary:
 func preview(who: int, kind: int, t: int) -> Dictionary:
 	var out := {"ok": false, "reason": "", "detail": "", "tile": -1, "upgrade": -1, "level": 1,
 		"gold": 0.0, "supplies": 0.0, "ticks": 0, "radius": 0.0, "kind": kind}
-	if kind < 0 or kind >= Rules.BUILDING_KINDS:
+	if kind < 0 or kind >= rules.building_count():
 		out["reason"] = "bad_kind"
 		return out
 	out["gold"] = cost(who, kind)
@@ -190,6 +244,10 @@ func preview(who: int, kind: int, t: int) -> Dictionary:
 	out["radius"] = rules.building_radius(kind)
 	if not st.is_alive(who):
 		out["reason"] = "dead"
+		return out
+	if not unlocked(who, kind):
+		out["reason"] = "locked"
+		out["detail"] = rules.building_requires(kind)
 		return out
 	var site := find_site(who, kind, t)
 	if not site.is_empty():
@@ -255,8 +313,7 @@ func tick() -> void:
 			var add := s.level - s.active_levels
 			s.active_levels = s.level
 			st.add_blevel(s.owner, s.kind, add)
-			if s.kind == Rules.B_DEFENSE:
-				_posts_cache.erase(s.owner)
+			_changed(s.owner)
 			events.emit(SimEvents.BUILD_DONE, {"id": s.id, "owner": s.owner, "kind": s.kind, "tile": s.tile, "level": s.level})
 
 
@@ -267,7 +324,7 @@ func _on_tile_changed(t: int, old: int, new_owner: int) -> void:
 	var s := structs[sid]
 	if not s.alive:
 		return
-	if new_owner == 0 or s.kind == Rules.B_DEFENSE:
+	if new_owner == 0 or (s.kind == Rules.B_DEFENSE and not bool(rules.building_effect(s.kind).get("survives_capture", false))):
 		destroy(s)
 		return
 	st.add_blevel(old, s.kind, -s.active_levels)
@@ -275,8 +332,8 @@ func _on_tile_changed(t: int, old: int, new_owner: int) -> void:
 	st.add_blevel(new_owner, s.kind, s.active_levels)
 	st.add_bowned(new_owner, s.kind, s.level)
 	s.owner = new_owner
-	_posts_cache.erase(old)
-	_posts_cache.erase(new_owner)
+	_changed(old)
+	_changed(new_owner)
 	events.emit(SimEvents.STRUCT_CAPTURED, {"id": s.id, "kind": s.kind, "from": old, "to": new_owner, "tile": t})
 
 
@@ -288,7 +345,7 @@ func destroy(s: Structure) -> void:
 	st.add_bowned(s.owner, s.kind, -s.level)
 	st.set_struct_at(s.tile, -1)
 	_grid_remove(s)
-	_posts_cache.erase(s.owner)
+	_changed(s.owner)
 	events.emit(SimEvents.STRUCT_DESTROYED, {"id": s.id, "kind": s.kind, "owner": s.owner, "tile": s.tile})
 
 
@@ -302,7 +359,7 @@ func to_dict() -> Dictionary:
 func from_dict(d: Dictionary) -> void:
 	structs.clear()
 	_grid.clear()
-	_posts_cache.clear()
+	invalidate_caches()
 	for sd: Dictionary in d["structs"]:
 		var s := Structure.from_dict(sd)
 		structs.append(s)

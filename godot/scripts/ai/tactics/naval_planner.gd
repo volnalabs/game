@@ -33,7 +33,7 @@ static func my_bodies(bot: StrategicAI) -> Array[int]:
 static func best_landing(bot: StrategicAI) -> Dictionary:
 	var sim := bot.sim
 	var st := sim.st
-	if st.o_boats[bot.id] >= sim.naval.max_boats() or st.o_supplies[bot.id] < float(sim.rules.n["boat_supplies"]):
+	if st.o_boats[bot.id] >= sim.naval.max_boats(bot.id) or st.o_supplies[bot.id] < float(sim.rules.n["boat_supplies"]):
 		return {}
 	var bodies := my_bodies(bot)
 	if bodies.is_empty():

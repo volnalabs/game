@@ -102,7 +102,7 @@ func refresh(force: bool = false) -> void:
 		"army":
 			_body.add_child(UITheme.stat_row(tr("MIL_TROOPS"), UITheme.num(st.o_troops[id]), UITheme.ARMY))
 			_body.add_child(UITheme.stat_row(tr("MIL_IN_ATTACKS"), UITheme.num(sim.attacks.troops_in_attacks(id))))
-			_body.add_child(UITheme.stat_row(tr("MIL_BOATS"), "%d / %d" % [st.o_boats[id], sim.naval.max_boats()]))
+			_body.add_child(UITheme.stat_row(tr("MIL_BOATS"), "%d / %d" % [st.o_boats[id], sim.naval.max_boats(id)]))
 			_body.add_child(UITheme.stat_row(tr("MIL_ATTACKS"), str(st.o_st_attacks[id])))
 			_body.add_child(UITheme.stat_row(tr("MIL_CONQUERED"), UITheme.num(float(st.o_st_conquered[id]))))
 			if mine or hud.ai_debug:

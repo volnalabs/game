@@ -104,6 +104,8 @@ static func reason_text(pv: Dictionary, rules: Rules) -> String:
 	if detail == "not_own_land":
 		return TranslationServer.translate("REJECT_BUILD_OWN_LAND")
 	var reason := String(pv["reason"])
+	if reason == "locked":
+		return TranslationServer.translate("BUILD_REQUIRES") % MetaData.text(ResearchSystem.tech(detail).get("name", {}))
 	if reason == "no_site":
 		if detail == "no_coast":
 			return TranslationServer.translate("BUILD_DETAIL_NO_COAST")

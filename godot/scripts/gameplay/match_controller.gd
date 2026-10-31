@@ -235,6 +235,12 @@ func _handle_events() -> void:
 			SimEvents.COMMAND_REJECTED:
 				if int(e["owner"]) == pid:
 					hud.toast(tr("REJECT_" + String(e["reason"]).to_upper()))
+			SimEvents.RESEARCH_DONE:
+				if int(e["owner"]) == pid:
+					var tname := MetaData.text(ResearchSystem.tech(String(e["tech"])).get("name", {}))
+					hud.toast(tr("RESEARCH_DONE_TOAST") % tname, UITheme.RESEARCH, "r_research")
+					hud.log_line(tr("RESEARCH_DONE_TOAST") % tname, UITheme.RESEARCH)
+					hud.dock.mark_dirty()
 			SimEvents.SPAWNED:
 				if int(e["owner"]) == pid:
 					effects.ring(int(e["tile"]), UITheme.ACCENT, 14.0)
@@ -343,7 +349,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_SPACE:
 				set_speed(0.0 if not paused else maxf(speed, 1.0))
 			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9:
-				var kinds := GameHUD.build_kinds(sim.rules)
+				var kinds := hud.quick_kinds()
 				if k - KEY_1 < kinds.size():
 					begin_build(kinds[k - KEY_1])
 			KEY_TAB:
@@ -504,6 +510,12 @@ func cancel_spawn() -> void:
 	spawn_info_pending = {}
 	effects.spawn_pending = {}
 	hud.refresh()
+
+
+func start_research(tech_id: String) -> void:
+	sim.submit(Commands.research(sim.player_id, tech_id))
+	hud.toast(tr("RESEARCH_STARTED") % MetaData.text(ResearchSystem.tech(tech_id).get("name", {})), UITheme.RESEARCH, "r_research")
+	hud.dock.mark_dirty()
 
 
 func toggle_zones() -> void:

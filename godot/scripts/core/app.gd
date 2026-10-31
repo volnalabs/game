@@ -7,11 +7,11 @@ signal state_changed(state: int)
 signal refresh_requested
 
 enum State { MAIN_MENU, MAP_SELECT, MAP_GENERATOR, MATCH_SETUP, LOADING, SPAWN_SELECT, PLAYING, PAUSED,
-	VICTORY, DEFEAT, LOAD_GAME, SETTINGS, CREDITS, PROFILE, PROGRESS, CASES, INVENTORY, ACHIEVEMENTS, RESULTS }
+	VICTORY, DEFEAT, LOAD_GAME, SETTINGS, CREDITS, PROFILE, PROGRESS, CASES, INVENTORY, ACHIEVEMENTS, RESULTS, SKILLS }
 
 const STATE_NAMES := ["main_menu", "map_select", "map_generator", "match_setup", "loading", "spawn_select",
 	"playing", "paused", "victory", "defeat", "load_game", "settings", "credits", "profile", "progress", "cases",
-	"inventory", "achievements", "results"]
+	"inventory", "achievements", "results", "skills"]
 
 var state: int = State.MAIN_MENU
 ## Selected map for the next match (registry map or a generated world).
@@ -62,6 +62,9 @@ func select_map(def: MapDefinition, data: MapData = null) -> void:
 func start_new_match() -> void:
 	load_path = ""
 	config.match_id = new_match_id()
+	# Profile perks enter the match only here (and never in Fair mode).
+	var prof := get_node_or_null("/root/Profile")
+	config.player_perks = [] if config.fair_mode or prof == null else (prof.data.data["perks"]["loadout"] as Array).duplicate()
 	goto(State.LOADING)
 
 

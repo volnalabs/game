@@ -41,6 +41,20 @@ static func build_kinds(rules: Rules) -> Array[int]:
 	return out
 
 
+const QUICK_SLOTS := 6
+
+
+## Kinds on the quick build bar and keys 1..n: buildable and already unlocked by research.
+func quick_kinds() -> Array[int]:
+	var out: Array[int] = []
+	for k in build_kinds(sim.rules):
+		if sim.player_id <= 0 or sim.structures.unlocked(sim.player_id, k):
+			out.append(k)
+			if out.size() >= QUICK_SLOTS:
+				break
+	return out
+
+
 func setup(controller: Node, sim_: Sim) -> void:
 	ctl = controller
 	sim = sim_

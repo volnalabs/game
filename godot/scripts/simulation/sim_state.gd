@@ -54,7 +54,7 @@ var o_boats: PackedInt32Array
 var o_attacked_tick: PackedInt32Array
 var o_killer: PackedInt32Array
 var o_elim_tick: PackedInt32Array
-## Active building levels: [id * Rules.BUILDING_KINDS + kind].
+## Active building levels: [id * Rules.MAX_BUILDING_KINDS + kind].
 var o_blevels: PackedInt32Array
 ## Building levels owned including those under construction (drives costs).
 var o_bowned: PackedInt32Array
@@ -133,8 +133,8 @@ func _init(map_data: MapData, rules_: Rules) -> void:
 	o_attacked_tick = _i32(m, -100000)
 	o_killer = _i32(m, 0)
 	o_elim_tick = _i32(m, -1)
-	o_blevels = _i32(m * Rules.BUILDING_KINDS, 0)
-	o_bowned = _i32(m * Rules.BUILDING_KINDS, 0)
+	o_blevels = _i32(m * Rules.MAX_BUILDING_KINDS, 0)
+	o_bowned = _i32(m * Rules.MAX_BUILDING_KINDS, 0)
 	o_st_attacks = _i32(m, 0)
 	o_st_conquered = _i32(m, 0)
 	o_st_lost_tiles = _i32(m, 0)
@@ -192,19 +192,19 @@ func is_alive(id: int) -> bool:
 
 
 func blevel(id: int, kind: int) -> int:
-	return o_blevels[id * Rules.BUILDING_KINDS + kind]
+	return o_blevels[id * Rules.MAX_BUILDING_KINDS + kind]
 
 
 func bowned(id: int, kind: int) -> int:
-	return o_bowned[id * Rules.BUILDING_KINDS + kind]
+	return o_bowned[id * Rules.MAX_BUILDING_KINDS + kind]
 
 
 func add_blevel(id: int, kind: int, d: int) -> void:
-	o_blevels[id * Rules.BUILDING_KINDS + kind] += d
+	o_blevels[id * Rules.MAX_BUILDING_KINDS + kind] += d
 
 
 func add_bowned(id: int, kind: int, d: int) -> void:
-	o_bowned[id * Rules.BUILDING_KINDS + kind] += d
+	o_bowned[id * Rules.MAX_BUILDING_KINDS + kind] += d
 
 
 func add_troops(id: int, d: float) -> void:

@@ -9,6 +9,7 @@ const TRADE_EVERY := 50
 var st: SimState
 var rules: Rules
 var structures: StructureSystem
+var mods: Modifiers
 
 
 func _init(state: SimState, rules_: Rules, structs: StructureSystem) -> void:
@@ -29,11 +30,11 @@ func tick() -> void:
 		var kind := st.o_kind[id]
 		var cities := st.blevel(id, Rules.B_CITY)
 		var factories := st.blevel(id, Rules.B_FACTORY)
-		var cap := rules.troop_cap(kind, st.o_tiles[id], cities)
+		var cap := rules.troop_cap(kind, st.o_tiles[id], cities) * mods.mult("cap_mult", id)
 		var troops := st.o_troops[id]
-		var income := rules.gold_income(kind, st.o_value[id], cities, st.o_port_trade[id], factories)
-		var upkeep := rules.upkeep(troops, cap)
-		var sup := rules.supplies_income(factories)
+		var income := rules.gold_income(kind, st.o_value[id], cities, st.o_port_trade[id], factories) * mods.mult("gold_mult", id)
+		var upkeep := rules.upkeep(troops, cap) * mods.mult("upkeep_mult", id)
+		var sup := rules.supplies_income(factories) * mods.mult("supply_mult", id)
 		var gold := st.o_gold[id] + income - upkeep
 		var growth := 0.0
 		if gold < 0.0:
@@ -43,6 +44,8 @@ func tick() -> void:
 			gold = 0.0
 		else:
 			growth = rules.troop_growth(kind, troops, cap)
+			if growth > 0.0:
+				growth *= mods.mult("growth_mult", id)
 		st.add_gold(id, gold - st.o_gold[id])
 		st.stat_gold(id, income, 0.0, minf(upkeep, st.o_gold[id] + upkeep))
 		st.add_supplies(id, minf(sup, sup_max - st.o_supplies[id]))

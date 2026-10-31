@@ -151,6 +151,7 @@ func think() -> void:
 	_act_on_state()
 	if now >= next_econ:
 		next_econ = now + int(diff["econ_interval"])
+		ResearchPlanner.act(self)
 		EconomicPlanner.act(self)
 
 

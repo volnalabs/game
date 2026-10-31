@@ -33,7 +33,18 @@ const B_FACTORY := 2
 const B_DEFENSE := 3
 const B_SAM := 4
 const B_SILO := 5
-const BUILDING_KINDS := 6
+const B_RESEARCH := 6
+const B_RADAR := 7
+const B_AIRBASE := 8
+const B_ACADEMY := 9
+const B_LOGISTICS := 10
+const B_COMMAND := 11
+const B_BUNKER := 12
+const B_POWER := 13
+const B_NAVAL_BASE := 14
+## Stride of the per-owner building arrays (SimState.o_blevels / o_bowned); the real number of
+## kinds comes from data/buildings/buildings.json (building_count()).
+const MAX_BUILDING_KINDS := 16
 
 var raw: Dictionary
 var buildings_raw: Dictionary
@@ -196,6 +207,29 @@ func upkeep(troops: float, cap: float) -> float:
 
 func building_index(id: String) -> int:
 	return b_ids.find(id)
+
+
+func building_count() -> int:
+	return b_kinds.size()
+
+
+## Research that unlocks a kind ("" = available from the start).
+func building_requires(kind: int) -> String:
+	return String(b_kinds[kind].get("requires", ""))
+
+
+## Effect numbers of a kind (buildings.json "effect").
+func building_effect(kind: int) -> Dictionary:
+	return b_kinds[kind].get("effect", {})
+
+
+## Building kinds whose zone counts as defended ground (defence posts, bunkers).
+func defended_kinds() -> Array[int]:
+	var out: Array[int] = [B_DEFENSE]
+	for k in building_count():
+		if bool(building_effect(k).get("defended", false)) and not out.has(k):
+			out.append(k)
+	return out
 
 
 func building_cost(kind: int, owned_levels: int) -> float:

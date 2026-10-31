@@ -53,6 +53,7 @@ var rng: SimRng
 var events: SimEvents
 var structures: StructureSystem
 var attacks: Array[Attack] = []
+var mods: Modifiers
 ## Attacks that ended since the AI last looked (outcomes the bots learn from).
 var recently_ended: Array[Dictionary] = []
 var _pair: Dictionary = {}
@@ -329,7 +330,7 @@ func _process(a: Attack) -> void:
 	var neutral := tg == 0
 	if a.retreat_at > 0:
 		if tick >= a.retreat_at:
-			end_attack(a, true, 1.0 if neutral else rules.retreat_keep)
+			end_attack(a, true, 1.0 if neutral else minf(1.0, rules.retreat_keep + (mods.add("retreat_keep_add", at) if mods != null else 0.0)))
 			return
 		if tick >= a.frozen_from:
 			return
@@ -344,13 +345,29 @@ func _process(a: Attack) -> void:
 		if st.o_kind[tg] == Rules.KIND_TRIBE and akind != Rules.KIND_TRIBE:
 			mag_k = rules.a["tribe_defender_loss_mult"]
 		st.mark_attacked(tg)
-	var posts := PackedInt32Array() if neutral else structures.defense_posts_of(tg)
+	# Defended ground: defence posts and bunkers of the defender, each with its own radius.
+	var zone_tiles: Array[PackedInt32Array] = []
+	var zone_r2: PackedFloat32Array = PackedFloat32Array()
+	if not neutral:
+		for dk in rules.defended_kinds():
+			var tl := structures.active_tiles_of(tg, dk)
+			if not tl.is_empty():
+				zone_tiles.append(tl)
+				zone_r2.append(rules.building_radius(dk) * rules.building_radius(dk))
+	# Air support: the attacker's airbases lower its losses on tiles in their radius.
+	var air := PackedInt32Array() if akind == Rules.KIND_TRIBE else structures.active_tiles_of(at, Rules.B_AIRBASE)
+	var air_r2 := rules.building_radius(Rules.B_AIRBASE) * rules.building_radius(Rules.B_AIRBASE)
+	var air_mult := float(rules.building_effect(Rules.B_AIRBASE).get("attack_loss_mult", 1.0))
+	var loss_k := 1.0
+	var speed_k := 1.0
+	if mods != null:
+		loss_k = mods.mult("attack_loss_mult", at) * (mods.mult("defense_loss_mult", tg) if not neutral else 1.0)
+		speed_k = (mods.mult("defense_speed_mult", tg) if not neutral else 1.0) / mods.mult("attack_speed_mult", at)
 	var nl_per: float = rules.a["tribe_neutral_loss_per_mag"] if akind == Rules.KIND_TRIBE else rules.a["neutral_loss_per_mag"]
 	var nc_scale: float = rules.a["neutral_cost_scale"]
 	var nc_min: float = rules.a["neutral_min_cost"]
 	var nc_max: float = rules.a["neutral_max_cost"]
 	var loss_dens: float = rules.a["attacker_loss_per_density"]
-	var post_r2 := rules.defense_radius() * rules.defense_radius()
 	var owner := st.owner
 	var terrain := st.map.terrain
 	var land := st.map.land
@@ -381,18 +398,26 @@ func _process(a: Attack) -> void:
 			a.head = t
 			a.chew = 0.0
 		var defended := 0
-		if posts.size() > 0:
-			var tx := t % W
-			var ty := t / W
-			for p in posts:
+		var tx := t % W
+		var ty := t / W
+		for zi in zone_tiles.size():
+			for p in zone_tiles[zi]:
 				var dx := (p % W) - tx
 				var dy := (p / W) - ty
-				if dx * dx + dy * dy <= post_r2:
+				if dx * dx + dy * dy <= zone_r2[zi]:
 					defended = 1
 					break
+			if defended == 1:
+				break
 		var ti := (terrain[t] & 31) * 2 + defended
-		var mag := _mag[ti]
-		var tc := _cost[ti]
+		var mag := _mag[ti] * loss_k
+		var tc := _cost[ti] * speed_k
+		for p in air:
+			var dx := (p % W) - tx
+			var dy := (p / W) - ty
+			if dx * dx + dy * dy <= air_r2:
+				mag *= air_mult
+				break
 		var loss: float
 		var tf: float
 		var dloss := 0.0

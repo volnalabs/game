@@ -1,11 +1,132 @@
 {
-	"_comment": "AI personalities (docs/ai/AI_DESIGN.md §8). Weights multiply utility terms; risk_tolerance in 0..1 (share of the exposure penalty ignored); reserve = share of troops kept home outside of wars; grudge = how slowly grudges fade; coalition = eagerness to gang up on a runaway leader.",
-	"order": ["balanced", "aggressive", "economic", "defensive", "opportunistic"],
+	"_comment": "AI personalities (docs/ai/AI_DESIGN.md §8). Weights multiply utility terms; risk_tolerance in 0..1 (share of the exposure penalty ignored); reserve = share of troops kept home outside of wars; grudge = how slowly grudges fade; coalition = eagerness to gang up on a runaway leader. perks: profile-style perks the AI uses (off in Fair mode); research_order: branch preference for in-match research.",
+	"order": [
+		"balanced",
+		"aggressive",
+		"economic",
+		"defensive",
+		"opportunistic"
+	],
 	"personalities": {
-		"aggressive":    {"expansion": 1.2, "war_appetite": 1.25, "risk_tolerance": 0.6, "reserve": 0.25, "defense": 0.6, "economy": 0.7, "opportunism": 1.0, "grudge": 1.0, "naval": 1.0, "coalition": 0.8, "max_wars": 2},
-		"economic":      {"expansion": 1.0, "war_appetite": 0.6, "risk_tolerance": 0.35, "reserve": 0.35, "defense": 0.9, "economy": 1.6, "opportunism": 0.8, "grudge": 0.6, "naval": 0.9, "coalition": 1.0, "max_wars": 1},
-		"defensive":     {"expansion": 0.8, "war_appetite": 0.5, "risk_tolerance": 0.3, "reserve": 0.50, "defense": 1.6, "economy": 1.0, "opportunism": 0.6, "grudge": 1.4, "naval": 0.6, "coalition": 1.2, "max_wars": 1},
-		"balanced":      {"expansion": 1.0, "war_appetite": 1.0, "risk_tolerance": 0.5, "reserve": 0.30, "defense": 1.0, "economy": 1.0, "opportunism": 1.0, "grudge": 1.0, "naval": 1.0, "coalition": 1.0, "max_wars": 2},
-		"opportunistic": {"expansion": 1.0, "war_appetite": 0.9, "risk_tolerance": 0.5, "reserve": 0.30, "defense": 0.9, "economy": 1.0, "opportunism": 2.0, "grudge": 0.8, "naval": 1.1, "coalition": 1.3, "max_wars": 2}
+		"aggressive": {
+			"expansion": 1.2,
+			"war_appetite": 1.25,
+			"risk_tolerance": 0.6,
+			"reserve": 0.25,
+			"defense": 0.6,
+			"economy": 0.7,
+			"opportunism": 1.0,
+			"grudge": 1.0,
+			"naval": 1.0,
+			"coalition": 0.8,
+			"max_wars": 2,
+			"perks": [
+				"mil_drill",
+				"mil_blitz"
+			],
+			"research_order": [
+				"military",
+				"logistics",
+				"strategic",
+				"economy",
+				"defense"
+			]
+		},
+		"economic": {
+			"expansion": 1.0,
+			"war_appetite": 0.6,
+			"risk_tolerance": 0.35,
+			"reserve": 0.35,
+			"defense": 0.9,
+			"economy": 1.6,
+			"opportunism": 0.8,
+			"grudge": 0.6,
+			"naval": 0.9,
+			"coalition": 1.0,
+			"max_wars": 1,
+			"perks": [
+				"eco_tax",
+				"eco_industry"
+			],
+			"research_order": [
+				"economy",
+				"strategic",
+				"logistics",
+				"defense",
+				"military"
+			]
+		},
+		"defensive": {
+			"expansion": 0.8,
+			"war_appetite": 0.5,
+			"risk_tolerance": 0.3,
+			"reserve": 0.5,
+			"defense": 1.6,
+			"economy": 1.0,
+			"opportunism": 0.6,
+			"grudge": 1.4,
+			"naval": 0.6,
+			"coalition": 1.2,
+			"max_wars": 1,
+			"perks": [
+				"def_walls",
+				"def_militia"
+			],
+			"research_order": [
+				"defense",
+				"economy",
+				"logistics",
+				"military",
+				"strategic"
+			]
+		},
+		"balanced": {
+			"expansion": 1.0,
+			"war_appetite": 1.0,
+			"risk_tolerance": 0.5,
+			"reserve": 0.3,
+			"defense": 1.0,
+			"economy": 1.0,
+			"opportunism": 1.0,
+			"grudge": 1.0,
+			"naval": 1.0,
+			"coalition": 1.0,
+			"max_wars": 2,
+			"perks": [
+				"log_roads",
+				"eco_tax"
+			],
+			"research_order": [
+				"economy",
+				"military",
+				"defense",
+				"logistics",
+				"strategic"
+			]
+		},
+		"opportunistic": {
+			"expansion": 1.0,
+			"war_appetite": 0.9,
+			"risk_tolerance": 0.5,
+			"reserve": 0.3,
+			"defense": 0.9,
+			"economy": 1.0,
+			"opportunism": 2.0,
+			"grudge": 0.8,
+			"naval": 1.1,
+			"coalition": 1.3,
+			"max_wars": 2,
+			"perks": [
+				"int_scouts",
+				"mil_drill"
+			],
+			"research_order": [
+				"strategic",
+				"military",
+				"economy",
+				"logistics",
+				"defense"
+			]
+		}
 	}
 }

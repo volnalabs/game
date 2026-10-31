@@ -24,7 +24,7 @@ static func kind_color(rules: Rules, kind: int) -> Color:
 ## Kinds that have an effect radius (for the legend).
 static func zone_kinds(rules: Rules) -> Array[int]:
 	var out: Array[int] = []
-	for k in Rules.BUILDING_KINDS:
+	for k in rules.building_count():
 		if rules.building_radius(k) > 0.0 and not rules.b_kinds[k].has("phase"):
 			out.append(k)
 	return out
