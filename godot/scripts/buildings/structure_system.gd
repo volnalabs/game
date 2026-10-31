@@ -174,21 +174,54 @@ func find_site(who: int, kind: int, t: int) -> Dictionary:
 	return {"tile": cand, "upgrade": -1}
 
 
+## Dry run of a build order on tile t — the same checks try_build makes, without side effects.
+## {"ok", "reason" (as try_build), "detail" (finer reason for the UI: not_own_land, no_coast,
+## too_close), "tile" (-1 if no site), "upgrade" (structure id or -1), "level" (level after the
+## order), "gold", "supplies", "ticks", "radius"}.
+func preview(who: int, kind: int, t: int) -> Dictionary:
+	var out := {"ok": false, "reason": "", "detail": "", "tile": -1, "upgrade": -1, "level": 1,
+		"gold": 0.0, "supplies": 0.0, "ticks": 0, "radius": 0.0, "kind": kind}
+	if kind < 0 or kind >= Rules.BUILDING_KINDS:
+		out["reason"] = "bad_kind"
+		return out
+	out["gold"] = cost(who, kind)
+	out["supplies"] = rules.building_supplies(kind)
+	out["ticks"] = rules.building_ticks(kind)
+	out["radius"] = rules.building_radius(kind)
+	if not st.is_alive(who):
+		out["reason"] = "dead"
+		return out
+	var site := find_site(who, kind, t)
+	if not site.is_empty():
+		out["tile"] = site["tile"]
+		out["upgrade"] = site["upgrade"]
+		if int(site["upgrade"]) >= 0:
+			out["level"] = structs[int(site["upgrade"])].level + 1
+	if st.o_gold[who] < float(out["gold"]):
+		out["reason"] = "no_gold"
+	elif st.o_supplies[who] < float(out["supplies"]):
+		out["reason"] = "no_supplies"
+	elif site.is_empty():
+		out["reason"] = "no_site"
+	if site.is_empty():
+		if t < 0 or t >= st.N or st.owner[t] != who:
+			out["detail"] = "not_own_land"
+		elif rules.building_coastal(kind):
+			out["detail"] = "no_coast"
+		else:
+			out["detail"] = "too_close"
+	out["ok"] = out["reason"] == ""
+	return out
+
+
 ## Validates, pays and starts a build. Returns {"ok": bool, "reason": String, "id": int}.
 func try_build(who: int, kind: int, t: int) -> Dictionary:
-	if kind < 0 or kind >= Rules.BUILDING_KINDS:
-		return {"ok": false, "reason": "bad_kind"}
-	if not st.is_alive(who):
-		return {"ok": false, "reason": "dead"}
-	var gold_cost := cost(who, kind)
-	var sup_cost := rules.building_supplies(kind)
-	if st.o_gold[who] < gold_cost:
-		return {"ok": false, "reason": "no_gold"}
-	if st.o_supplies[who] < sup_cost:
-		return {"ok": false, "reason": "no_supplies"}
-	var site := find_site(who, kind, t)
-	if site.is_empty():
-		return {"ok": false, "reason": "no_site"}
+	var pv := preview(who, kind, t)
+	if not pv["ok"]:
+		return {"ok": false, "reason": pv["reason"]}
+	var gold_cost: float = pv["gold"]
+	var sup_cost: float = pv["supplies"]
+	var site := {"tile": pv["tile"], "upgrade": pv["upgrade"]}
 	var done := st.tick + rules.building_ticks(kind)
 	var s: Structure
 	if int(site["upgrade"]) >= 0:

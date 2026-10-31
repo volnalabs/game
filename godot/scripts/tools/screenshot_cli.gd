@@ -61,7 +61,6 @@ func _run() -> void:
 	var ctl: Node = main._current
 	while ctl.sim == null:
 		await _wait(5)
-	await _shot("05_spawn")
 	var sim: Sim = ctl.sim
 	# Valid start closest to the map centre (keeps the camera inside the map).
 	var start := -1
@@ -73,8 +72,17 @@ func _run() -> void:
 		if d < best and sim.spawn.is_valid_start(t):
 			best = d
 			start = t
-	sim.submit(Commands.spawn(sim.player_id, start))
-	for i in 40:
+	var sp := Vector2(start % sim.map.width, start / sim.map.width)
+	ctl.cam.focus(sp, ctl.cam.min_zoom * 4.0)
+	await _wait(3)
+	ctl.hover_tile = start
+	ctl._update_spawn_hover()
+	await _shot("05_spawn")
+	ctl._left_click(start)
+	await _wait(3)
+	await _shot("05b_spawn_confirm")
+	ctl.confirm_spawn()
+	while sim.phase == Sim.Phase.SPAWN:
 		sim.step()
 	# Play a while: the player expands and builds a city.
 	sim.submit(Commands.attack_target(sim.player_id, 0, 15000.0))
@@ -83,15 +91,49 @@ func _run() -> void:
 		if i == ticks / 2:
 			sim.st.add_gold(sim.player_id, 0.0)
 			sim.submit(Commands.build(sim.player_id, Rules.B_CITY, sim.st.o_spawn_tile[sim.player_id]))
-	ctl.cam.focus(Vector2(start % sim.map.width, start / sim.map.width), ctl.cam.min_zoom * 3.0)
-	await _wait(10)
+	# Attack every neighbour so the fronts are visible.
+	for o in range(1, sim.st.owner_count + 1):
+		if o != sim.player_id and sim.st.o_alive[o] == 1 and ctl.borders(sim.player_id, o):
+			sim.submit(Commands.attack_target(sim.player_id, o, sim.st.o_troops[sim.player_id] * 0.15))
+	sim.submit(Commands.attack_target(sim.player_id, 0, sim.st.o_troops[sim.player_id] * 0.1))
+	for i in 15:
+		sim.step()
+		await _wait(2)
+	ctl.cam.focus(sp, ctl.cam.min_zoom * 3.0)
+	await _wait(30)
 	await _shot("06_playing")
+	# A war between two states, selected: its fronts, losses and captures.
+	var war: AttackSystem.Attack = null
+	for a in sim.attacks.attacks:
+		if a.alive and a.target > 0 and not a.landing and (war == null or a.troops > war.troops):
+			war = a
+	if war != null:
+		ctl.select_owner(war.attacker)
+		ctl.cam.focus(ctl.effects._fronts.get(war.id, {}).get("p", sim.st.centroid(war.attacker)), ctl.cam.min_zoom * 5.0)
+		ctl.hud.inspector.set_tab("army")
+		await _wait(80)
+		await _shot("06b_war_fronts")
+		ctl.select_owner(0)
 	ctl.hud.dock.open("economy")
 	await _wait(5)
 	await _shot("07_economy_panel")
 	ctl.hud.dock.open("build")
 	await _wait(5)
 	await _shot("07b_build_panel")
+	ctl.hud.dock.open("")
+	sim.st.add_supplies(sim.player_id, 5000.0)
+	sim.st.add_gold(sim.player_id, 1000000.0)
+	sim.submit(Commands.build(sim.player_id, Rules.B_DEFENSE, sim.st.o_spawn_tile[sim.player_id]))
+	sim.step()
+	ctl.toggle_zones()
+	ctl.begin_build(Rules.B_DEFENSE)
+	var gt: int = sim.st.o_spawn_tile[sim.player_id]
+	ctl.hover_tile = gt
+	ctl._mouse_screen = ctl.cam.get_canvas_transform() * Vector2(gt % sim.map.width + 0.5, gt / sim.map.width + 0.5)
+	await _wait(10)
+	await _shot("07c_build_ghost")
+	ctl.cancel_build()
+	ctl.toggle_zones()
 	ctl.hud.dock.open("")
 	ctl.hud.ai_debug = true
 	var bot := sim.ai.brains[0].id

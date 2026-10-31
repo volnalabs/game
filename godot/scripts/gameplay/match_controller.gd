@@ -11,6 +11,8 @@ var sim: Sim
 var renderer: MapRenderer
 var cam: MapCamera
 var structures: StructureLayer
+var zones: ZoneLayer
+var ghost: GhostLayer
 var effects: EffectsLayer
 var labels: LabelLayer
 var hud: GameHUD
@@ -29,6 +31,15 @@ var _loading: Control
 var _ended: bool = false
 var _last_save: String = ""
 var step_ms: float = 0.0
+var _ghost_tile: int = -2
+var _ghost_t: float = 0.0
+var _mouse_screen: Vector2 = Vector2.ZERO
+## Spawn selection: the chosen (not yet confirmed) start tile and the analyses shown for it and
+## for the tile under the cursor.
+var spawn_pending: int = -1
+var spawn_info_pending: Dictionary = {}
+var spawn_info_hover: Dictionary = {}
+var _advisor: SpawnAdvisor
 
 
 func _ready() -> void:
@@ -92,8 +103,12 @@ func _build_world() -> void:
 	renderer = MapRenderer.new()
 	add_child(renderer)
 	renderer.setup(sim)
+	zones = ZoneLayer.new()
+	add_child(zones)
 	structures = StructureLayer.new()
 	add_child(structures)
+	ghost = GhostLayer.new()
+	add_child(ghost)
 	effects = EffectsLayer.new()
 	add_child(effects)
 	cam = MapCamera.new()
@@ -103,6 +118,11 @@ func _build_world() -> void:
 	cam.setup(Vector2(sim.map.width, sim.map.height))
 	structures.sim = sim
 	structures.cam = cam
+	zones.sim = sim
+	zones.cam = cam
+	zones.show_all = Settings.show_zones
+	ghost.sim = sim
+	ghost.cam = cam
 	effects.sim = sim
 	effects.cam = cam
 	var ui := CanvasLayer.new()
@@ -151,6 +171,7 @@ func _process(delta: float) -> void:
 	renderer.apply_changes(sim.st.drain_changed_tiles())
 	renderer.flush(4.0)
 	renderer.set_highlight(selected_owner, hover_owner)
+	_update_ghost(delta)
 	_handle_events()
 	_check_end()
 
@@ -158,7 +179,9 @@ func _process(delta: float) -> void:
 func _handle_events() -> void:
 	var pid := sim.player_id
 	var st := sim.st
+	effects.focus_owner = selected_owner
 	for e in sim.events.drain():
+		effects.on_event(e)
 		match String(e["type"]):
 			SimEvents.ATTACK_STARTED:
 				if int(e["target"]) == pid:
@@ -182,6 +205,7 @@ func _handle_events() -> void:
 					if int(e["owner"]) == pid:
 						hud.log_line(tr("LOG_LANDED"), UITheme.GOOD)
 			SimEvents.BUILD_DONE:
+				structures.pop(int(e["id"]))
 				if int(e["owner"]) == pid:
 					hud.log_line(tr("LOG_BUILT") % tr("B_" + sim.rules.b_ids[int(e["kind"])].to_upper()), UITheme.GOOD)
 					effects.ring(int(e["tile"]), UITheme.GOOD, 6.0)
@@ -235,9 +259,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if sim == null:
 		return
 	if event is InputEventMouseMotion:
-		hover_tile = tile_at_screen((event as InputEventMouseMotion).position)
+		_mouse_screen = (event as InputEventMouseMotion).position
+		hover_tile = tile_at_screen(_mouse_screen)
 		hover_owner = sim.st.owner[hover_tile] if hover_tile >= 0 else 0
-		effects.spawn_hover = hover_tile if sim.phase == Sim.Phase.SPAWN and sim.player_id > 0 and sim.st.o_spawned[sim.player_id] == 0 else -1
+		_update_spawn_hover()
 	elif event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
@@ -254,8 +279,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and not event.echo:
 		var k := (event as InputEventKey).keycode
 		match k:
+			KEY_ENTER, KEY_KP_ENTER:
+				if spawn_pending >= 0:
+					confirm_spawn()
 			KEY_ESCAPE:
-				if hud.ui_hidden:
+				if spawn_pending >= 0:
+					cancel_spawn()
+				elif hud.ui_hidden:
 					hud.set_ui_hidden(false)
 				elif build_kind >= 0:
 					cancel_build()
@@ -285,6 +315,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				set_speed(maxf(speed * 0.5, 0.5))
 			KEY_HOME:
 				focus_home()
+			KEY_Z:
+				toggle_zones()
 
 
 func _left_click(t: int) -> void:
@@ -297,19 +329,29 @@ func _left_click(t: int) -> void:
 	if sim.phase == Sim.Phase.SPAWN:
 		if st.o_spawned[pid] == 1:
 			return
-		if sim.spawn.is_valid_start(t):
-			sim.submit(Commands.spawn(pid, t))
-		else:
-			hud.toast(tr("REJECT_BAD_TILE"))
+		# Two steps: the first click chooses, a second click on the same place (or Confirm) starts.
+		if spawn_pending >= 0 and sim.map.dist2(spawn_pending, t) <= 4:
+			confirm_spawn()
+			return
+		var info := _spawn_advisor().analyze(t)
+		if String(info["reason"]) != "":
+			hud.toast(tr("SPAWN_BAD_" + String(info["reason"]).to_upper()), UITheme.BAD, "ui_warning")
+			return
+		spawn_pending = t
+		spawn_info_pending = info
+		effects.spawn_pending = info
+		hud.refresh()
 		return
 	if not sim.is_player_alive() or sim.phase != Sim.Phase.PLAYING:
 		select_owner(st.owner[t])
 		return
 	if build_kind >= 0:
-		if st.owner[t] != pid:
-			hud.toast(tr("REJECT_BUILD_OWN_LAND"))
+		var pv := sim.structures.preview(pid, build_kind, t)
+		if not pv["ok"]:
+			hud.toast(BuildTip.reason_text(pv, sim.rules), UITheme.BAD, "ui_warning")
 			return
 		sim.submit(Commands.build(pid, build_kind, t))
+		_ghost_tile = -2
 		if not Input.is_key_pressed(KEY_SHIFT):
 			cancel_build()
 		return
@@ -377,6 +419,72 @@ func begin_build(kind: int) -> void:
 func cancel_build() -> void:
 	build_kind = -1
 	hud.refresh()
+
+
+func _spawn_advisor() -> SpawnAdvisor:
+	if _advisor == null:
+		_advisor = SpawnAdvisor.new(sim)
+	return _advisor
+
+
+func _update_spawn_hover() -> void:
+	var choosing := sim.phase == Sim.Phase.SPAWN and sim.player_id > 0 and sim.st.o_spawned[sim.player_id] == 0
+	if not choosing:
+		if not effects.spawn_hover.is_empty():
+			effects.spawn_hover = {}
+			spawn_info_hover = {}
+		return
+	if hover_tile == int(spawn_info_hover.get("tile", -2)):
+		return
+	spawn_info_hover = _spawn_advisor().analyze(hover_tile) if hover_tile >= 0 else {}
+	effects.spawn_hover = spawn_info_hover
+	hud.refresh()
+
+
+func confirm_spawn() -> void:
+	if spawn_pending < 0 or sim.phase != Sim.Phase.SPAWN:
+		return
+	if not sim.spawn.is_valid_start(spawn_pending):
+		hud.toast(tr("SPAWN_BAD_TAKEN"), UITheme.BAD, "ui_warning")
+		cancel_spawn()
+		return
+	sim.submit(Commands.spawn(sim.player_id, spawn_pending))
+	cancel_spawn()
+
+
+func cancel_spawn() -> void:
+	spawn_pending = -1
+	spawn_info_pending = {}
+	effects.spawn_pending = {}
+	hud.refresh()
+
+
+func toggle_zones() -> void:
+	zones.show_all = not zones.show_all
+	Settings.show_zones = zones.show_all
+	Settings.save_settings()
+	zones.queue_redraw()
+	hud.refresh()
+
+
+## Build placement preview under the cursor: recomputed when the tile changes and a few times a
+## second (gold and supplies change), drawn by the ghost layer and described by the build tip.
+func _update_ghost(delta: float) -> void:
+	zones.focus_kind = build_kind
+	zones.extra_owner = selected_owner
+	var active := build_kind >= 0 and hover_tile >= 0 and sim.phase == Sim.Phase.PLAYING and not menu_open
+	if not active:
+		if _ghost_tile != -2:
+			ghost.clear()
+			hud.build_tip.visible = false
+			_ghost_tile = -2
+		return
+	_ghost_t -= delta
+	if hover_tile != _ghost_tile or _ghost_t <= 0.0 or int(ghost.preview.get("kind", -1)) != build_kind:
+		_ghost_tile = hover_tile
+		_ghost_t = 0.25
+		ghost.set_preview(hover_tile, sim.structures.preview(sim.player_id, build_kind, hover_tile))
+	hud.build_tip.show_preview(ghost.preview, sim, _mouse_screen)
 
 
 func retreat(aid: int) -> void:

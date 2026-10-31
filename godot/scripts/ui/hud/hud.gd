@@ -18,11 +18,12 @@ var inspector: HudInspector
 var board: HudLeaderboard
 var command: HudCommandBar
 var toasts: ToastStack
+var build_tip: BuildTip
+var zone_legend: HudZoneLegend
 var log_lines: Array[String] = []
 var ai_debug: bool = false
 var _t: float = 0.0
-var _spawn_banner: PanelContainer
-var _spawn_l: Label
+var spawn_panel: HudSpawnPanel
 var _pause: Control
 var _end: Control
 var _end_title: Label
@@ -74,6 +75,12 @@ func setup(controller: Node, sim_: Sim) -> void:
 	toasts.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
 	toasts.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	toasts.offset_top = 80
+	zone_legend = HudZoneLegend.new(self)
+	add_child(zone_legend)
+	zone_legend.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 10)
+	zone_legend.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	build_tip = BuildTip.new()
+	add_child(build_tip)
 	_build_spawn_banner()
 	_build_pause()
 	_build_end()
@@ -95,13 +102,11 @@ func refresh() -> void:
 	board.refresh()
 	dock.refresh()
 	inspector.refresh()
-	_spawn_banner.visible = sim.phase == Sim.Phase.SPAWN and not ui_hidden
-	if _spawn_banner.visible:
-		var pid := sim.player_id
-		if sim.st.o_spawned[pid] == 1 and sim.countdown_end > 0:
-			_spawn_l.text = tr("SPAWN_COUNTDOWN") % maxf(0.0, float(sim.countdown_end - sim.st.tick) / 10.0)
-		else:
-			_spawn_l.text = tr("SPAWN_HINT")
+	zone_legend.visible = not ui_hidden and ctl.get("zones") != null and (ctl.zones as ZoneLayer).visible_zones() \
+		and not ZoneLayer.zone_kinds(sim.rules).is_empty()
+	spawn_panel.visible = sim.phase == Sim.Phase.SPAWN and sim.player_id > 0 and not ui_hidden and ctl.get("spawn_pending") != null
+	if spawn_panel.visible:
+		spawn_panel.refresh()
 
 
 func set_ui_hidden(on: bool) -> void:
@@ -156,17 +161,11 @@ func flag_of(id: int) -> Texture2D:
 # ---------------------------------------------------------------------------------------------
 
 func _build_spawn_banner() -> void:
-	_spawn_banner = UITheme.panel(16)
-	add_child(_spawn_banner)
-	var v := UITheme.vbox(4)
-	_spawn_banner.add_child(v)
-	v.add_child(UITheme.icon_label("g_capital", tr("SPAWN_TITLE"), UITheme.ACCENT, UITheme.T_TITLE))
-	_spawn_l = UITheme.label(tr("SPAWN_HINT"), UITheme.T_BODY, UITheme.TEXT_DIM)
-	v.add_child(_spawn_l)
-	_spawn_banner.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
-	_spawn_banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_spawn_banner.offset_top = 76
-	_spawn_banner.offset_bottom = 76
+	spawn_panel = HudSpawnPanel.new(self)
+	add_child(spawn_panel)
+	# Left, next to the dock rail: the centre of the screen stays free for the map being inspected.
+	spawn_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE)
+	spawn_panel.position = Vector2(76, 74)
 
 
 func _modal() -> Array:

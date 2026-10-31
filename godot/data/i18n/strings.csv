@@ -114,6 +114,15 @@ SETTINGS_EDGE_SCROLL,Прокрутка карты у края экрана,Scro
 SETTINGS_AI_DEBUG,Отладка AI (F3),AI debugging (F3)
 CREDITS_TITLE,Титры и лицензии,Credits & licences
 CREDITS_ICONS,Иконки,Icons
+BUILD_TIP_OK,Можно строить здесь — щелчок ставит заказ (Shift — несколько),Can build here — click to place (Shift for several)
+BUILD_TIP_UPGRADE,Улучшение существующей постройки — щелчок подтверждает,Upgrades the existing building — click to confirm
+BUILD_TIP_LEVEL,ур. %d,lv. %d
+BUILD_TIP_RADIUS,радиус %d,radius %d
+BUILD_DETAIL_NO_COAST,Порт ставится только на своём побережье рядом с курсором,A port needs your own coast near the cursor
+BUILD_DETAIL_TOO_CLOSE,Слишком близко к другим постройкам: нужно не меньше %d тайлов,Too close to other buildings: at least %d tiles apart
+ZONES_TITLE,Зоны действия,Effect zones
+ZONES_NOTE,Пунктир — постройка ещё не готова. Красноватые — зоны выбранного государства.,Dashed: not finished yet. Reddish: zones of the selected state.
+ACTION_ZONES,Зоны действия построек (Z),Building effect zones (Z)
 CREDITS_ENGINE_PARTS,Сторонние компоненты Godot,Godot third-party components
 CREDITS_BODY,"Разработка: VolnaLabs.
 © OpenFront and Contributors — игра является модифицированной версией OpenFront через RoWorld (© 2026 Snick Co.) и распространяется под GNU AGPL v3 с дополнительными условиями (см. LICENSE).
@@ -200,7 +209,28 @@ AI_DEBUG_OFF,Отладка AI выключена,AI debugging off
 AI_DEBUG_HINT,"Нажмите F3 и выберите государство AI (правый щелчок), чтобы увидеть его план, угрозы и причины решений.","Press F3 and select an AI state (right click) to see its plan, threats and the reasons behind its decisions."
 AI_THREAT,угроза,threat
 SPAWN_TITLE,Выберите стартовую позицию,Choose your start
-SPAWN_HINT,Щёлкните по свободной суше. Зелёный круг — можно начать здесь.,Click free land. A green circle means you can start there.
+SPAWN_HINT,"Наведите курсор на свободную сушу и щёлкните, чтобы выбрать место.",Hover free land and click to choose a place.
+SPAWN_HINT_CONFIRM,"Подтвердите выбор: кнопка, Enter или повторный щелчок. Esc — выбрать другое место.","Confirm: the button, Enter or click again. Esc to choose another place."
+SPAWN_WAIT,Ожидание остальных игроков…,Waiting for the others…
+SPAWN_CONFIRM,Начать здесь,Start here
+CANCEL,Отмена,Cancel
+YES,да,yes
+NO,нет,no
+SPAWN_BAD_NOT_LAND,Это вода — начать можно только на суше,That is water — you can only start on land
+SPAWN_BAD_TAKEN,Эта земля уже занята другим государством,This land already belongs to another state
+SPAWN_BAD_CROWDED,Слишком тесно: вокруг мало свободной суши,Too crowded: not enough free land around
+SPAWN_OK,Здесь можно начать,You can start here
+SPAWN_CLAIM,Стартовая территория,Starting territory
+SPAWN_TILES,%d тайлов,%d tiles
+SPAWN_FREE,Свободная земля рядом,Free land nearby
+SPAWN_COAST,Выход к морю,Sea access
+SPAWN_DANGER,Опасность,Danger
+SPAWN_DANGER_LOW,низкая,low
+SPAWN_DANGER_MID,средняя,medium
+SPAWN_DANGER_HIGH,высокая,high
+SPAWN_NEIGHBOURS,Ближайшие государства,Nearest states
+SPAWN_NO_NEIGHBOURS,Поблизости никого — простор для экспансии,Nobody nearby — room to expand
+SPAWN_DIST,%d тайлов,%d tiles
 SPAWN_COUNTDOWN,Начало через %.1f с,Starting in %.1f s
 PAUSE_TITLE,Пауза,Paused
 PAUSE_CONTINUE,Продолжить,Continue

@@ -222,6 +222,11 @@ func building_coastal(kind: int) -> bool:
 	return bool(b_kinds[kind]["coastal"])
 
 
+## Effect radius of a building kind in tiles (0 when it has none) — what zone overlays draw.
+func building_radius(kind: int) -> float:
+	return float(b_kinds[kind].get("radius", 0.0)) / k_lin
+
+
 func defense_radius() -> float:
 	return float(b_kinds[B_DEFENSE]["radius"]) / k_lin
 

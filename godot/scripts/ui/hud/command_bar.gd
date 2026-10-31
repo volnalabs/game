@@ -8,6 +8,7 @@ var _ratio_buttons: Array[Button] = []
 var _send: Label
 var _build: Dictionary = {}
 var _build_cost: Dictionary = {}
+var _zones: Button
 
 
 func _init(h: GameHUD) -> void:
@@ -74,6 +75,8 @@ func _init(h: GameHUD) -> void:
 	var ah := UITheme.hbox(2)
 	ah.add_child(UITheme.icon_button("ui_home", tr("ACTION_HOME"), func() -> void: hud.ctl.focus_home(), 36))
 	ah.add_child(UITheme.icon_button("ui_back", tr("ACTION_RETREAT_ALL"), func() -> void: hud.ctl.retreat_all(), 36))
+	_zones = UITheme.icon_button("ui_zones", tr("ACTION_ZONES"), func() -> void: hud.ctl.toggle_zones(), 36, true)
+	ah.add_child(_zones)
 	ah.add_child(UITheme.icon_button("ui_eye_off", tr("ACTION_HIDE_UI"), func() -> void: hud.set_ui_hidden(true), 36))
 	av.add_child(ah)
 	row.add_child(av)
@@ -86,10 +89,14 @@ func refresh() -> void:
 		_ratio_buttons[i].button_pressed = is_equal_approx(GameHUD.RATIOS[i], hud.ctl.ratio)
 	_send.text = tr("ACTIONS_SEND") % UITheme.num(floorf(sim.st.o_troops[pid] * hud.ctl.ratio))
 	var playing := sim.phase == Sim.Phase.PLAYING and sim.is_player_alive()
+	if hud.ctl.get("zones") != null:
+		_zones.set_pressed_no_signal((hud.ctl.zones as ZoneLayer).show_all)
 	for k: int in _build:
 		var b: Button = _build[k]
 		var cost := sim.structures.cost(pid, k)
 		(_build_cost[k] as Label).text = UITheme.num(cost)
 		(_build_cost[k] as Label).add_theme_color_override("font_color", UITheme.GOLD if sim.st.o_gold[pid] >= cost else UITheme.BAD)
-		b.disabled = not playing or not sim.structures.can_afford(pid, k)
+		# Unaffordable kinds can still be placed in preview (the ghost explains why it is refused).
+		b.disabled = not playing
+		b.modulate.a = 1.0 if sim.structures.can_afford(pid, k) else 0.6
 		b.button_pressed = hud.ctl.build_kind == k

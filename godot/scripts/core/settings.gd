@@ -9,6 +9,7 @@ var edge_scroll: bool = true
 var default_speed: float = 1.0
 var show_ai_debug: bool = false
 var ui_animations: bool = true
+var show_zones: bool = false
 var last_difficulty: String = "normal"
 var last_bots: int = 20
 
@@ -29,6 +30,8 @@ func load_settings() -> void:
 	show_ai_debug = cfg.get_value("game", "ai_debug", show_ai_debug)
 	last_difficulty = cfg.get_value("game", "difficulty", last_difficulty)
 	last_bots = cfg.get_value("game", "bots", last_bots)
+	ui_animations = cfg.get_value("ui", "animations", ui_animations)
+	show_zones = cfg.get_value("game", "zones", show_zones)
 
 
 func save_settings() -> void:
@@ -40,6 +43,8 @@ func save_settings() -> void:
 	cfg.set_value("game", "ai_debug", show_ai_debug)
 	cfg.set_value("game", "difficulty", last_difficulty)
 	cfg.set_value("game", "bots", last_bots)
+	cfg.set_value("ui", "animations", ui_animations)
+	cfg.set_value("game", "zones", show_zones)
 	cfg.save(PATH)
 
 
