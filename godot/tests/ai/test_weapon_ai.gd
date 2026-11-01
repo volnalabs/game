@@ -137,3 +137,42 @@ func test_ai_war_with_weapons_is_reproducible_and_valid() -> void:
 	check_eq(results[0][0], results[1][0], "same seed, same war")
 	check(int(results[0][1]) > 0, "the bots use their weapons")
 	check_eq(int(results[0][2]), 0, "no impossible launch orders")
+
+
+func test_artillery_aims_at_the_front_within_reach() -> void:
+	# Phase 2G: in real matches the planner sampled the enemy's whole border and found nothing in
+	# range; artillery must aim at the shared front near our defence posts.
+	var c := _setup(6, "aggressive")
+	var sim: Sim = c["sim"]
+	var m: MapData = c["map"]
+	var bot: StrategicAI = c["bot"]
+	_put(sim, c["a"], Rules.B_DEFENSE, m.tile_at(110, 60), 2)
+	var w := sim.rules.weapon_index("artillery")
+	var targets := WeaponPlanner._targets(bot, c["b"], w)
+	check(targets.size() > 0, "front tiles found (%d)" % targets.size())
+	var rng_max := float(sim.rules.weapon(w)["range"])
+	for t in targets:
+		check(sim.st.owner[t] == c["b"], "enemy land")
+		check(float(m.dist2(t, m.tile_at(110, 60))) <= rng_max * rng_max, "within the post's reach")
+
+
+func test_research_reaches_weapons_later_in_the_match() -> void:
+	var c := _setup(7, "aggressive")
+	var sim: Sim = c["sim"]
+	var bot: StrategicAI = c["bot"]
+	var a: int = c["a"]
+	# Everything but the weapons branch is known; the bot is at war late in the match.
+	var done: Array = []
+	for t: Dictionary in ResearchSystem.techs():
+		if String(t["branch"]) != "weapons":
+			done.append(String(t["id"]))
+	sim.research.state[a] = {"done": done, "current": "", "progress": {}}
+	sim.play_start_tick = sim.st.tick - 12000
+	sim.st.add_troops(a, -1000.0)
+	sim.attacks.start(a, c["b"], 1000.0)
+	sim._commands.clear()
+	ResearchPlanner.act(bot)
+	var cmds: Array = sim._commands.filter(func(x: Dictionary) -> bool: return String(x["type"]) == Commands.RESEARCH)
+	check_eq(cmds.size(), 1, "a research order")
+	if cmds.size() == 1:
+		check_eq(String(ResearchSystem.tech(String(cmds[0]["tech"]))["branch"]), "weapons", "from the weapons branch")

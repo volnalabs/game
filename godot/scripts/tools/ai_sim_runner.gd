@@ -69,6 +69,8 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 	# Diplomacy: pacts formed / broken, help requests and answers, and AI commands the simulation
 	# refused because of a pact (must stay 0: the AI respects its pacts).
 	var dipl := {"formed": 0, "betrayals": 0, "help_asked": 0, "help_given": 0, "convoys": 0, "blocked": 0}
+	# Every system in use: landings, strikes (nuclear among them), interceptions, buildings, research.
+	var systems := {"landings": 0, "strikes": 0, "nuclear": 0, "intercepted": 0, "built": 0, "researched": 0, "rejected": 0}
 	while sim.st.tick < max_ticks and sim.phase != Sim.Phase.OVER:
 		sim.step()
 		for e in sim.events.drain():
@@ -91,7 +93,20 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 						dipl["help_given"] += 1
 				SimEvents.CONVOY_SENT:
 					dipl["convoys"] += 1
+				SimEvents.BOAT_LAUNCHED:
+					systems["landings"] += 1
+				SimEvents.WEAPON_LAUNCHED:
+					systems["strikes"] += 1
+					if bool(e.get("nuclear", false)):
+						systems["nuclear"] += 1
+				SimEvents.INTERCEPTED:
+					systems["intercepted"] += 1
+				SimEvents.BUILD_DONE:
+					systems["built"] += 1
+				SimEvents.RESEARCH_DONE:
+					systems["researched"] += 1
 				SimEvents.COMMAND_REJECTED:
+					systems["rejected"] += 1
 					if String(e["reason"]) in ["team", "ally", "pact"]:
 						dipl["blocked"] += 1
 						print("        blocked %s by %d at %d" % [e["cmd"], int(e["owner"]), int(e["tick"])])
@@ -121,7 +136,7 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 				winner = int(b["id"])
 	return {"seed": seed_value, "map": map_spec, "mode": mode, "ticks": st.tick, "over": sim.phase == Sim.Phase.OVER,
 		"reason": sim.result.get("reason", "tick_limit"), "winner": winner, "winner_group": groups.get(winner, "?"),
-		"bots": bots_out, "diplomacy": dipl, "team_winner": int(sim.result.get("team", 0)), "ms": Time.get_ticks_msec() - t0}
+		"bots": bots_out, "diplomacy": dipl, "systems": systems, "team_winner": int(sim.result.get("team", 0)), "ms": Time.get_ticks_msec() - t0}
 
 
 static func _levels(st: SimState, id: int) -> int:

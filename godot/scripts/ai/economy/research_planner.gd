@@ -34,6 +34,10 @@ static func act(bot: StrategicAI) -> void:
 			continue
 		var br := String(t["branch"])
 		var idx := order.find(br)
+		# Weapons rank one step below the military branch (personalities list five classic branches).
+		if br == "weapons":
+			var mi := order.find("military")
+			idx = (mi if mi >= 0 else 3) + 1
 		var u := 5.0 - float(idx if idx >= 0 else 4)
 		match br:
 			"defense":
@@ -47,6 +51,9 @@ static func act(bot: StrategicAI) -> void:
 			"weapons":
 				# Weapons come after the basics: for a warlike state at war, or in answer to rivals' weapons.
 				u += aware * (1.0 if at_war else 0.0) * (float(bot.pers.get("war_appetite", 1.0)) - 0.6)
+				# The arms race picks up later in a match.
+				if sim.elapsed_seconds() > 900.0:
+					u += aware * 0.5 * float(bot.pers.get("war_appetite", 1.0))
 		if tid == "air_defence":
 			for o: int in bot.perception.neighbors:
 				if st.bowned(o, Rules.B_SILO) > 0:

@@ -35,6 +35,7 @@ func _run() -> void:
 		print("  game %2d seed %d: %s (%s) after %d ticks, winner %s [%s], %.1f s" % [g + 1, r["seed"], "over" if r["over"] else "limit",
 			r["reason"], r["ticks"], _name(r), r["winner_group"], float(r["ms"]) / 1000.0])
 		print("      diplomacy: ", r["diplomacy"], (" team %d won" % int(r["team_winner"])) if int(r["team_winner"]) > 0 else "")
+		print("      systems: ", r["systems"])
 	var summary := AISimRunner.summarize(results)
 	print("\nGroup summary:")
 	print("  %-14s %6s %6s %8s %8s %9s %8s %8s %8s %8s" % ["group", "wins", "surv", "share", "life", "atk/won", "succ", "gold+", "upkeep", "entropy"])

@@ -89,6 +89,12 @@ static func act(bot: StrategicAI) -> void:
 		if kind == Rules.B_PORT:
 			bot.has_coast = false
 		return
+	# The simulation's own site check (spacing, coast, own land): never send an order it would refuse.
+	if sim.structures.find_site(id, kind, t).is_empty():
+		t = BuildPlacement.valid_site(bot, kind)
+		if t < 0:
+			bot.log.add(st.tick, "refuse", -1, {"reason": "no_site", "building": r.b_ids[kind]})
+			return
 	bot.submit(Commands.build(id, kind, t))
 	bot.log.add(st.tick, "build", -1, {"building": r.b_ids[kind], "u": best_ratio})
 	bot.plan_note = ""

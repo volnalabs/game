@@ -13,6 +13,14 @@ static func site(bot: StrategicAI, kind: int, threat_owner: int = 0) -> int:
 	return _interior_site(bot)
 
 
+## Any own tile where the simulation accepts building `kind` (spacing, coast), or -1.
+static func valid_site(bot: StrategicAI, kind: int) -> int:
+	for t in _own_samples(bot, 24, 240):
+		if not bot.sim.structures.find_site(bot.id, kind, t).is_empty():
+			return t
+	return -1
+
+
 static func _own_samples(bot: StrategicAI, want: int, tries: int) -> Array[int]:
 	var st := bot.sim.st
 	var out: Array[int] = []

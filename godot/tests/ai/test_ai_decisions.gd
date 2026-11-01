@@ -106,3 +106,26 @@ func test_difficulty_changes_decisions_not_resources() -> void:
 	for b in s2.ai.brains:
 		t.append(s2.st.o_troops[b.id])
 	check_eq(t[0], t[1])
+
+
+func test_economy_never_orders_a_build_the_simulation_refuses() -> void:
+	# Phase 2G: a full match showed ~100 refused build orders per game (sites too close to other
+	# buildings); the planner now checks the simulation's own site rule first.
+	sim.st.add_gold(bot.id, 5e7)
+	sim.st.add_supplies(bot.id, 1e5)
+	var refused := 0
+	var orders := 0
+	for i in 40:
+		sim._commands.clear()
+		bot.next_econ = 0
+		EconomicPlanner.act(bot)
+		for cmd: Dictionary in sim._commands:
+			if String(cmd["type"]) == Commands.BUILD:
+				orders += 1
+				if sim.apply_command(cmd) != "":
+					refused += 1
+		for k in 5:
+			sim.st.tick += 1
+			sim.structures.tick()
+	check(orders > 5, "the bot keeps building (%d orders)" % orders)
+	check_eq(refused, 0, "none refused")
