@@ -34,6 +34,7 @@ func _init(h: GameHUD) -> void:
 	register("economy", "r_gold", "DOCK_ECONOMY", HudPanels.economy)
 	register("research", "r_research", "DOCK_RESEARCH", HudPanels.research)
 	register("arsenal", "w_missile", "DOCK_ARSENAL", HudPanels.arsenal)
+	register("diplomacy", "ui_users", "DOCK_DIPLOMACY", DiplomacyPanel.panel)
 	register("log", "ui_book", "DOCK_LOG", HudPanels.events)
 
 

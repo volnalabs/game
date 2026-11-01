@@ -43,6 +43,7 @@
 | `scripts/map_generator` | генератор миров, пресеты, анализ справедливости стартов, имена и флаги |
 | `scripts/simulation` | `sim.gd` (оркестратор), `sim_state.gd`, `territory.gd`, `commands.gd`, `spawn_system.gd`, `victory.gd`, `sim_events.gd`, `state_hash.gd` |
 | `scripts/military` | `attack_system.gd`, `front_queue.gd`, `naval_system.gd`, `landing_planner.gd`, `water_nav.gd` |
+| `scripts/diplomacy` | `diplomacy_system.gd` — отношения, договоры, посылки, помощь, команды (Phase 2F) |
 | `scripts/economy` | `economy_system.gd` |
 | `scripts/buildings` | `structure_system.gd` (+ правила размещения) |
 | `scripts/ai` | `ai_director.gd`, `ai_bot.gd`, `perception.gd`, `personality.gd`, `difficulty.gd`, `decision_log.gd`, `strategy/`, `tactics/`, `economy/`, `baseline/` |
@@ -62,8 +63,10 @@
 5. `AIDirector.tick` — боты думают по своему расписанию и кладут `Command` в очередь следующего тика.
 6. `AttackSystem.tick` — наступление фронтов, потери, аннексия, отступления.
 7. `NavalSystem.tick` — движение транспортов, возврат отменённых, проверка места высадки (пересчёт маршрута или возврат войск), высадки.
-8. Элиминации; `Victory.check` раз в 10 тиков.
-9. `SimEvents` получает события (захват, атака, постройка, уничтожение, победа) и список изменённых тайлов.
+8. `WeaponSystem.tick`, затем `DiplomacySystem.tick` — войны по идущим атакам, истечение предложений,
+   договоров и просьб о помощи, прибытие посылок.
+9. Элиминации (договоры выбывшего снимаются); `Victory.check` раз в 10 тиков (с командами — победа команды).
+10. `SimEvents` получает события (захват, атака, постройка, уничтожение, победа) и список изменённых тайлов.
 
 ### 3.2 Данные (`SimState`)
 - На тайл: `owner: PackedInt32Array`, `border_next/prev: PackedInt32Array` (интрузивные списки

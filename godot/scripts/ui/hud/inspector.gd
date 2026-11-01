@@ -1,8 +1,9 @@
 class_name HudInspector
 extends PanelContainer
 ## Right inspector. For a selected state: header (flag, name, kind, personality) and one row of text
-## tabs — overview, economy (own state or AI debug), army, buildings, threats (+ AI debug). Actions
-## against a foreign state live in the bottom attack bar, not here. For a selected building: what it
+## tabs — overview, diplomacy (foreign nations: treaties, aid, help — DiplomacyPanel.actions), economy
+## (own state or AI debug), army, buildings, threats (+ AI debug). Attacks on a foreign state live in
+## the bottom attack bar, not here. For a selected building: what it
 ## is, what it does with exact numbers, its state and actions. Other states' economies are hidden
 ## unless AI debugging is on (fog of war applies to the player too).
 
@@ -30,7 +31,7 @@ func _init(h: GameHUD) -> void:
 	_tabs.add_theme_constant_override("h_separation", 0)
 	_tabs.add_theme_constant_override("v_separation", 2)
 	v.add_child(_tabs)
-	for id: String in ["overview", "economy", "army", "buildings", "threats", "ai"]:
+	for id: String in ["overview", "diplomacy", "economy", "army", "buildings", "threats", "ai"]:
 		var tid := id
 		var b := UITheme.ghost_button(tr("TABX_" + id.to_upper()), func() -> void: set_tab(tid))
 		b.toggle_mode = true
@@ -102,6 +103,10 @@ func refresh(force: bool = false) -> void:
 	if tab == "ai" and not hud.ai_debug:
 		tab = "overview"
 	(_tab_buttons["ai"] as Button).visible = hud.ai_debug and not mine
+	var diplo_ok := not mine and sim.player_id > 0 and st.o_kind[id] != Rules.KIND_TRIBE
+	(_tab_buttons["diplomacy"] as Button).visible = diplo_ok
+	if tab == "diplomacy" and not diplo_ok:
+		tab = "overview"
 	var econ_ok := mine or hud.ai_debug
 	(_tab_buttons["economy"] as Button).visible = econ_ok
 	if tab == "economy" and not econ_ok:
@@ -132,6 +137,9 @@ func refresh(force: bool = false) -> void:
 			_body.add_child(UITheme.stat_row(tr("INFO_TROOPS"), UITheme.num(st.o_troops[id]), UITheme.ARMY, "r_army"))
 			_body.add_child(UITheme.stat_row(tr("INFO_RANK"), "#%d" % hud.rank_of(id), UITheme.TEXT, "ui_trophy"))
 			_body.add_child(UITheme.stat_row(tr("INFO_STATUS"), HudPanels.status_of(sim, id), UITheme.TEXT, "ui_flag"))
+			if diplo_ok:
+				var rel := sim.diplomacy.relation(sim.player_id, id)
+				_body.add_child(UITheme.stat_row(tr("DIPLO_RELATION"), DiplomacyPanel.relation_line(sim, id), DiplomacyPanel.rel_color(rel), DiplomacyPanel.REL_ICON[rel]))
 			if not mine:
 				var ratio := st.o_troops[sim.player_id] / maxf(st.o_troops[id], 1.0)
 				_body.add_child(UITheme.stat_row(tr("INFO_POWER_RATIO"), _ratio_text(ratio), UITheme.GOOD if ratio >= 1.0 else UITheme.BAD, "ui_swords"))
@@ -170,6 +178,8 @@ func refresh(force: bool = false) -> void:
 				_body.add_child(r)
 			if rows.is_empty():
 				_body.add_child(UITheme.label(tr("NO_THREATS"), UITheme.T_BODY, UITheme.TEXT_FAINT))
+		"diplomacy":
+			DiplomacyPanel.actions(hud, _body, id)
 		"ai":
 			_ai(id)
 

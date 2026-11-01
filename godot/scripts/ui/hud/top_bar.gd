@@ -155,7 +155,15 @@ func refresh() -> void:
 		_put("research", tr("RESEARCH_IDLE_SHORT"), "", UITheme.TEXT_FAINT, UITheme.WARN)
 	var goal := sim.config.victory.domination_share
 	var share := st.land_share(pid)
-	_goal_l.text = tr("HUD_GOAL") % [share * 100.0, goal * 100.0]
+	var tm := int(sim.diplomacy.team.get(pid, 0))
+	if tm > 0:
+		share = 0.0
+		for o in range(1, st.owner_count + 1):
+			if int(sim.diplomacy.team.get(o, 0)) == tm and st.o_alive[o] == 1:
+				share += st.land_share(o)
+		_goal_l.text = tr("HUD_GOAL_TEAM") % [share * 100.0, roundi(goal * 100.0)]
+	else:
+		_goal_l.text = tr("HUD_GOAL") % [share * 100.0, goal * 100.0]
 	_goal.value = clampf(share / goal, 0.0, 1.0)
 
 

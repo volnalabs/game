@@ -46,6 +46,7 @@ var _advisor: SpawnAdvisor
 var hover_arrow: int = -1
 var weapons_fx: WeaponLayer
 var fallout: FalloutLayer
+var convoys: ConvoyLayer
 ## Sea landing being prepared (LandingPlanner result + "tile"), {} = none.
 var naval_plan: Dictionary = {}
 ## The player's transport selected on the map (boat id), -1 = none.
@@ -146,6 +147,8 @@ func _build_world() -> void:
 	add_child(effects)
 	weapons_fx = WeaponLayer.new()
 	add_child(weapons_fx)
+	convoys = ConvoyLayer.new()
+	add_child(convoys)
 	# Beyond the map edge: deep ocean, not a black void.
 	RenderingServer.set_default_clear_color(TerrainColors.styled(TerrainColors.BASE[0], renderer.map_style).darkened(0.25))
 	cam = MapCamera.new()
@@ -166,6 +169,8 @@ func _build_world() -> void:
 	effects.cam = cam
 	weapons_fx.sim = sim
 	weapons_fx.cam = cam
+	convoys.sim = sim
+	convoys.cam = cam
 	var ui := CanvasLayer.new()
 	ui.layer = 1
 	add_child(ui)
@@ -271,6 +276,7 @@ func _handle_events() -> void:
 		effects.on_event(e)
 		weapons_fx.on_event(e)
 		_weapon_news(e)
+		_diplo_news(e)
 		match String(e["type"]):
 			SimEvents.ATTACK_STARTED:
 				if int(e["target"]) == pid and int(e["attacker"]) > 0 and st.o_kind[int(e["attacker"])] != Rules.KIND_TRIBE:
@@ -383,7 +389,7 @@ func _check_end() -> void:
 	if sim.phase == Sim.Phase.OVER:
 		_ended = true
 		_pay(false)
-		var won := int(sim.result.get("winner", 0)) == sim.player_id and sim.player_id > 0
+		var won := sim.won(sim.player_id)
 		App.goto(App.State.VICTORY if won else App.State.DEFEAT)
 		hud.show_end(won, String(sim.result.get("reason", "domination")) if won else ("player_lost" if not sim.is_player_alive() else String(sim.result.get("reason", "domination"))))
 	elif sim.phase == Sim.Phase.PLAYING and sim.player_id > 0 and not sim.is_player_alive() and not watching:
@@ -763,6 +769,126 @@ func _update_ghost(delta: float) -> void:
 		_ghost_t = 0.25
 		ghost.set_preview(hover_tile, sim.structures.preview(sim.player_id, build_kind, hover_tile))
 	hud.build_tip.show_preview(ghost.preview, sim, _mouse_screen)
+
+
+# ---- diplomacy (DiplomacyPanel) ----
+
+## Player diplomacy: action "request" (kind), "reply" (accept), "break" or "extend" towards `id`.
+func diplo(action: String, id: int, kind: String = "", accept: bool = false) -> void:
+	sim.submit(Commands.diplo(sim.player_id, action, id, kind, accept))
+	_diplo_changed()
+
+
+## Sends the attack share of troops or gold to an ally.
+func send_aid(id: int, kind: String) -> void:
+	var st := sim.st
+	var pid := sim.player_id
+	var amount := floorf((st.o_troops[pid] if kind == "troops" else st.o_gold[pid]) * ratio)
+	sim.submit(Commands.send(pid, id, kind, amount))
+	_diplo_changed()
+
+
+## Asks ally `id` for help against whoever attacks us hardest.
+func ask_help(id: int) -> void:
+	var enemy := DiplomacyPanel.main_enemy(sim)
+	if enemy > 0:
+		sim.submit(Commands.help(sim.player_id, id, enemy))
+	_diplo_changed()
+
+
+func answer_help(asker: int, accept: bool) -> void:
+	var pid := sim.player_id
+	sim.submit(Commands.help_answer(pid, asker, accept, floorf(sim.st.o_troops[pid] * ratio) if accept else 0.0))
+	_diplo_changed()
+
+
+func _diplo_changed() -> void:
+	hud.dock.mark_dirty()
+	hud.inspector.refresh(true)
+
+
+## Log lines and toasts for diplomacy that concerns the player.
+func _diplo_news(e: Dictionary) -> void:
+	var pid := sim.player_id
+	if pid <= 0:
+		return
+	var st := sim.st
+	var nm := func(o: int) -> String: return st.o_name[o] if o > 0 and o <= st.owner_count else "?"
+	var touched := true
+	match String(e["type"]):
+		SimEvents.DIPLO_REQUEST:
+			if int(e["to"]) == pid:
+				var msg := tr("LOG_DIPLO_OFFER") % [nm.call(int(e["from"])), DiplomacyPanel.rel_name(String(e["kind"]))]
+				hud.toast(msg, UITheme.ACCENT, "ui_users")
+				hud.log_line(msg, UITheme.ACCENT)
+				hud.tip("diplomacy")
+		SimEvents.DIPLO_FORMED:
+			var a := int(e["a"])
+			var b := int(e["b"])
+			if a == pid or b == pid:
+				var msg2 := tr("LOG_DIPLO_FORMED") % [nm.call(b if a == pid else a), DiplomacyPanel.rel_name(String(e["kind"]))]
+				hud.toast(msg2, UITheme.GOOD, "ui_users")
+				hud.log_line(msg2, UITheme.GOOD)
+		SimEvents.DIPLO_DECLINED:
+			if int(e["from"]) == pid:
+				var expired := String(e.get("reason", "")) == "expired"
+				hud.log_line((tr("LOG_DIPLO_EXPIRED") if expired else tr("LOG_DIPLO_DECLINED")) % nm.call(int(e["to"])), UITheme.TEXT_DIM)
+		SimEvents.DIPLO_ENDED:
+			var a2 := int(e["a"])
+			var b2 := int(e["b"])
+			if a2 == pid or b2 == pid:
+				var other := b2 if a2 == pid else a2
+				var breaker := int(e.get("breaker", 0))
+				var reason := String(e.get("reason", ""))
+				if reason == "nuked":
+					hud.log_line(tr("LOG_DIPLO_NUKED") % nm.call(other), UITheme.BAD)
+				elif breaker == pid:
+					hud.log_line(tr("LOG_DIPLO_YOU_BROKE") % nm.call(other), UITheme.WARN)
+				elif breaker > 0:
+					hud.toast(tr("LOG_DIPLO_BROKEN") % nm.call(other), UITheme.BAD, "ui_warning")
+					hud.log_line(tr("LOG_DIPLO_BROKEN") % nm.call(other), UITheme.BAD)
+				elif reason != "eliminated":
+					hud.log_line(tr("LOG_DIPLO_ENDED") % nm.call(other), UITheme.TEXT_DIM)
+		SimEvents.DIPLO_EXPIRING:
+			if int(e["a"]) == pid or int(e["b"]) == pid:
+				var o2 := int(e["b"]) if int(e["a"]) == pid else int(e["a"])
+				hud.toast(tr("LOG_DIPLO_EXPIRING") % nm.call(o2), UITheme.WARN, "ui_clock")
+				hud.log_line(tr("LOG_DIPLO_EXPIRING") % nm.call(o2), UITheme.WARN)
+		SimEvents.DIPLO_RENEWED:
+			if int(e["a"]) == pid or int(e["b"]) == pid:
+				hud.log_line(tr("LOG_DIPLO_RENEWED") % nm.call(int(e["b"]) if int(e["a"]) == pid else int(e["a"])), UITheme.GOOD)
+		SimEvents.DIPLO_EXTEND_ASKED:
+			if int(e["to"]) == pid:
+				hud.log_line(tr("LOG_DIPLO_EXTEND_ASKED") % nm.call(int(e["from"])), UITheme.ACCENT)
+		SimEvents.TRAITOR:
+			if int(e["id"]) != pid:
+				hud.log_line(tr("LOG_TRAITOR") % [nm.call(int(e["id"])), nm.call(int(e["victim"]))], UITheme.WARN)
+		SimEvents.CONVOY_ARRIVED:
+			var what := (tr("CONVOY_TROOPS") if String(e["kind"]) == "troops" else tr("CONVOY_GOLD")) % UITheme.num(float(e["amount"]))
+			if bool(e.get("returned", false)) and int(e["from"]) == pid:
+				hud.log_line(tr("LOG_CONVOY_BACK"), UITheme.WARN)
+			elif int(e["to"]) == pid and int(e["from"]) != pid:
+				hud.toast(tr("LOG_CONVOY_IN") % [nm.call(int(e["from"])), what], UITheme.GOOD, "ui_packages")
+				hud.log_line(tr("LOG_CONVOY_IN") % [nm.call(int(e["from"])), what], UITheme.GOOD)
+			elif int(e["from"]) == pid:
+				hud.log_line(tr("LOG_CONVOY_OUT") % nm.call(int(e["to"])), UITheme.TEXT_DIM)
+		SimEvents.HELP_REQUEST:
+			if int(e["to"]) == pid:
+				var msg3 := tr("LOG_HELP_ASKED") % [nm.call(int(e["from"])), nm.call(int(e["enemy"]))]
+				hud.toast(msg3, UITheme.WARN, "ui_swords")
+				hud.log_line(msg3, UITheme.WARN)
+		SimEvents.HELP_ANSWER:
+			if int(e["from"]) == pid:
+				if bool(e["accepted"]):
+					hud.log_line(tr("LOG_HELP_YES") % [nm.call(int(e["to"])), nm.call(int(e["enemy"]))], UITheme.GOOD)
+				else:
+					hud.log_line(tr("LOG_HELP_NO") % nm.call(int(e["to"])), UITheme.TEXT_DIM)
+		SimEvents.CONVOY_SENT:
+			pass
+		_:
+			touched = false
+	if touched:
+		hud.dock.mark_dirty()
 
 
 func retreat(aid: int) -> void:

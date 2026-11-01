@@ -304,7 +304,17 @@ func show_end(victory: bool, reason: String) -> void:
 	_end_body.add_child(UITheme.stat_row(tr("MIL_LOST"), UITheme.num(st.o_st_troops_lost[pid]), UITheme.TEXT, "g_skull"))
 	_end_body.add_child(UITheme.stat_row(tr("ECO_EARNED"), UITheme.num(st.o_st_gold_earned[pid]), UITheme.GOLD, "r_gold"))
 	var w := int(sim.result.get("winner", 0))
-	if w > 0:
+	var team := int(sim.result.get("team", 0))
+	if team > 0:
+		_end_body.add_child(UITheme.stat_row(tr("END_WINNER"), tr("END_TEAM_WON") % team, UITheme.TEXT, "g_victory"))
+		var names := PackedStringArray()
+		for o: int in sim.result.get("winners", []):
+			names.append(st.o_name[o])
+		var ml := UITheme.label(tr("END_TEAM_MEMBERS") % ", ".join(names), UITheme.T_CAPTION, UITheme.TEXT_DIM)
+		ml.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		ml.custom_minimum_size.x = 360
+		_end_body.add_child(ml)
+	elif w > 0:
 		_end_body.add_child(UITheme.stat_row(tr("END_WINNER"), st.o_name[w], st.o_color[w].lightened(0.3), "g_victory"))
 	var prof := get_node_or_null("/root/Profile")
 	if prof != null and not (prof.last_report as Dictionary).is_empty() and prof.last_report.get("match_id", "") == sim.config.match_id:

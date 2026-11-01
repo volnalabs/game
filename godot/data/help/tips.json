@@ -96,6 +96,18 @@
 				"en": "A click on foreign land you do not border prepares a sea landing: route, beach and advance are shown on the map. Click again or press Enter to send, Esc to cancel."
 			},
 			"article": "army_naval"
+		},
+		{
+			"id": "diplomacy",
+			"title": {
+				"ru": "Вам предлагают договор",
+				"en": "You are offered a treaty"
+			},
+			"text": {
+				"ru": "Ответить можно на вкладке «Связи» слева: союзник не нападает и помогает, пакт просто запрещает атаки. Разрыв договора делает предателем.",
+				"en": "Answer in the Relations tab on the left: an ally doesn't attack you and helps, a pact just forbids attacks. Breaking a treaty makes you a traitor."
+			},
+			"article": "diplomacy_overview"
 		}
 	]
 }

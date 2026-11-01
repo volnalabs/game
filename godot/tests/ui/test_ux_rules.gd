@@ -71,7 +71,7 @@ func test_glossary_covers_every_hud_value() -> void:
 func test_every_hud_button_is_explained_and_disabled_ones_say_why() -> void:
 	var ctl: Node = await _match(Vector2i(1600, 900))
 	var hud: GameHUD = ctl.hud
-	for tab in ["state", "army", "economy", "research", "log"]:
+	for tab in ["state", "army", "economy", "research", "arsenal", "diplomacy", "log"]:
 		hud.dock.open(tab)
 		await _wait(2)
 		for b in hud.find_children("*", "BaseButton", true, false):

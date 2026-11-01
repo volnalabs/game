@@ -353,8 +353,18 @@ func refresh() -> void:
 			_target_line.text = tr("BAR_TARGET_LINE") % [UITheme.num(floorf(st.o_troops[pid] * hud.ctl.ratio)), UITheme.num(st.o_troops[o])]
 			var borders: bool = hud.ctl.borders(pid, o)
 			_attack_btn.visible = borders
-			_attack_btn.disabled = sim.phase != Sim.Phase.PLAYING or not sim.is_player_alive()
+			# Treaties: an ally, a pact partner or a teammate cannot be attacked (the reason says how to change that).
+			var why := ""
+			var block := sim.diplomacy.block_reason(pid, o)
+			if block != "":
+				why = NavalOrders.reason_text(block)
+			elif sim.phase != Sim.Phase.PLAYING or not sim.is_player_alive():
+				why = tr("REJECT_NOT_PLAYING")
+			Hints.disable(_attack_btn, why)
+			if block != "":
+				_target_line.text = why
 			_landing_btn.visible = not borders
+			Hints.disable(_landing_btn, NavalOrders.reason_text(block) if block != "" else "")
 		"naval":
 			_refresh_naval()
 		"boat":

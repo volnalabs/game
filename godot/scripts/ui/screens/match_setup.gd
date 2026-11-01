@@ -129,6 +129,14 @@ func _ready() -> void:
 	dom_row.add_child(dom)
 	dom_row.add_child(_dom_val)
 	form.add_child(_field(tr("SETUP_DOMINATION"), dom_row))
+	var teams := OptionButton.new()
+	for n in [0, 2, 3, 4]:
+		teams.add_item(tr("TEAMS_NONE") if n == 0 else tr("TEAMS_N") % n, n)
+	teams.select(maxi(0, [0, 2, 3, 4].find(cfg.teams)))
+	teams.tooltip_text = tr("SETUP_TEAMS_TIP")
+	teams.item_selected.connect(func(i: int) -> void: cfg.teams = teams.get_item_id(i))
+	teams.name = "Teams"
+	form.add_child(_field(tr("SETUP_TEAMS"), teams))
 	var tl := OptionButton.new()
 	for m in [0, 30, 60, 90]:
 		tl.add_item(tr("TIME_NONE") if m == 0 else tr("TIME_MIN") % m, m)

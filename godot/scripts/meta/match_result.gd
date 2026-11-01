@@ -9,7 +9,7 @@ extends RefCounted
 static func from_sim(sim: Sim, abandoned: bool = false, tracked: Dictionary = {}) -> Dictionary:
 	var st := sim.st
 	var pid := sim.player_id
-	var won := not abandoned and sim.phase == Sim.Phase.OVER and int(sim.result.get("winner", 0)) == pid and pid > 0
+	var won := not abandoned and sim.won(pid)
 	var elims := 0
 	for o in range(1, st.owner_count + 1):
 		if o != pid and st.o_alive[o] == 0 and st.o_killer[o] == pid:

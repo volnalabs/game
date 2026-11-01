@@ -84,6 +84,14 @@ func refresh() -> void:
 		nm.clip_text = true
 		nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		h.add_child(nm)
+		if pid > 0 and not mine:
+			# Treaties at a glance: team / ally / pact mark next to the name.
+			var rel := sim.diplomacy.relation(pid, o)
+			if rel in ["team", "alliance", "nap"]:
+				var mk := Icons.rect(DiplomacyPanel.REL_ICON[rel], 13, DiplomacyPanel.rel_color(rel))
+				mk.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				mk.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+				h.add_child(mk)
 		var pct := UITheme.label("%.1f%%" % (st.land_share(o) * 100.0), 12, UITheme.TEXT_FAINT)
 		pct.add_theme_font_override("font", UITheme.font_numbers)
 		h.add_child(pct)
@@ -91,5 +99,6 @@ func refresh() -> void:
 		b.pressed.connect(func() -> void: hud.ctl.select_owner(o, true))
 		var oname := st.o_name[o]
 		Hints.attach(b, func() -> Dictionary: return {"title": oname, "text": tr("HUD_LB_ROW_HINT"),
-			"rows": [[tr("INFO_LAND"), "%.1f%%" % (st.land_share(o) * 100.0)], [tr("INFO_TROOPS"), UITheme.num(st.o_troops[o])]]})
+			"rows": [[tr("INFO_LAND"), "%.1f%%" % (st.land_share(o) * 100.0)], [tr("INFO_TROOPS"), UITheme.num(st.o_troops[o])],
+			[tr("DIPLO_RELATION"), DiplomacyPanel.relation_line(sim, o) if pid > 0 and o != pid else "—"]]})
 		_rows.add_child(b)
