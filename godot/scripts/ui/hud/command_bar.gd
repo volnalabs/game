@@ -97,7 +97,7 @@ func _build_normal() -> Control:
 	var build := UITheme.button(tr("BAR_BUILD"), func() -> void: hud.ctl.open_build_mode(), 0, "b_city")
 	build.custom_minimum_size.y = 40
 	build.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	Hints.attach(build, {"title": tr("DOCK_BUILD_FULL"), "text": tr("BAR_BUILD_HINT"), "hotkey": "B"})
+	Hints.attach(build, func() -> Dictionary: return {"title": tr("DOCK_BUILD_FULL"), "text": tr("BAR_BUILD_HINT"), "hotkey": Keys.label("build")})
 	row.add_child(build)
 	_retreat = UITheme.button(tr("ACTION_RETREAT_SHORT"), func() -> void: hud.ctl.retreat_all(), 0, "ui_back")
 	_retreat.custom_minimum_size.y = 40
@@ -207,7 +207,7 @@ func _build_naval() -> Control:
 	_nv_send = UITheme.accent_button(tr("NAVAL_SEND"), func() -> void: hud.ctl.confirm_naval(), 0, "g_landing")
 	_nv_send.custom_minimum_size.y = 40
 	_nv_send.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	Hints.attach(_nv_send, {"title": tr("NAVAL_SEND"), "text": tr("NAVAL_SEND_HINT"), "hotkey": "Enter"})
+	Hints.attach(_nv_send, func() -> Dictionary: return {"title": tr("NAVAL_SEND"), "text": tr("NAVAL_SEND_HINT"), "hotkey": Keys.label("confirm")})
 	row.add_child(_nv_send)
 	var cancel := UITheme.ghost_button(tr("CANCEL"), func() -> void: hud.ctl.cancel_naval(), "ui_close")
 	cancel.focus_mode = Control.FOCUS_NONE
@@ -241,7 +241,7 @@ func _build_weapon() -> Control:
 	_wp_fire = UITheme.accent_button(tr("AIM_LAUNCH"), func() -> void: hud.ctl.fire_weapon(), 0, "ui_target")
 	_wp_fire.custom_minimum_size.y = 40
 	_wp_fire.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	Hints.attach(_wp_fire, func() -> Dictionary: return {"title": tr("AIM_LAUNCH"), "text": tr("AIM_LAUNCH_HINT"), "hotkey": "Enter",
+	Hints.attach(_wp_fire, func() -> Dictionary: return {"title": tr("AIM_LAUNCH"), "text": tr("AIM_LAUNCH_HINT"), "hotkey": Keys.label("confirm"),
 		"reason": String(_wp_fire.get_meta("reason", ""))})
 	row.add_child(_wp_fire)
 	var cancel := UITheme.ghost_button(tr("CANCEL"), func() -> void: hud.ctl.cancel_weapon(), "ui_close")

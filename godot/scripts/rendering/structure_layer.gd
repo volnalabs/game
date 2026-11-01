@@ -187,7 +187,7 @@ func _draw() -> void:
 		var s: StructureSystem.Structure = g[0]
 		var count: int = g[1]
 		var pos := _center(s)
-		var oc: Color = sim.st.o_color[s.owner]
+		var oc: Color = ColorAccess.color(sim.st.o_color[s.owner])
 		var building := s.done_tick > 0 and s.active_levels == 0
 		var k := 1.0
 		if _pops.has(s.id):

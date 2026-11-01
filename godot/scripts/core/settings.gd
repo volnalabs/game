@@ -22,6 +22,16 @@ var volume_sfx: float = 0.8
 var volume_alerts: float = 0.8
 var volume_ambience: float = 0.35
 var mute_unfocused: bool = true
+## Rebound hotkeys: action id (Keys.ACTIONS) -> physical keycode (KEY_NONE = unbound).
+var key_overrides: Dictionary = {}
+## Map colours for colour vision deficiency: "off", "deuteranopia", "protanopia", "tritanopia",
+## "high_contrast" (ColorAccess).
+var color_mode: String = "off"
+## Visual effects: 0 low (arrows and markers only), 1 medium, 2 high.
+var effects_quality: int = 2
+
+## Emitted by apply(): open screens and the match pick up new settings at once.
+signal changed
 
 
 ## The game was called "VolnaLabs: World Strategy" before it became TerraFront; Godot keeps user data
@@ -91,6 +101,9 @@ func load_settings() -> void:
 	volume_alerts = cfg.get_value("audio", "alerts", volume_alerts)
 	volume_ambience = cfg.get_value("audio", "ambience", volume_ambience)
 	mute_unfocused = cfg.get_value("audio", "mute_unfocused", mute_unfocused)
+	key_overrides = cfg.get_value("controls", "keys", key_overrides)
+	color_mode = cfg.get_value("display", "color_mode", color_mode)
+	effects_quality = clampi(int(cfg.get_value("display", "effects", effects_quality)), 0, 2)
 
 
 func save_settings() -> void:
@@ -112,6 +125,9 @@ func save_settings() -> void:
 	cfg.set_value("audio", "alerts", volume_alerts)
 	cfg.set_value("audio", "ambience", volume_ambience)
 	cfg.set_value("audio", "mute_unfocused", mute_unfocused)
+	cfg.set_value("controls", "keys", key_overrides)
+	cfg.set_value("display", "color_mode", color_mode)
+	cfg.set_value("display", "effects", effects_quality)
 	cfg.save(PATH)
 
 
@@ -120,5 +136,8 @@ func apply() -> void:
 	var audio := get_node_or_null("/root/Audio")
 	if audio != null:
 		audio.apply_volumes()
+	Keys.install(key_overrides)
+	ColorAccess.current = color_mode if color_mode in ColorAccess.MODES else "off"
+	changed.emit()
 	if get_tree() != null and get_tree().root != null:
 		get_tree().root.content_scale_factor = ui_scale

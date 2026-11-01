@@ -38,11 +38,11 @@ func setup(sim_: Sim) -> void:
 	add_child(terrain_sprite)
 	palette_img = Image.create(512, 1, false, Image.FORMAT_RGBA8)
 	palette_tex = ImageTexture.create_from_image(palette_img)
-	refresh_palette()
 	material_shared = ShaderMaterial.new()
 	material_shared.shader = load("res://assets/shaders/territory.gdshader")
 	material_shared.set_shader_parameter("palette", palette_tex)
 	material_shared.set_shader_parameter("player", sim.player_id)
+	refresh_palette()
 	owner_bytes = PackedByteArray()
 	owner_bytes.resize(cw * ch * CHUNK * CHUNK * 4)
 	dirty = PackedByteArray()
@@ -69,11 +69,20 @@ func setup(sim_: Sim) -> void:
 	dirty_list.clear()
 
 
+## Owner colours into the palette texture, through the colour-vision mode (ColorAccess); also sets the
+## mode's border / fill strength.
 func refresh_palette() -> void:
 	var st := sim.st
+	var m := ColorAccess.mode()
 	for id in range(1, mini(st.owner_count + 1, 512)):
-		palette_img.set_pixel(id, 0, st.o_color[id])
+		palette_img.set_pixel(id, 0, ColorAccess.color_for(st.o_color[id], m))
 	palette_tex.update(palette_img)
+	if material_shared == null:
+		return
+	var p := ColorAccess.territory_params(m)
+	material_shared.set_shader_parameter("border_dark", p[0])
+	material_shared.set_shader_parameter("border_alpha", p[1])
+	material_shared.set_shader_parameter("fill_alpha", p[2])
 
 
 func set_highlight(selected: int, hovered: int) -> void:

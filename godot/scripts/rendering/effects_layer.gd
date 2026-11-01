@@ -306,7 +306,7 @@ func _draw_arrows(z: float, view: Rect2) -> void:
 			continue
 		var bend := 0.16 if a.id % 2 == 0 else -0.16
 		var w := AttackArrow.width_px(a.troops) / z
-		var col: Color = sim.st.o_color[a.attacker].lightened(0.3)
+		var col: Color = ColorAccess.color(sim.st.o_color[a.attacker]).lightened(0.3)
 		var alpha := 0.95
 		var hollow := false
 		var pts: PackedVector2Array
@@ -434,7 +434,7 @@ func _draw_naval(z: float, view: Rect2) -> void:
 		_boat_dir[b.id] = rot
 		var bob := sin(now * 1.7 + b.id * 1.3) * 0.035
 		var wake := clampf(b.progress / 6.0, 0.25, 1.0) * clampf((b.length - b.progress) / 4.0, 0.3, 1.0)
-		ShipPainter.draw_ship(self, p, rot + bob, length * (1.0 + 0.015 * sin(now * 2.3 + b.id)), sim.st.o_color[b.owner], 1.0,
+		ShipPainter.draw_ship(self, p, rot + bob, length * (1.0 + 0.015 * sin(now * 2.3 + b.id)), ColorAccess.color(sim.st.o_color[b.owner]), 1.0,
 			spx, wake, now + b.id, b.id == selected_boat)
 		ships[b.id] = {"pos": p, "rot": rot, "len": length, "owner": b.owner}
 	for id: int in _boat_dir.keys():

@@ -7,6 +7,9 @@ uniform int selected = 0;
 uniform int hovered = 0;
 uniform int player = 0;
 uniform float fill_alpha = 0.40;
+// Border strength (colour-vision modes make it stronger).
+uniform float border_dark = 0.72;
+uniform float border_alpha = 0.78;
 
 void fragment() {
 	vec4 o = texture(TEXTURE, UV);
@@ -28,8 +31,8 @@ void fragment() {
 		}
 		if ((flags & 1) != 0) {
 			// A quiet edge: a darker shade of the owner's colour, not a contrasting outline.
-			c *= 0.72;
-			a = 0.78;
+			c *= border_dark;
+			a = border_alpha;
 		}
 		COLOR = vec4(c, a);
 	}

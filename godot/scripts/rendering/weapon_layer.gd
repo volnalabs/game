@@ -19,6 +19,9 @@ var cam: MapCamera
 var aim: Dictionary = {}
 var _fx: Array = []
 var _shown: Dictionary = {}
+## Effects quality (Settings.effects_quality): 0 — no trails, no small bursts, one ring per blast;
+## 1 — shorter trails; 2 — everything.
+var quality: int = 2
 
 
 func _process(_delta: float) -> void:
@@ -158,7 +161,7 @@ func _draw_munitions(z: float, now: int, t_ms: float) -> void:
 		var pos: Vector2 = _shown.get(m.id, real)
 		pos = pos.lerp(real, 0.35)
 		_shown[m.id] = pos
-		var oc: Color = sim.st.o_color[m.owner].lightened(0.35)
+		var oc: Color = ColorAccess.color(sim.st.o_color[m.owner]).lightened(0.35)
 		var mine := m.owner == pid
 		var incoming := not mine and pid > 0 and sim.st.owner[m.to_tile] == pid
 		var nuclear := sim.weapons.is_nuclear(m.weapon) or m.warhead
@@ -184,7 +187,7 @@ func _draw_munitions(z: float, now: int, t_ms: float) -> void:
 		var trail_col := Color(1.0, 0.85, 0.6) if not nuclear else SimState.RADIATION_COLOR
 		var prev_p := pos
 		var flying_since := m.launch_tick + m.delay
-		for i in range(1, 9):
+		for i in range(1, [0, 5, 9][quality]):
 			if now - i < flying_since:
 				break
 			var q := m.position(now - i)
@@ -228,15 +231,18 @@ func _draw_interceptors(z: float, now: int) -> void:
 
 func _draw_fx(z: float) -> void:
 	for f: Dictionary in _fx:
+		if quality == 0 and String(f["kind"]) in ["kill", "miss", "split"]:
+			continue
 		var k := float(f["t"]) / float(f["life"])
 		var p: Vector2 = f["pos"]
 		var r: float = f["r"]
 		var lw := maxf(0.15, 2.0 / z)
 		match String(f["kind"]):
 			"blast":
-				draw_circle(p, r * (0.3 + 0.7 * k), Color(1.0, 0.62, 0.3, 0.45 * (1.0 - k)))
+				if quality > 0:
+					draw_circle(p, r * (0.3 + 0.7 * k), Color(1.0, 0.62, 0.3, 0.45 * (1.0 - k)))
 				draw_arc(p, r * (0.4 + 0.8 * k), 0.0, TAU, 48, Color(1.0, 0.85, 0.6, 1.0 - k), lw * 1.5)
-				if k < 0.25:
+				if k < 0.25 and quality > 0:
 					draw_circle(p, r * 0.35, Color(1, 1, 0.9, 0.9 * (1.0 - k * 4.0)))
 			"emp":
 				for i in 3:
@@ -253,7 +259,8 @@ func _draw_fx(z: float) -> void:
 				draw_circle(p, fire, Color(rad, 0.8 * (1.0 - k)))
 				draw_circle(p, inner * 0.45, Color(rad.lightened(0.55), 0.85 * maxf(0.0, 1.0 - k * 2.0)))
 				draw_arc(p, r * (0.3 + 1.1 * k), 0.0, TAU, 96, Color(rad.lightened(0.3), 0.9 * (1.0 - k)), lw * 2.2)
-				draw_arc(p, r * (0.2 + 0.8 * k), 0.0, TAU, 96, Color(0.04, 0.05, 0.03, 0.6 * (1.0 - k)), lw * 1.6)
+				if quality > 0:
+					draw_arc(p, r * (0.2 + 0.8 * k), 0.0, TAU, 96, Color(0.04, 0.05, 0.03, 0.6 * (1.0 - k)), lw * 1.6)
 			"kill":
 				var rr := maxf(0.6, 10.0 / z) * (0.4 + k)
 				draw_circle(p, rr * 0.6, Color(1, 1, 0.9, 0.8 * (1.0 - k)))

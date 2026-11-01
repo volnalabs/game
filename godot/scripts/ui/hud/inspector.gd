@@ -118,7 +118,7 @@ func refresh(force: bool = false) -> void:
 	_head.add_child(UITheme.flag_rect(hud.flag_of(id), 48, 32))
 	var nv := UITheme.vbox(2)
 	nv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	nv.add_child(UITheme.label(st.o_name[id], UITheme.T_TITLE, st.o_color[id].lightened(0.35), true))
+	nv.add_child(UITheme.label(st.o_name[id], UITheme.T_TITLE, ColorAccess.color(st.o_color[id]).lightened(0.35), true))
 	var kind := tr("KIND_PLAYER") if mine else (tr("KIND_TRIBE") if st.o_kind[id] == Rules.KIND_TRIBE else tr("KIND_NATION"))
 	var brain := sim.ai.brain_of(id)
 	if brain != null and brain is StrategicAI:
@@ -261,7 +261,7 @@ func _structure_page() -> void:
 	nv.add_child(UITheme.label(BuildingInfo.title(sim.rules, s.kind), UITheme.T_TITLE, UITheme.TEXT, true))
 	var who := UITheme.hbox(6)
 	var sw := ColorRect.new()
-	sw.color = sim.st.o_color[s.owner]
+	sw.color = ColorAccess.color(sim.st.o_color[s.owner])
 	sw.custom_minimum_size = Vector2(8, 8)
 	sw.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	who.add_child(sw)

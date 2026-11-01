@@ -75,7 +75,7 @@ func refresh() -> void:
 		h.offset_right = -6
 		b.add_child(h)
 		var sw := ColorRect.new()
-		sw.color = st.o_color[o]
+		sw.color = ColorAccess.color(st.o_color[o])
 		sw.custom_minimum_size = Vector2(8, 8)
 		sw.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		sw.mouse_filter = Control.MOUSE_FILTER_IGNORE

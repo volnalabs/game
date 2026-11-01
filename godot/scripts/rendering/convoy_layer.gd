@@ -24,7 +24,7 @@ func _draw() -> void:
 	var px := 1.0 / maxf(z, 0.01)
 	var now := sim.st.tick
 	for c in sim.diplomacy.convoys:
-		var col := sim.st.o_color[c.from]
+		var col := ColorAccess.color(sim.st.o_color[c.from])
 		var pos := c.position(now)
 		# Route: dots every 6 screen pixels from here to the destination.
 		var to := c.to_pos

@@ -56,13 +56,13 @@ func _zoom_at(f: float, screen_pos: Vector2) -> void:
 
 func _process(delta: float) -> void:
 	var move := Vector2.ZERO
-	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+	if Input.is_action_pressed(Keys.action("cam_left")):
 		move.x -= 1
-	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+	if Input.is_action_pressed(Keys.action("cam_right")):
 		move.x += 1
-	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+	if Input.is_action_pressed(Keys.action("cam_up")):
 		move.y -= 1
-	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+	if Input.is_action_pressed(Keys.action("cam_down")):
 		move.y += 1
 	if edge_scroll and DisplayServer.window_is_focused():
 		var mp := get_viewport().get_mouse_position()

@@ -88,7 +88,7 @@ func _draw() -> void:
 	var lift := EffectsLayer.ship_px(z) * 0.42 + 10.0
 	for b in sim.naval.boats:
 		if b.alive and (b.owner == sim.player_id or z > 2.0):
-			_badge(UITheme.num(b.troops), _to_screen(b.position()) + Vector2(0, -lift), st.o_color[b.owner])
+			_badge(UITheme.num(b.troops), _to_screen(b.position()) + Vector2(0, -lift), ColorAccess.color(st.o_color[b.owner]))
 
 
 func _text_c(s: String, p: Vector2, size: int, c: Color) -> void:

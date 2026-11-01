@@ -61,7 +61,7 @@ func _init(h: GameHUD) -> void:
 		var b: Button
 		if s == 0.0:
 			b = UITheme.icon_button("ui_pause", "", func() -> void: hud.ctl.set_speed(s), 26, true)
-			Hints.attach(b, {"title": tr("HUD_PAUSE_SHORT"), "text": MetaData.text(Glossary.data()["speed"]["what"]), "hotkey": tr("KEY_SPACE")})
+			Hints.attach(b, func() -> Dictionary: return {"title": tr("HUD_PAUSE_SHORT"), "text": MetaData.text(Glossary.data()["speed"]["what"]), "hotkey": Keys.label("pause")})
 		else:
 			b = UITheme.ghost_button("×%d" % int(s), func() -> void: hud.ctl.set_speed(s))
 			b.toggle_mode = true

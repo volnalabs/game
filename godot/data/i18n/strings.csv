@@ -944,3 +944,46 @@ SETTINGS_VOL_ALERTS,Тревоги и сообщения,Alerts and messages
 SETTINGS_VOL_AMBIENCE,Фон,Background
 SETTINGS_VOL_TEST,Прослушать,Play a sample
 SETTINGS_MUTE_UNFOCUSED,"Без звука, когда окно игры не активно",Mute when the game window is in the background
+SETTINGS_TAB_DISPLAY,Изображение,Display
+SETTINGS_TAB_CONTROLS,Управление,Controls
+SETTINGS_EFFECTS,Качество эффектов,Effects quality
+SETTINGS_FX_0,Низкое,Low
+SETTINGS_FX_1,Среднее,Medium
+SETTINGS_FX_2,Высокое,High
+SETTINGS_EFFECTS_NOTE,"Низкое: стрелки атак и метки событий без искр, всплывающих чисел и следов ракет. Среднее: короче следы. На симуляцию не влияет.","Low: attack arrows and event markers without sparks, floating numbers or missile trails. Medium: shorter trails. The simulation is not affected."
+SETTINGS_COLOR_MODE,Цвета карты,Map colours
+SETTINGS_COLOR_PREVIEW,Пример цветов,Sample colours
+SETTINGS_COLOR_OFF,Обычные,Standard
+SETTINGS_COLOR_DEUTERANOPIA,Дейтеранопия (зелёный),Deuteranopia (green)
+SETTINGS_COLOR_PROTANOPIA,Протанопия (красный),Protanopia (red)
+SETTINGS_COLOR_TRITANOPIA,Тританопия (синий),Tritanopia (blue)
+SETTINGS_COLOR_HIGH_CONTRAST,Высокий контраст,High contrast
+SETTINGS_COLOR_NOTE,"Для нарушений цветового зрения цвета государств пересчитываются так, чтобы различия, которые трудно увидеть, перешли в различимые оттенки. «Высокий контраст» делает границы темнее, а заливку плотнее.",For colour vision deficiencies state colours are recalculated so that hard-to-see differences move into distinguishable shades. High contrast makes borders darker and fills denser.
+SETTINGS_KEYS_NOTE,Нажмите на клавишу действия и затем новую клавишу. Esc отменяет и всегда открывает меню — его переназначить нельзя.,"Click an action's key, then press a new key. Esc cancels and always opens the menu — it cannot be rebound."
+SETTINGS_KEYS_RESET,Вернуть клавиши по умолчанию,Restore default keys
+KEYS_PRESS,Нажмите клавишу…,Press a key…
+SETTINGS_KEYS_MOVED,Клавиша %s снята с действия «%s» — назначьте ему другую.,Key %s was taken from “%s” — give it another one.
+SETTINGS_KEYS_RESERVED,Esc занята: она отменяет действия и открывает меню.,Esc is reserved: it cancels and opens the menu.
+KEYS_PAUSE,Пауза / продолжить,Pause / resume
+KEYS_SPEED_UP,Быстрее,Faster
+KEYS_SPEED_DOWN,Медленнее,Slower
+KEYS_RATIO_DOWN,Сила атаки: меньше,Attack share: less
+KEYS_RATIO_UP,Сила атаки: больше,Attack share: more
+KEYS_CONFIRM,"Подтвердить (старт, пуск, десант)","Confirm (start, launch, landing)"
+KEYS_BUILD,Строительство,Construction
+KEYS_ZONES,Показать зоны зданий,Show building zones
+KEYS_HOME,Камера домой,Camera home
+KEYS_TOGGLE_UI,Скрыть интерфейс,Hide the interface
+KEYS_SAVE,Быстрое сохранение,Quick save
+KEYS_ENCYCLOPEDIA,Справочник,Encyclopedia
+KEYS_AI_DEBUG,Отладка AI,AI debugging
+KEYS_CAM_LEFT,Камера влево,Camera left
+KEYS_CAM_RIGHT,Камера вправо,Camera right
+KEYS_CAM_UP,Камера вверх,Camera up
+KEYS_CAM_DOWN,Камера вниз,Camera down
+KEYS_QUICK_1,Быстрая постройка 1,Quick build 1
+KEYS_QUICK_2,Быстрая постройка 2,Quick build 2
+KEYS_QUICK_3,Быстрая постройка 3,Quick build 3
+KEYS_QUICK_4,Быстрая постройка 4,Quick build 4
+KEYS_QUICK_5,Быстрая постройка 5,Quick build 5
+KEYS_QUICK_6,Быстрая постройка 6,Quick build 6

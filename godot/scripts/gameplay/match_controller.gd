@@ -170,6 +170,8 @@ func _build_world() -> void:
 	effects.cam = cam
 	weapons_fx.sim = sim
 	weapons_fx.cam = cam
+	_apply_display()
+	Settings.changed.connect(_apply_display)
 	convoys.sim = sim
 	convoys.cam = cam
 	var ui := CanvasLayer.new()
@@ -185,6 +187,14 @@ func _build_world() -> void:
 	ui.add_child(hud)
 	hud.setup(self, sim)
 	hud.log_line(tr("LOG_WELCOME") % sim.def.display_name(), UITheme.ACCENT)
+
+
+## Display settings that can change during a match: effects quality, colour-vision mode, edge scroll.
+func _apply_display() -> void:
+	effects.quality = Settings.effects_quality
+	weapons_fx.quality = Settings.effects_quality
+	cam.edge_scroll = Settings.edge_scroll
+	renderer.refresh_palette()
 
 
 func _focus_player_nation() -> void:
@@ -457,69 +467,77 @@ func _unhandled_input(event: InputEvent) -> void:
 					var t := tile_at_screen(mb.position)
 					select_owner(sim.st.owner[t] if t >= 0 else 0)
 	elif event is InputEventKey and event.pressed and not event.echo:
-		var k := (event as InputEventKey).keycode
-		match k:
-			KEY_ENTER, KEY_KP_ENTER:
-				if spawn_pending >= 0:
-					confirm_spawn()
-				elif weapon_aim >= 0:
-					fire_weapon()
-				elif not naval_plan.is_empty():
-					confirm_naval()
-			KEY_ESCAPE:
-				if spawn_pending >= 0:
-					cancel_spawn()
-				elif weapon_aim >= 0:
-					cancel_weapon()
-				elif not naval_plan.is_empty():
-					cancel_naval()
-				elif selected_boat >= 0:
-					select_boat(-1)
-				elif selected_structure >= 0:
-					select_structure(-1)
-				elif hud.ui_hidden:
-					hud.set_ui_hidden(false)
-				elif build_kind >= 0:
-					cancel_build()
-				elif build_open:
-					close_build_mode()
-				elif selected_owner > 0:
-					select_owner(0)
-				elif menu_open:
-					close_pause_menu()
-				else:
-					open_pause_menu()
-			KEY_SPACE:
-				set_speed(0.0 if not paused else maxf(speed, 1.0))
-			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9:
-				var kinds := hud.quick_kinds()
-				if k - KEY_1 < kinds.size():
-					begin_build(kinds[k - KEY_1])
-			KEY_TAB:
-				hud.set_ui_hidden(not hud.ui_hidden)
-			KEY_Q:
-				_step_ratio(-1)
-			KEY_E:
-				_step_ratio(1)
-			KEY_F3:
-				hud.toggle_ai_debug()
-			KEY_F5:
-				save_game()
-			KEY_EQUAL, KEY_KP_ADD:
-				set_speed(minf(speed * 2.0, 4.0))
-			KEY_MINUS, KEY_KP_SUBTRACT:
-				set_speed(maxf(speed * 0.5, 0.5))
-			KEY_HOME:
-				focus_home()
-			KEY_F1:
-				open_encyclopedia()
-			KEY_Z:
-				toggle_zones()
-			KEY_B:
-				if build_open:
-					close_build_mode()
-				else:
-					open_build_mode()
+		# Esc is fixed (cancel / menu); everything else goes through the rebindable actions (Keys).
+		if (event as InputEventKey).keycode == KEY_ESCAPE:
+			_escape()
+			return
+		var act := func(id: String) -> bool: return event.is_action_pressed(Keys.action(id))
+		if act.call("confirm"):
+			if spawn_pending >= 0:
+				confirm_spawn()
+			elif weapon_aim >= 0:
+				fire_weapon()
+			elif not naval_plan.is_empty():
+				confirm_naval()
+		elif act.call("pause"):
+			set_speed(0.0 if not paused else maxf(speed, 1.0))
+		elif act.call("toggle_ui"):
+			hud.set_ui_hidden(not hud.ui_hidden)
+		elif act.call("ratio_down"):
+			_step_ratio(-1)
+		elif act.call("ratio_up"):
+			_step_ratio(1)
+		elif act.call("ai_debug"):
+			hud.toggle_ai_debug()
+		elif act.call("save"):
+			save_game()
+		elif act.call("speed_up"):
+			set_speed(minf(speed * 2.0, 4.0))
+		elif act.call("speed_down"):
+			set_speed(maxf(speed * 0.5, 0.5))
+		elif act.call("home"):
+			focus_home()
+		elif act.call("encyclopedia"):
+			open_encyclopedia()
+		elif act.call("zones"):
+			toggle_zones()
+		elif act.call("build"):
+			if build_open:
+				close_build_mode()
+			else:
+				open_build_mode()
+		else:
+			for n in 6:
+				if act.call("quick_%d" % (n + 1)):
+					var kinds := hud.quick_kinds()
+					if n < kinds.size():
+						begin_build(kinds[n])
+					break
+
+
+func _escape() -> void:
+	if spawn_pending >= 0:
+		cancel_spawn()
+	elif weapon_aim >= 0:
+		cancel_weapon()
+	elif not naval_plan.is_empty():
+		cancel_naval()
+	elif selected_boat >= 0:
+		select_boat(-1)
+	elif selected_structure >= 0:
+		select_structure(-1)
+	elif hud.ui_hidden:
+		hud.set_ui_hidden(false)
+	elif build_kind >= 0:
+		cancel_build()
+	elif build_open:
+		close_build_mode()
+	elif selected_owner > 0:
+		select_owner(0)
+	elif menu_open:
+		close_pause_menu()
+	else:
+		open_pause_menu()
 
 
 func _left_click(t: int) -> void:
