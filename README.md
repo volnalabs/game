@@ -96,9 +96,8 @@
 
 ### Игра с другом
 
-Пока TerraFront — одиночная игра. В версии 0.3.0 появится игра по сети: хост нажимает «Пригласить»,
-отправляет код другу в любой мессенджер (хоть в чат Steam), друг вставляет код — и вы в одной партии.
-Без серверов и регистрации.
+Пока TerraFront — одиночная игра против AI. Игра по сети с другом (приглашение по коду, без серверов)
+запланирована на будущее, сроки пока не определены.
 
 ## Для разработчиков
 
@@ -158,7 +157,7 @@ English UI.
 
 **Download**: [Windows](https://github.com/volnalabs/game/releases/latest/download/TerraFront-windows-x64.zip) ·
 [Linux](https://github.com/volnalabs/game/releases/latest/download/TerraFront-linux-x64.tar.gz) — unzip and
-run; no installation. Online play with an invite code is planned for 0.3.0.
+run; no installation. Online play is planned for a later version.
 
 Licence: GNU AGPL v3 with additional terms (§7). © OpenFront and Contributors · based on RoWorld ·
 TerraFront © VolnaLabs.
