@@ -36,7 +36,8 @@
 
 | Каталог | Содержимое |
 |---|---|
-| `scripts/core` | `app.gd` (autoload `App`: машина состояний экранов), `match_config.gd`, `sim_rng.gd`, `settings.gd` (autoload), `log.gd` |
+| `scripts/core` | `app.gd` (autoload `App`: машина состояний экранов), `match_config.gd`, `sim_rng.gd`, `settings.gd` (autoload, сигнал `changed`), `keys.gd` (реестр переназначаемых клавиш, InputMap), `log.gd` |
+| `scripts/audio` | `sound_synth.gd` (синтез звуков по `data/audio/sounds.json`), `audio_manager.gd` (autoload `Audio`: шины, громкости, звуки событий) |
 | `scripts/rules` | `rules.gd` — загрузка JSON, масштаб k_lin; `combat_math.gd` — формулы боя/роста (общие для Sim и AI) |
 | `scripts/world` | `map_data.gd` — рельеф и производные массивы (land, water_body, coastal, landmass) |
 | `scripts/maps` | `map_definition.gd`, `map_registry.gd` (autoload), `map_loader.gd` |
@@ -48,7 +49,7 @@
 | `scripts/buildings` | `structure_system.gd` (+ правила размещения) |
 | `scripts/ai` | `ai_director.gd`, `ai_bot.gd`, `perception.gd`, `personality.gd`, `difficulty.gd`, `decision_log.gd`, `strategy/`, `tactics/`, `economy/`, `baseline/` |
 | `scripts/rendering` | `map_renderer.gd`, шейдер территорий, камера, слои построек/надписей/эффектов |
-| `scripts/ui` | тема (дизайн-система), контроллеры экранов, виджеты |
+| `scripts/ui` | тема (дизайн-система), контроллеры экранов, виджеты, `color_access.gd` (режимы цветов для нарушений цветового зрения) |
 | `scripts/save_system` | `save_manager.gd`, формат и миграции |
 | `scripts/tools` | CLI: `ai_sim_cli.gd`, `bench_cli.gd`, `bake_maps.gd`, `screenshot_cli.gd` |
 | `tests` | мини-раннер `run_tests.gd` + `unit/`, `integration/`, `ai/`, `performance/` |

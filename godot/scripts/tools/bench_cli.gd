@@ -42,10 +42,19 @@ func _run() -> void:
 	var times := PackedFloat32Array()
 	var upload := PackedFloat32Array()
 	var sys := {}
+	# The slowest ticks and what took their time (spikes are what the player notices).
+	var worst: Array = []
 	for i in ticks:
 		var ts := Time.get_ticks_usec()
 		sim.step()
-		times.append((Time.get_ticks_usec() - ts) / 1000.0)
+		var dt := (Time.get_ticks_usec() - ts) / 1000.0
+		times.append(dt)
+		if dt > 50.0:
+			var prof := {}
+			for k in sim.profile:
+				if k != "_last":
+					prof[k] = snappedf(float(sim.profile[k]), 0.1)
+			worst.append([dt, sim.st.tick, prof])
 		for k in sim.profile:
 			if k != "_last":
 				sys[k] = float(sys.get(k, 0.0)) + float(sim.profile[k])
@@ -75,4 +84,8 @@ func _run() -> void:
 	for k in sys:
 		per[k] = snappedf(float(sys[k]) / ticks, 0.01)
 	print("  per system avg ms: ", per)
+	worst.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) > float(b[0]))
+	print("  ticks over 50 ms: %d" % worst.size())
+	for w: Array in worst.slice(0, 5):
+		print("    %.0f ms at tick %d: %s" % [w[0], w[1], w[2]])
 	quit()

@@ -144,6 +144,11 @@ static func refine(bot: StrategicAI, best: Dictionary) -> Dictionary:
 	var goal := LandingPlanner.key_tile(nv, o)
 	if goal < 0 or goal == int(best["tile"]):
 		return best
+	# Only a city within 30 tiles (overland) of a shore is worth aiming past the beach (below). The
+	# overland way is never shorter than the straight line, so without any coast of `o` within 30
+	# tiles of the goal the rule fails anyway — skip the second plan (each plan searches the sea).
+	if bot.sim.structures.of_owner(o, Rules.B_CITY).is_empty() or not _coast_near(bot.sim.st, o, goal, 30):
+		return best
 	var inland := LandingPlanner.plan(nv, bot.id, goal)
 	if not inland["ok"]:
 		return best
@@ -161,6 +166,20 @@ static func refine(bot: StrategicAI, best: Dictionary) -> Dictionary:
 		out["reason"] = "inland_goal"
 		return out
 	return best
+
+
+## Whether `o` owns a coastal tile within `r` tiles (straight line) of `t`.
+static func _coast_near(st: SimState, o: int, t: int, r: int) -> bool:
+	var x0 := t % st.W
+	var y0 := t / st.W
+	for y in range(maxi(0, y0 - r), mini(st.H, y0 + r + 1)):
+		for x in range(maxi(0, x0 - r), mini(st.W, x0 + r + 1)):
+			if (x - x0) * (x - x0) + (y - y0) * (y - y0) > r * r:
+				continue
+			var u := y * st.W + x
+			if st.map.coastal[u] == 1 and st.owner[u] == o:
+				return true
+	return false
 
 
 static func launch(bot: StrategicAI, best: Dictionary) -> void:

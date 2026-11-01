@@ -7,6 +7,9 @@ const GAMES := 6
 ## The strategic-vs-legacy check uses more games: with research, perks and diplomacy single games
 ## swing more (one unanswered treaty offer can change who wins a game), 10 games were not enough.
 const GAMES_VS_LEGACY := 20
+## Hard vs easy over 10 games: 6 games split 3-3 after 2G although 60-game series show hard ahead as
+## before (44/60 wins, land 14.6 % vs 10.4 %; before 2F 43/60, 15.4 % vs 9.6 %).
+const GAMES_HARD_EASY := 10
 
 
 func _series(mode: String, seed0: int, n: int = GAMES) -> Dictionary:
@@ -36,7 +39,7 @@ func test_strategic_ai_outlasts_and_outearns_the_legacy_ai() -> void:
 
 
 func test_hard_beats_easy_without_bonuses() -> void:
-	var s := _series("hard_vs_easy", 600)
+	var s := _series("hard_vs_easy", 600, GAMES_HARD_EASY)
 	var a: Dictionary = s["hard"]
 	var b: Dictionary = s["easy"]
 	print("      hard share %.3f wins %.2f | easy share %.3f wins %.2f" % [a["avg_share"], a["win_rate"], b["avg_share"], b["win_rate"]])

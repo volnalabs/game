@@ -150,8 +150,10 @@ func think() -> void:
 	var tact := int(diff["tactical_interval"])
 	next_think = now + tact
 	state_ticks[state] = int(state_ticks.get(state, 0)) + tact
+	_t = Time.get_ticks_usec() if sim.profiling else 0
 	perception.refresh()
 	_update_memory()
+	_lap("perception")
 	if not _started:
 		_started = true
 		_opening()
@@ -160,20 +162,39 @@ func think() -> void:
 		next_strategic = now + int(diff["strategic_interval"])
 		_strategic_upkeep()
 		StrategicPlanner.decide(self)
+		_lap("strategy")
 	DefensePlanner.counter(self)
 	DefensePlanner.review_attacks(self)
+	_lap("defense")
 	_act_on_state()
+	_lap("tactics")
 	if state == S_WAR or state == S_DEFEND or not sim.attacks.incoming(id).is_empty():
 		WeaponPlanner.act(self)
+		_lap("weapons")
 	if now >= next_econ:
 		next_econ = now + int(diff["econ_interval"])
 		ResearchPlanner.act(self)
 		EconomicPlanner.act(self)
+		_lap("economy")
 	# Diplomacy last: a pact accepted now takes effect after this tick's own orders, which it then
 	# cancels cleanly (troops come home) instead of having them refused.
 	if now >= next_diplo:
 		next_diplo = now + int(AIProfile.diplomacy().get("interval", 50))
 		DiplomacyPlanner.act(self)
+		_lap("diplomacy")
+
+
+## Profiling (Sim.profiling): time spent per planner, summed into sim.profile["ai/<name>"].
+var _t: int = 0
+
+
+func _lap(name: String) -> void:
+	if not sim.profiling:
+		return
+	var now := Time.get_ticks_usec()
+	var k := "ai/" + name
+	sim.profile[k] = float(sim.profile.get(k, 0.0)) + float(now - _t) / 1000.0
+	_t = now
 
 
 ## First move: grab free land around the start (like every player does).
@@ -253,16 +274,21 @@ func _act_on_state() -> void:
 			_opportunistic(0.25)
 		S_DEVELOP, S_CONSOLIDATE:
 			_opportunistic(0.4)
+	_lap("land")
 	# Naval: whenever there is no free land to take on our own landmass, compare the best landing
 	# (free islands, overseas rivals) with the best land war and take it when it is worth more.
 	# Landings are limited by the boats at sea, not by the land offensive cooldown.
 	if now >= next_naval and perception.free_contact == 0 and state != S_DEFEND:
 		var landing := NavalPlanner.best_landing(self)
+		_lap("naval_pick")
 		var land_u := 0.0
 		if not options.is_empty() and float(options[0]["u"]) > 0.0:
 			land_u = float(options[0]["u"])
 		if not landing.is_empty() and float(landing["u"]) > land_u * 0.7:
 			landing = NavalPlanner.refine(self, landing)
+			_lap("naval_refine")
+			if sim.profiling:
+				sim.profile["ai/naval_refine_n"] = float(sim.profile.get("ai/naval_refine_n", 0.0)) + 1.0
 		if not landing.is_empty() and float(landing["u"]) > land_u * 0.7:
 			NavalPlanner.launch(self, landing)
 			last_offense = now

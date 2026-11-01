@@ -335,3 +335,21 @@ func test_many_transports_stay_cheap() -> void:
 	check(per < 1000.0, "moving them is cheap")
 	print("      30 orders planned in %.1f ms" % (plan_us / 1000.0))
 	sim.rules.n["max_boats"] = 3
+
+
+func test_one_sea_search_per_departure() -> void:
+	# Phase 2G: planning tried up to 8 separate A* searches from the same port (hundreds of ms on a
+	# world map); now every candidate beach is ranked by one multi-goal search and the winner's
+	# route comes from it.
+	var c := _setup(9)
+	var sim: Sim = c["sim"]
+	var m: MapData = c["map"]
+	var nav := sim.naval.nav
+	nav._routes.clear()
+	var before := nav.searches
+	var p := LandingPlanner.plan(sim.naval, c["pid"], m.tile_at(W - 20, 40))
+	check(p["ok"], "inland goal planned")
+	check(nav.searches - before <= 1, "one sea search (%d)" % (nav.searches - before))
+	var again := LandingPlanner.plan(sim.naval, c["pid"], m.tile_at(W - 20, 40))
+	check_eq(int(again["beach"]), int(p["beach"]), "same plan again")
+	check(again["path"] == p["path"], "same route")

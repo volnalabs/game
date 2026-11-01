@@ -93,6 +93,9 @@ func _init(state: SimState, rules_: Rules, ev: SimEvents, atk: AttackSystem) -> 
 var mods: Modifiers
 var structures: StructureSystem
 var diplomacy: DiplomacySystem
+## own_coast() cache, valid for one tick.
+var _own_coast: Dictionary = {}
+var _own_coast_tick: int = -1
 
 
 func max_boats(who: int = 0) -> int:
@@ -104,17 +107,35 @@ func source_for(who: int, target: int) -> int:
 	var body := st.map.coast_body[target]
 	if body == 0 or not st.map.coast_by_body.has(body):
 		return -1
-	var list: PackedInt32Array = st.map.coast_by_body[body]
-	var owner := st.owner
 	var best := -1
 	var bd := 1 << 62
+	for t in own_coast(who, body):
+		var d := st.map.dist2(t, target)
+		if d < bd:
+			bd = d
+			best = t
+	return best
+
+
+## Coast tiles of `who` on water body `body`, in coast-list order (cached for the current tick: a
+## landing plan asks for many beaches, and the coast of an ocean can hold tens of thousands of
+## tiles).
+func own_coast(who: int, body: int) -> PackedInt32Array:
+	var key := who * 65536 + body
+	var hit: Array = _own_coast.get(key, [])
+	if hit.size() == 2 and int(hit[0]) == st.tick:
+		return hit[1]
+	if _own_coast_tick != st.tick:
+		_own_coast.clear()
+		_own_coast_tick = st.tick
+	var out := PackedInt32Array()
+	var list: PackedInt32Array = st.map.coast_by_body.get(body, PackedInt32Array())
+	var owner := st.owner
 	for t in list:
 		if owner[t] == who:
-			var d := st.map.dist2(t, target)
-			if d < bd:
-				bd = d
-				best = t
-	return best
+			out.append(t)
+	_own_coast[key] = [st.tick, out]
+	return out
 
 
 func water_next_to(t: int, body: int) -> int:

@@ -341,6 +341,7 @@ func step() -> void:
 	weapons.tick()
 	_lap("weapons", t0)
 	diplomacy.tick()
+	_lap("diplomacy", t0)
 	_process_eliminations()
 	if st.tick % 10 == 0:
 		_check_end()

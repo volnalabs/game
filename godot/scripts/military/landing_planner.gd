@@ -103,14 +103,74 @@ static func plan(nv: NavalSystem, who: int, goal: int, from_water: int = -1) -> 
 			picks.append(b)
 			if picks.size() >= max_c:
 				break
-	var best: Dictionary = {}
+	# Rank every candidate with ONE multi-goal sea search per departure point (coarse sea distance +
+	# overland part + zone penalty), then build the exact route only for the winner (falling back to
+	# the next one if it has none). Planning on a world map tried up to 8 separate A* searches from
+	# the same port before (hundreds of ms per plan).
+	var lw := float(n.get("landing_land_weight", 3.0))
+	var pen := float(n.get("landing_unsafe_penalty", 60.0))
+	var w0s := {}
+	var info: Array = []
 	var saw_coast := false
-	for b in picks:
-		var c := _candidate(nv, who, b, int(dist[b]), from_water)
-		if String(c.get("reason", "")) != "no_coast":
+	# One departure per water body: our coast nearest to the first candidate on that body (the beach
+	# nearest to the goal overland) — the fleet sails from one port towards one target area.
+	var dep := {}
+	for i in picks.size():
+		var b := picks[i]
+		var body := map.coast_body[b]
+		var w0 := -1
+		var src := -1
+		if body != 0:
+			if from_water >= 0:
+				w0 = from_water if map.water_body[from_water] == body else -1
+			else:
+				if not dep.has(body):
+					var s0 := nv.source_for(who, b)
+					dep[body] = [s0, nv.water_next_to(s0, body) if s0 >= 0 else -1]
+				src = int(dep[body][0])
+				w0 = int(dep[body][1])
+		var w1 := nv.water_next_to(b, body) if body != 0 else -1
+		if w0 >= 0:
 			saw_coast = true
-		if c["ok"] and (best.is_empty() or float(c["score"]) < float(best["score"])):
+		info.append([w0, w1, src])
+		if w0 >= 0 and w1 >= 0:
+			if not w0s.has(w0):
+				w0s[w0] = []
+			(w0s[w0] as Array).append(i)
+	var est := PackedFloat32Array()
+	est.resize(picks.size())
+	est.fill(INF)
+	var routes := {}
+	for w0: int in w0s:
+		var idx: Array = w0s[w0]
+		var goals := PackedInt32Array()
+		for i: int in idx:
+			goals.append(int(info[i][1]))
+		var d := nv.nav.distances(w0, goals)
+		for k in idx.size():
+			var i: int = idx[k]
+			if d[k] == INF:
+				continue
+			var b := picks[i]
+			var bo := st.owner[b]
+			var unsafe := bo > 0 and nv.structures != null and (nv.structures.in_zone(bo, Rules.B_DEFENSE, b) or nv.structures.in_zone(bo, Rules.B_RADAR, b))
+			est[i] = d[k] + float(int(dist[b])) * lw + (pen if unsafe else 0.0)
+		# Routes come from this search (its tree is kept until the next search).
+		for i: int in idx:
+			if est[i] < INF:
+				routes[i] = [w0, nv.nav.route_to(w0, int(info[i][1]))]
+	var order: Array = []
+	for i in picks.size():
+		if est[i] < INF:
+			order.append(i)
+	order.sort_custom(func(x: int, y: int) -> bool: return est[x] < est[y] or (est[x] == est[y] and x < y))
+	var best: Dictionary = {}
+	for i: int in order:
+		var r: Array = routes.get(i, [])
+		var c := _candidate(nv, who, picks[i], int(dist[picks[i]]), from_water, r[1] if r.size() == 2 else PackedVector2Array(), int(info[i][2]))
+		if c["ok"]:
 			best = c
+			break
 	if best.is_empty():
 		return _fail("no_route" if saw_coast else "no_coast")
 	# The overland way from the beach back to the goal (sparse points for drawing).
@@ -127,7 +187,8 @@ static func plan(nv: NavalSystem, who: int, goal: int, from_water: int = -1) -> 
 
 
 ## One beach: departure, water route and score.
-static func _candidate(nv: NavalSystem, who: int, beach: int, land_len: int, from_water: int) -> Dictionary:
+static func _candidate(nv: NavalSystem, who: int, beach: int, land_len: int, from_water: int,
+		known_path: PackedVector2Array = PackedVector2Array(), source: int = -1) -> Dictionary:
 	var st := nv.st
 	var map := st.map
 	var body := map.coast_body[beach]
@@ -140,14 +201,14 @@ static func _candidate(nv: NavalSystem, who: int, beach: int, land_len: int, fro
 			return _fail("no_coast")
 		w0 = from_water
 	else:
-		src = nv.source_for(who, beach)
+		src = source if source >= 0 else nv.source_for(who, beach)
 		if src < 0:
 			return _fail("no_coast")
 		w0 = nv.water_next_to(src, body)
 	var w1 := nv.water_next_to(beach, body)
 	if w0 < 0 or w1 < 0:
 		return _fail("no_route")
-	var path := nv.nav.find_path(w0, w1)
+	var path := known_path if known_path.size() >= 2 else nv.nav.find_path(w0, w1)
 	if path.size() < 2:
 		return _fail("no_route")
 	var sea := 0.0
