@@ -39,6 +39,11 @@ var next_strategic: int = 0
 var next_econ: int = 0
 var next_naval: int = 0
 var next_weapon: int = 0
+## Diplomacy (DiplomacyPlanner): next cycle, next own proposal / help request, pacts seen last cycle.
+var next_diplo: int = 0
+var next_proposal: int = 0
+var next_help: int = 0
+var pacts_seen: Dictionary = {}
 var last_war_end: int = -100000
 var state_ticks: Dictionary = {}
 var _noticed: Dictionary = {}
@@ -125,6 +130,14 @@ func set_state(s: int, tgt: int) -> void:
 		state_since = sim.st.tick
 
 
+## Whether the bot may start or feed an attack on `o` (no pact or team). A pending treaty offer does
+## not stop it: blocking attacks while an offer waits (one that may never be answered) made bots drop
+## their war plans and cost them dearly in AI series; a pact signed in the same tick cancels the
+## tick's attacks cleanly (Sim applies treaty commands last).
+func may_attack(o: int) -> bool:
+	return o <= 0 or sim.diplomacy.can_attack(id, o)
+
+
 func max_wars() -> int:
 	return int(pers.get("max_wars", 2))
 
@@ -156,6 +169,11 @@ func think() -> void:
 		next_econ = now + int(diff["econ_interval"])
 		ResearchPlanner.act(self)
 		EconomicPlanner.act(self)
+	# Diplomacy last: a pact accepted now takes effect after this tick's own orders, which it then
+	# cancels cleanly (troops come home) instead of having them refused.
+	if now >= next_diplo:
+		next_diplo = now + int(AIProfile.diplomacy().get("interval", 50))
+		DiplomacyPlanner.act(self)
 
 
 ## First move: grab free land around the start (like every player does).
@@ -284,7 +302,8 @@ func _expand() -> void:
 
 func _wage_war() -> void:
 	var st := sim.st
-	if target <= 0 or not st.is_alive(target) or not perception.neighbors.has(target):
+	if target <= 0 or not st.is_alive(target) or not perception.neighbors.has(target) \
+			or not may_attack(target):
 		last_war_end = st.tick
 		set_state(S_DEVELOP, 0)
 		return
@@ -323,7 +342,8 @@ func _opportunistic(bar: float) -> void:
 		return
 	var best: Dictionary = options[0]
 	var tgt: int = best["target"]
-	if not sim.st.is_alive(tgt) or sim.attacks.find(id, tgt) != null or not perception.neighbors.has(tgt):
+	if not sim.st.is_alive(tgt) or sim.attacks.find(id, tgt) != null or not perception.neighbors.has(tgt) \
+			or not may_attack(tgt):
 		return
 	var e := AttackPlanner.best_size(self, tgt, _available())
 	if e.is_empty() or float(e["u"]) < bar * float(e["troops"]):
@@ -371,7 +391,8 @@ func to_dict() -> Dictionary:
 		"last_war_end": last_war_end, "state_ticks": state_ticks, "started": _started,
 		"has_coast": has_coast, "memory": perception.memory, "prng": perception.rng.get_state(),
 		"options": options, "threats": threats, "war_plan": war_plan, "countered": countered, "noticed": _noticed,
-		"free_estimate": perception.free_estimate, "plan_note": plan_note, "next_offense": next_offense, "last_offense": last_offense})
+		"free_estimate": perception.free_estimate, "plan_note": plan_note, "next_offense": next_offense, "last_offense": last_offense,
+		"next_diplo": next_diplo, "next_proposal": next_proposal, "next_help": next_help, "pacts_seen": pacts_seen})
 	return d
 
 
@@ -399,5 +420,11 @@ func from_dict(d: Dictionary) -> void:
 	plan_note = d.get("plan_note", "")
 	next_offense = d.get("next_offense", 0)
 	last_offense = d.get("last_offense", 0)
+	next_diplo = d.get("next_diplo", 0)
+	next_proposal = d.get("next_proposal", 0)
+	next_help = d.get("next_help", 0)
+	pacts_seen = {}
+	for k in d.get("pacts_seen", {}):
+		pacts_seen[int(k)] = true
 	if d.has("prng"):
 		perception.rng.set_state(d["prng"])

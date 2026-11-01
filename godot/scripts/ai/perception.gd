@@ -24,6 +24,11 @@ class NeighborView:
 	var war_out: float = 0.0
 	var war_in: float = 0.0
 	var attacking_me: float = 0.0
+	## Diplomacy: "" (free to attack), "team", "ally" or "pact" (sim.diplomacy.block_reason).
+	var pact: String = ""
+
+	func partner() -> bool:
+		return pact != ""
 
 	func avg_mag() -> float:
 		return mag_sum / maxf(1.0, float(contact))
@@ -146,6 +151,7 @@ func refresh() -> void:
 		var nv: NeighborView = neighbors[o]
 		nv.tiles = st.o_tiles[o]
 		nv.kind = st.o_kind[o]
+		nv.pact = sim.diplomacy.block_reason(bot, o)
 		nv.est_troops = estimate_troops(o)
 		var posts := sim.structures.defense_posts_of(o)
 		var seen: Array[int] = []

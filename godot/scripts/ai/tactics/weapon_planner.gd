@@ -64,10 +64,13 @@ static func act(bot: StrategicAI) -> bool:
 static func _enemies(bot: StrategicAI) -> Array[int]:
 	var out: Array[int] = []
 	var st := bot.sim.st
-	if bot.target > 0 and st.is_alive(bot.target) and (bot.state == StrategicAI.S_WAR or bot.state == StrategicAI.S_DEFEND):
+	var dip := bot.sim.diplomacy
+	if bot.target > 0 and st.is_alive(bot.target) and (bot.state == StrategicAI.S_WAR or bot.state == StrategicAI.S_DEFEND) \
+			and bot.may_attack(bot.target):
 		out.append(bot.target)
 	for a in bot.sim.attacks.incoming(bot.id):
-		if a.attacker > 0 and st.o_kind[a.attacker] != Rules.KIND_TRIBE and not out.has(a.attacker):
+		if a.attacker > 0 and st.o_kind[a.attacker] != Rules.KIND_TRIBE and not out.has(a.attacker) \
+				and dip.can_attack(bot.id, a.attacker):
 			out.append(a.attacker)
 	return out
 

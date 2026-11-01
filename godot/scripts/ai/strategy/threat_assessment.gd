@@ -24,6 +24,7 @@ static func evaluate(bot: StrategicAI) -> float:
 			hostility += 0.5
 		if o == bot.sim.player_id and p.leader == o:
 			hostility += 0.3
+		hostility *= pact_factor(nv.pact)
 		var contact_f := float(nv.contact) / (float(nv.contact) + 20.0)
 		var th := nv.est_troops / mine * contact_f * hostility
 		bot.threats[o] = th
@@ -42,4 +43,12 @@ static func danger_from(bot: StrategicAI, o: int) -> float:
 		p += 0.4
 	if nv.war_out > 0.3 * nv.est_troops:
 		p *= 0.6
-	return nv.est_troops * minf(p, 1.0)
+	return nv.est_troops * minf(p, 1.0) * pact_factor(nv.pact)
+
+
+## How much of a neighbour's threat remains under a pact. A teammate never attacks. An ally or a NAP
+## partner stays fully watched: pacts last minutes and can be broken. AI series showed that bots which
+## lowered their guard for partners (×0.15 / ×0.3, also only while the pact had time left) kept too
+## small a reserve and were punished when the pact ended — hard bots lost their edge over easy ones.
+static func pact_factor(pact: String) -> float:
+	return 0.0 if pact == "team" else 1.0

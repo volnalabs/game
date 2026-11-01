@@ -4,8 +4,9 @@ extends TestCase
 ## Quality is measured by results (land, survival), not by the number of actions.
 
 const GAMES := 6
-## The strategic-vs-legacy check uses more games: with research and perks single games swing more.
-const GAMES_VS_LEGACY := 10
+## The strategic-vs-legacy check uses more games: with research, perks and diplomacy single games
+## swing more (one unanswered treaty offer can change who wins a game), 10 games were not enough.
+const GAMES_VS_LEGACY := 20
 
 
 func _series(mode: String, seed0: int, n: int = GAMES) -> Dictionary:

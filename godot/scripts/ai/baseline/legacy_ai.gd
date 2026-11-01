@@ -99,7 +99,7 @@ func _consider_war(nb: Dictionary) -> bool:
 	var best_s := 0.0
 	var mine := st.o_troops[id]
 	for o: int in nb:
-		if o == 0 or not st.is_alive(o) or int(nb[o]) < 2:
+		if o == 0 or not st.is_alive(o) or int(nb[o]) < 2 or not sim.diplomacy.can_attack(id, o):
 			continue
 		var s := mine / (st.o_troops[o] + 1.0)
 		if st.o_kind[o] == Rules.KIND_TRIBE:
@@ -183,7 +183,7 @@ func _consider_boat() -> void:
 	for _i in 48:
 		var t := coast[rng.below(coast.size())]
 		var o := st.owner[t]
-		if o == id:
+		if o == id or (o > 0 and not sim.diplomacy.can_attack(id, o)):
 			continue
 		var s := 3.0
 		if o != 0:

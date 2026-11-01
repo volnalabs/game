@@ -25,14 +25,16 @@ func _run() -> void:
 	var ticks := int(_arg(args, "ticks", "9000"))
 	var tribes := int(_arg(args, "tribes", "0"))
 	var domination := float(_arg(args, "domination", "0.6"))
+	var teams := int(_arg(args, "teams", "0"))
 	var reg: Node = root.get_node("MapRegistry")
 	var results: Array = []
 	print("AI simulation: %d games, map %s, %d bots, mode %s, seeds %d..%d, max %d ticks" % [games, map_spec, bots, mode, seed0, seed0 + games - 1, ticks])
 	for g in games:
-		var r := AISimRunner.run_game(map_spec, seed0 + g, bots, mode, ticks, reg, tribes, domination)
+		var r := AISimRunner.run_game(map_spec, seed0 + g, bots, mode, ticks, reg, tribes, domination, teams)
 		results.append(r)
 		print("  game %2d seed %d: %s (%s) after %d ticks, winner %s [%s], %.1f s" % [g + 1, r["seed"], "over" if r["over"] else "limit",
 			r["reason"], r["ticks"], _name(r), r["winner_group"], float(r["ms"]) / 1000.0])
+		print("      diplomacy: ", r["diplomacy"], (" team %d won" % int(r["team_winner"])) if int(r["team_winner"]) > 0 else "")
 	var summary := AISimRunner.summarize(results)
 	print("\nGroup summary:")
 	print("  %-14s %6s %6s %8s %8s %9s %8s %8s %8s %8s" % ["group", "wins", "surv", "share", "life", "atk/won", "succ", "gold+", "upkeep", "entropy"])

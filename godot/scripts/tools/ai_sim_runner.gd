@@ -41,7 +41,7 @@ static func make_map(map_spec: String, seed_value: int, reg: Node) -> Array:
 
 
 static func run_game(map_spec: String, seed_value: int, bots: int, mode: String, max_ticks: int, reg: Node,
-		tribes: int = 0, domination: float = 0.6) -> Dictionary:
+		tribes: int = 0, domination: float = 0.6, teams: int = 0) -> Dictionary:
 	var md := make_map(map_spec, seed_value if map_spec.begins_with("gen:") else 0, reg)
 	var def: MapDefinition = md[0]
 	var map: MapData = md[1]
@@ -53,6 +53,7 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 	cfg.victory.domination_share = domination
 	cfg.victory.eliminate_all = true
 	cfg.bot_overrides = overrides_for(mode, bots)
+	cfg.teams = teams
 	# Difficulty comparisons measure decision quality only: no perks on either side
 	# (VL_FAIR_MODE=1 forces Fair mode for any series, to measure the effect of perks).
 	cfg.fair_mode = mode == "hard_vs_easy" or OS.has_environment("VL_FAIR_MODE")
@@ -65,6 +66,9 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 			groups[id] = cfg.bot_overrides[nation_i]["group"] if nation_i < cfg.bot_overrides.size() else "?"
 			nation_i += 1
 	var atk := {}
+	# Diplomacy: pacts formed / broken, help requests and answers, and AI commands the simulation
+	# refused because of a pact (must stay 0: the AI respects its pacts).
+	var dipl := {"formed": 0, "betrayals": 0, "help_asked": 0, "help_given": 0, "convoys": 0, "blocked": 0}
 	while sim.st.tick < max_ticks and sim.phase != Sim.Phase.OVER:
 		sim.step()
 		for e in sim.events.drain():
@@ -75,6 +79,22 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 				atk[a][0] += 1
 				if int(e["taken"]) >= 20:
 					atk[a][1] += 1
+			match String(e["type"]):
+				SimEvents.DIPLO_FORMED:
+					dipl["formed"] += 1
+				SimEvents.TRAITOR:
+					dipl["betrayals"] += 1
+				SimEvents.HELP_REQUEST:
+					dipl["help_asked"] += 1
+				SimEvents.HELP_ANSWER:
+					if bool(e["accepted"]):
+						dipl["help_given"] += 1
+				SimEvents.CONVOY_SENT:
+					dipl["convoys"] += 1
+				SimEvents.COMMAND_REJECTED:
+					if String(e["reason"]) in ["team", "ally", "pact"]:
+						dipl["blocked"] += 1
+						print("        blocked %s by %d at %d" % [e["cmd"], int(e["owner"]), int(e["tick"])])
 	var st := sim.st
 	var bots_out: Array = []
 	for id: int in groups:
@@ -101,7 +121,7 @@ static func run_game(map_spec: String, seed_value: int, bots: int, mode: String,
 				winner = int(b["id"])
 	return {"seed": seed_value, "map": map_spec, "mode": mode, "ticks": st.tick, "over": sim.phase == Sim.Phase.OVER,
 		"reason": sim.result.get("reason", "tick_limit"), "winner": winner, "winner_group": groups.get(winner, "?"),
-		"bots": bots_out, "ms": Time.get_ticks_msec() - t0}
+		"bots": bots_out, "diplomacy": dipl, "team_winner": int(sim.result.get("team", 0)), "ms": Time.get_ticks_msec() - t0}
 
 
 static func _levels(st: SimState, id: int) -> int:

@@ -61,6 +61,10 @@ static func best_landing(bot: StrategicAI) -> Dictionary:
 				continue
 			if o > 0 and bot.perception.neighbors.has(o):
 				continue  # reachable over land: the land planner handles it
+			if o > 0 and not bot.may_attack(o):
+				continue
+			if _partner_near(bot, t):
+				continue  # a partner is advancing there: the shore may be theirs before we land
 			var dist := Vector2(t % st.W, t / st.W).distance_to(c)
 			var u := 0.0
 			var reason := ""
@@ -95,6 +99,25 @@ static func best_landing(bot: StrategicAI) -> Dictionary:
 					n = clampf(isl * 16.0 * 1.3, 500.0, send)
 				best = {"tile": t, "owner": o, "u": u, "troops": n, "reason": reason}
 	return best
+
+
+## Whether a treaty partner owns land within 2 tiles of free tile `t`.
+static func _partner_near(bot: StrategicAI, t: int) -> bool:
+	var st := bot.sim.st
+	var x0 := t % st.W
+	var y0 := t / st.W
+	for dy in range(-2, 3):
+		var y := y0 + dy
+		if y < 0 or y >= st.H:
+			continue
+		for dx in range(-2, 3):
+			var x := x0 + dx
+			if x < 0 or x >= st.W:
+				continue
+			var o := st.owner[y * st.W + x]
+			if o > 0 and o != bot.id and not bot.sim.diplomacy.can_attack(bot.id, o):
+				return true
+	return false
 
 
 static func act(bot: StrategicAI) -> bool:

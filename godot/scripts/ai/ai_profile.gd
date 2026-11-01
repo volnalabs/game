@@ -5,6 +5,7 @@ extends RefCounted
 static var _pers: Dictionary = {}
 static var _order: Array = []
 static var _diff: Dictionary = {}
+static var _dip: Dictionary = {}
 
 
 static func _load() -> void:
@@ -13,6 +14,7 @@ static func _load() -> void:
 	var p: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/ai/personalities.json"))
 	_pers = p["personalities"]
 	_order = p["order"]
+	_dip = p.get("diplomacy", {})
 	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/ai/difficulty.json"))
 	_diff = d["levels"]
 
@@ -34,3 +36,9 @@ static func difficulty(id: String) -> Dictionary:
 
 static func difficulty_ids() -> Array:
 	return ["easy", "normal", "hard"]
+
+
+## Thresholds and weights of the diplomatic AI (personalities.json "diplomacy").
+static func diplomacy() -> Dictionary:
+	_load()
+	return _dip

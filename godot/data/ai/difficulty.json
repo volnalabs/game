@@ -1,8 +1,62 @@
 {
-	"_comment": "AI difficulty = decision quality, never extra resources (docs/ai/AI_DESIGN.md §9). Intervals in ticks (10 per second).",
+	"_comment": "AI difficulty = decision quality, never extra resources (docs/ai/AI_DESIGN.md §9). Intervals in ticks (10 per second). diplomacy_insight: how well the bot sees through treaties (a weaker neighbour is future prey, not a partner).",
 	"levels": {
-		"easy":   {"strategic_interval": 50, "tactical_interval": 20, "reaction_delay": 25, "perception_noise": 0.35, "size_candidates": 3, "mistake_rate": 0.30, "exposure_weight": 0.3, "opportunism_detect": 0.3, "retreat": false, "counter_precision": 0.6, "forecast_steps": 10, "border_scan": 1500, "naval_samples": 10, "predict_growth": false, "econ_interval": 80, "player_grace_ticks": 3000},
-		"normal": {"strategic_interval": 30, "tactical_interval": 10, "reaction_delay": 10, "perception_noise": 0.15, "size_candidates": 5, "mistake_rate": 0.08, "exposure_weight": 1.0, "opportunism_detect": 0.8, "retreat": true,  "counter_precision": 0.9, "forecast_steps": 20, "border_scan": 3000, "naval_samples": 20, "predict_growth": true,  "econ_interval": 50, "player_grace_ticks": 1500},
-		"hard":   {"strategic_interval": 50, "tactical_interval": 5,  "reaction_delay": 3,  "perception_noise": 0.05, "size_candidates": 8, "mistake_rate": 0.0,  "exposure_weight": 1.0, "opportunism_detect": 1.0, "retreat": true,  "counter_precision": 1.0, "forecast_steps": 40,  "border_scan": 6000, "naval_samples": 36, "predict_growth": true,  "econ_interval": 30, "player_grace_ticks": 600}
+		"easy": {
+			"strategic_interval": 50,
+			"tactical_interval": 20,
+			"reaction_delay": 25,
+			"perception_noise": 0.35,
+			"size_candidates": 3,
+			"mistake_rate": 0.3,
+			"exposure_weight": 0.3,
+			"opportunism_detect": 0.3,
+			"retreat": false,
+			"counter_precision": 0.6,
+			"forecast_steps": 10,
+			"border_scan": 1500,
+			"naval_samples": 10,
+			"predict_growth": false,
+			"econ_interval": 80,
+			"player_grace_ticks": 3000,
+			"diplomacy_insight": 0.2
+		},
+		"normal": {
+			"strategic_interval": 30,
+			"tactical_interval": 10,
+			"reaction_delay": 10,
+			"perception_noise": 0.15,
+			"size_candidates": 5,
+			"mistake_rate": 0.08,
+			"exposure_weight": 1.0,
+			"opportunism_detect": 0.8,
+			"retreat": true,
+			"counter_precision": 0.9,
+			"forecast_steps": 20,
+			"border_scan": 3000,
+			"naval_samples": 20,
+			"predict_growth": true,
+			"econ_interval": 50,
+			"player_grace_ticks": 1500,
+			"diplomacy_insight": 0.7
+		},
+		"hard": {
+			"strategic_interval": 50,
+			"tactical_interval": 5,
+			"reaction_delay": 3,
+			"perception_noise": 0.05,
+			"size_candidates": 8,
+			"mistake_rate": 0.0,
+			"exposure_weight": 1.0,
+			"opportunism_detect": 1.0,
+			"retreat": true,
+			"counter_precision": 1.0,
+			"forecast_steps": 40,
+			"border_scan": 6000,
+			"naval_samples": 36,
+			"predict_growth": true,
+			"econ_interval": 30,
+			"player_grace_ticks": 600,
+			"diplomacy_insight": 1.0
+		}
 	}
 }

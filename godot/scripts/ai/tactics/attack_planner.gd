@@ -102,6 +102,9 @@ static func evaluate(bot: StrategicAI, target: int, troops: float, curve: Dictio
 			danger += ThreatAssessment.danger_from(bot, o)
 	# The target itself may strike back with what survives the attack.
 	danger += maxf(0.0, nv.est_troops - float(fc["killed"])) * 0.5
+	# Its allies may answer its call for help: a neighbour of ours can attack us, a distant one can
+	# send troops. Seeing this is part of diplomatic insight (difficulty).
+	danger += ally_risk(bot, target)
 	var exposure := maxf(0.0, danger - home) * 0.25 * float(bot.diff["exposure_weight"]) * (1.0 - float(pers["risk_tolerance"]))
 	var u: float = (gain + weaken + annex_bonus + opp + grudge + coalition) * float(pers["war_appetite"]) - losses - exposure
 	# Stalemate pressure: a full army that has not attacked for a long time accepts harder fights.
@@ -165,6 +168,25 @@ static func best_size(bot: StrategicAI, target: int, available: float) -> Dictio
 	return best
 
 
+## Troops the target's allies could throw at us if it calls them for help (weighted by insight).
+static func ally_risk(bot: StrategicAI, target: int) -> float:
+	var dip := bot.sim.diplomacy
+	var allies := dip.allies_of(target)
+	if allies.is_empty():
+		return 0.0
+	var cfg := AIProfile.diplomacy()
+	var p := bot.perception
+	var risk := 0.0
+	for a in allies:
+		if a == bot.id or not dip.can_attack(a, bot.id):
+			continue
+		if p.neighbors.has(a):
+			risk += (p.neighbors[a] as AIPerception.NeighborView).est_troops * float(cfg.get("ally_help_risk", 0.35))
+		else:
+			risk += p.guess_troops(a) * float(cfg.get("ally_far_risk", 0.1))
+	return risk * float(bot.diff.get("diplomacy_insight", 0.7))
+
+
 ## Land options ranked by utility (best first).
 static func rank_targets(bot: StrategicAI, available: float) -> Array:
 	var out: Array = []
@@ -172,7 +194,7 @@ static func rank_targets(bot: StrategicAI, available: float) -> Array:
 		if not bot.sim.st.is_alive(o):
 			continue
 		var nv: AIPerception.NeighborView = bot.perception.neighbors[o]
-		if nv.contact < 2:
+		if nv.contact < 2 or nv.partner() or not bot.may_attack(o):
 			continue
 		var e := best_size(bot, o, available)
 		if not e.is_empty():

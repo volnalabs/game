@@ -297,3 +297,22 @@ func test_diplomacy_is_saved_and_deterministic() -> void:
 		sa.step()
 		sb.step()
 	check_eq(sb.state_hash(), sa.state_hash(), "continues identically")
+
+
+func test_treaty_commands_apply_after_the_ticks_orders() -> void:
+	var c := _setup(7)
+	var sim: Sim = c["sim"]
+	var a: int = c["a"]
+	var b: int = c["b"]
+	sim._start_playing()
+	check_eq(sim.diplomacy.request(a, b, DiplomacySystem.NAP), "", "a asks b for a pact")
+	var troops := sim.st.o_troops[a]
+	# b accepts and, in the same tick, a's attack on b is queued after the answer.
+	sim.submit(Commands.diplo(b, "reply", a, "", true))
+	sim.submit(Commands.attack_target(a, b, 5000.0))
+	sim.step()
+	var evs := sim.events.drain()
+	check(not evs.any(func(e: Dictionary) -> bool: return e["type"] == SimEvents.COMMAND_REJECTED), "nothing is refused")
+	check(sim.diplomacy.has_nap(a, b), "the pact is signed")
+	check(sim.attacks.find(a, b) == null, "and the attack it overtook is cancelled")
+	check(absf(sim.st.o_troops[a] - troops) < 5000.0 * 0.5, "with the troops back home (%.0f -> %.0f)" % [troops, sim.st.o_troops[a]])

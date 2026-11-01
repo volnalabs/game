@@ -190,7 +190,17 @@ func submit(cmd: Dictionary) -> void:
 func _process_commands() -> void:
 	var cmds := _commands
 	_commands = []
+	# Treaty commands go last: a pact signed this tick then cancels the tick's attacks between the
+	# partners cleanly (troops come home) instead of some being refused depending on queue order.
+	var ordered: Array[Dictionary] = []
+	var treaties: Array[Dictionary] = []
 	for c in cmds:
+		if String(c.get("type", "")) == Commands.DIPLO:
+			treaties.append(c)
+		else:
+			ordered.append(c)
+	ordered.append_array(treaties)
+	for c in ordered:
 		var reason := apply_command(c)
 		if reason != "":
 			events.emit(SimEvents.COMMAND_REJECTED, {"owner": c.get("owner", 0), "cmd": c.get("type", ""), "reason": reason})
@@ -376,6 +386,15 @@ func _check_end() -> void:
 
 func is_player_alive() -> bool:
 	return player_id > 0 and st.is_alive(player_id)
+
+
+## Whether `id` won the finished match: the winner, or a member of the winning team.
+func won(id: int) -> bool:
+	if id <= 0 or phase != Phase.OVER:
+		return false
+	if int(result.get("winner", 0)) == id:
+		return true
+	return (result.get("winners", []) as Array).has(id)
 
 
 func elapsed_seconds() -> float:
