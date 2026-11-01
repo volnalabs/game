@@ -1,0 +1,175 @@
+{
+	"_comment": "AI personalities (docs/ai/AI_DESIGN.md §8). Weights multiply utility terms; risk_tolerance in 0..1 (share of the exposure penalty ignored); reserve = share of troops kept home outside of wars; grudge = how slowly grudges fade; coalition = eagerness to gang up on a runaway leader. perks: profile-style perks the AI uses (off in Fair mode); research_order: branch preference for in-match research. diplomacy: eagerness to make and keep pacts; treachery: willingness to break one when an ally becomes easy prey.",
+	"order": [
+		"balanced",
+		"aggressive",
+		"economic",
+		"defensive",
+		"opportunistic"
+	],
+	"personalities": {
+		"aggressive": {
+			"expansion": 1.2,
+			"war_appetite": 1.25,
+			"risk_tolerance": 0.6,
+			"reserve": 0.25,
+			"defense": 0.6,
+			"economy": 0.7,
+			"opportunism": 1.0,
+			"grudge": 1.0,
+			"naval": 1.0,
+			"coalition": 0.8,
+			"max_wars": 2,
+			"perks": [
+				"mil_drill",
+				"mil_blitz"
+			],
+			"research_order": [
+				"military",
+				"logistics",
+				"strategic",
+				"economy",
+				"defense"
+			],
+			"diplomacy": 0.7,
+			"treachery": 0.6
+		},
+		"economic": {
+			"expansion": 1.0,
+			"war_appetite": 0.6,
+			"risk_tolerance": 0.35,
+			"reserve": 0.35,
+			"defense": 0.9,
+			"economy": 1.6,
+			"opportunism": 0.8,
+			"grudge": 0.6,
+			"naval": 0.9,
+			"coalition": 1.0,
+			"max_wars": 1,
+			"perks": [
+				"eco_tax",
+				"eco_industry"
+			],
+			"research_order": [
+				"economy",
+				"strategic",
+				"logistics",
+				"defense",
+				"military"
+			],
+			"diplomacy": 1.2,
+			"treachery": 0.1
+		},
+		"defensive": {
+			"expansion": 0.8,
+			"war_appetite": 0.5,
+			"risk_tolerance": 0.3,
+			"reserve": 0.5,
+			"defense": 1.6,
+			"economy": 1.0,
+			"opportunism": 0.6,
+			"grudge": 1.4,
+			"naval": 0.6,
+			"coalition": 1.2,
+			"max_wars": 1,
+			"perks": [
+				"def_walls",
+				"def_militia"
+			],
+			"research_order": [
+				"defense",
+				"economy",
+				"logistics",
+				"military",
+				"strategic"
+			],
+			"diplomacy": 1.3,
+			"treachery": 0.05
+		},
+		"balanced": {
+			"expansion": 1.0,
+			"war_appetite": 1.0,
+			"risk_tolerance": 0.5,
+			"reserve": 0.3,
+			"defense": 1.0,
+			"economy": 1.0,
+			"opportunism": 1.0,
+			"grudge": 1.0,
+			"naval": 1.0,
+			"coalition": 1.0,
+			"max_wars": 2,
+			"perks": [
+				"log_roads",
+				"eco_tax"
+			],
+			"research_order": [
+				"economy",
+				"military",
+				"defense",
+				"logistics",
+				"strategic"
+			],
+			"diplomacy": 1.0,
+			"treachery": 0.2
+		},
+		"opportunistic": {
+			"expansion": 1.0,
+			"war_appetite": 0.9,
+			"risk_tolerance": 0.5,
+			"reserve": 0.3,
+			"defense": 0.9,
+			"economy": 1.0,
+			"opportunism": 2.0,
+			"grudge": 0.8,
+			"naval": 1.1,
+			"coalition": 1.3,
+			"max_wars": 2,
+			"perks": [
+				"int_scouts",
+				"mil_drill"
+			],
+			"research_order": [
+				"strategic",
+				"military",
+				"economy",
+				"logistics",
+				"defense"
+			],
+			"diplomacy": 1.0,
+			"treachery": 0.5
+		}
+	},
+	"diplomacy": {
+		"_comment": "Diplomatic AI (docs/ai/AI_DESIGN.md, Diplomacy). Ticks are simulation ticks.",
+		"interval": 50,
+		"accept_bar": 0.35,
+		"propose_bar": 0.55,
+		"propose_gap": 1200,
+		"propose_chance": 0.5,
+		"renew_bar": 0.0,
+		"leader_share": 0.3,
+		"fear_from": 0.6,
+		"fear_weight": 0.6,
+		"enemy_from": 0.5,
+		"enemy_weight": 0.5,
+		"peace_weight": 0.8,
+		"nap_bonus": 0.15,
+		"grudge_weight": 1.0,
+		"target_penalty": 1.0,
+		"traitor_penalty": 0.8,
+		"betrayed_grudge": 1.0,
+		"help_from": 0.25,
+		"help_gap": 600,
+		"help_share": 0.25,
+		"help_min": 500,
+		"betray_after_seconds": 600,
+		"betray_ratio": 0.4,
+		"betray_chance": 0.04,
+		"prey_penalty": 0.6,
+		"no_room_penalty": 0.6,
+		"weak_partner_penalty": 0.8,
+		"ally_help_risk": 0.35,
+		"ally_far_risk": 0.1,
+		"help_threat": 0.8
+	}
+}

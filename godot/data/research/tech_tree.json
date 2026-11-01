@@ -1,0 +1,573 @@
+{
+	"_comment": "In-match research (ResearchSystem). Research points per second: base + research centres (buildings.json effect research_per_level per active level), times research_mult. One research at a time per state; progress of a switched research is kept. 'modifiers' add to Modifiers stats; 'unlocks' are building ids (their 'requires' points back here).",
+	"branches": [
+		"economy",
+		"military",
+		"defense",
+		"logistics",
+		"strategic",
+		"weapons"
+	],
+	"rp_base_per_sec": 0.6,
+	"techs": [
+		{
+			"id": "trade_routes",
+			"branch": "economy",
+			"tier": 1,
+			"cost": 60,
+			"requires": [],
+			"name": {
+				"ru": "Торговые пути",
+				"en": "Trade routes"
+			},
+			"desc": {
+				"ru": "+6% к доходу золота.",
+				"en": "+6% gold income."
+			},
+			"modifiers": {
+				"gold_mult": 0.06
+			}
+		},
+		{
+			"id": "electrification",
+			"branch": "economy",
+			"tier": 2,
+			"cost": 120,
+			"requires": [
+				"trade_routes"
+			],
+			"name": {
+				"ru": "Электрификация",
+				"en": "Electrification"
+			},
+			"desc": {
+				"ru": "Открывает электростанцию.",
+				"en": "Unlocks the power plant."
+			},
+			"unlocks": [
+				"power_plant"
+			]
+		},
+		{
+			"id": "industrial_planning",
+			"branch": "economy",
+			"tier": 3,
+			"cost": 170,
+			"requires": [
+				"electrification"
+			],
+			"name": {
+				"ru": "Плановая индустрия",
+				"en": "Industrial planning"
+			},
+			"desc": {
+				"ru": "+15% снаряжения, постройки дешевле на 8%.",
+				"en": "+15% supplies, buildings 8% cheaper."
+			},
+			"modifiers": {
+				"supply_mult": 0.15,
+				"build_cost_mult": -0.08
+			}
+		},
+		{
+			"id": "banking",
+			"branch": "economy",
+			"tier": 4,
+			"cost": 230,
+			"requires": [
+				"industrial_planning"
+			],
+			"name": {
+				"ru": "Банковское дело",
+				"en": "Banking"
+			},
+			"desc": {
+				"ru": "Содержание армии −10%, доход +5%.",
+				"en": "Army upkeep −10%, income +5%."
+			},
+			"modifiers": {
+				"upkeep_mult": -0.1,
+				"gold_mult": 0.05
+			}
+		},
+		{
+			"id": "global_markets",
+			"branch": "economy",
+			"tier": 5,
+			"cost": 330,
+			"requires": [
+				"banking"
+			],
+			"name": {
+				"ru": "Мировые рынки",
+				"en": "Global markets"
+			},
+			"desc": {
+				"ru": "+8% к доходу золота.",
+				"en": "+8% gold income."
+			},
+			"modifiers": {
+				"gold_mult": 0.08
+			}
+		},
+		{
+			"id": "doctrine",
+			"branch": "military",
+			"tier": 1,
+			"cost": 80,
+			"requires": [],
+			"name": {
+				"ru": "Военная доктрина",
+				"en": "Military doctrine"
+			},
+			"desc": {
+				"ru": "Открывает военную академию; атакующие потери −3%.",
+				"en": "Unlocks the military academy; attack losses −3%."
+			},
+			"modifiers": {
+				"attack_loss_mult": -0.03
+			},
+			"unlocks": [
+				"military_academy"
+			]
+		},
+		{
+			"id": "combined_arms",
+			"branch": "military",
+			"tier": 2,
+			"cost": 150,
+			"requires": [
+				"doctrine"
+			],
+			"name": {
+				"ru": "Общевойсковой бой",
+				"en": "Combined arms"
+			},
+			"desc": {
+				"ru": "Наступление быстрее на 8%. Открывает артиллерийский удар с оборонных постов.",
+				"en": "Attacks advance 8% faster. Unlocks artillery fire from defence posts."
+			},
+			"modifiers": {
+				"attack_speed_mult": 0.08
+			},
+			"weapons": [
+				"artillery"
+			]
+		},
+		{
+			"id": "aviation",
+			"branch": "military",
+			"tier": 3,
+			"cost": 210,
+			"requires": [
+				"combined_arms"
+			],
+			"name": {
+				"ru": "Авиация",
+				"en": "Aviation"
+			},
+			"desc": {
+				"ru": "Открывает авиабазу и авиаудары.",
+				"en": "Unlocks the airbase and air strikes."
+			},
+			"unlocks": [
+				"airbase"
+			],
+			"weapons": [
+				"air_strike"
+			]
+		},
+		{
+			"id": "shock_troops",
+			"branch": "military",
+			"tier": 4,
+			"cost": 270,
+			"requires": [
+				"aviation"
+			],
+			"name": {
+				"ru": "Ударные части",
+				"en": "Shock troops"
+			},
+			"desc": {
+				"ru": "Атакующие потери −5%.",
+				"en": "Attack losses −5%."
+			},
+			"modifiers": {
+				"attack_loss_mult": -0.05
+			}
+		},
+		{
+			"id": "fortification",
+			"branch": "defense",
+			"tier": 1,
+			"cost": 70,
+			"requires": [],
+			"name": {
+				"ru": "Фортификация",
+				"en": "Fortification"
+			},
+			"desc": {
+				"ru": "Открывает бункер.",
+				"en": "Unlocks the bunker."
+			},
+			"unlocks": [
+				"bunker"
+			]
+		},
+		{
+			"id": "radar",
+			"branch": "defense",
+			"tier": 2,
+			"cost": 140,
+			"requires": [
+				"fortification"
+			],
+			"name": {
+				"ru": "Радиолокация",
+				"en": "Radar"
+			},
+			"desc": {
+				"ru": "Открывает радар.",
+				"en": "Unlocks the radar."
+			},
+			"unlocks": [
+				"radar"
+			]
+		},
+		{
+			"id": "defense_in_depth",
+			"branch": "defense",
+			"tier": 3,
+			"cost": 210,
+			"requires": [
+				"radar"
+			],
+			"name": {
+				"ru": "Эшелонированная оборона",
+				"en": "Defence in depth"
+			},
+			"desc": {
+				"ru": "Нападающие на вас теряют на 8% больше.",
+				"en": "Attackers lose 8% more against you."
+			},
+			"modifiers": {
+				"defense_loss_mult": 0.08
+			}
+		},
+		{
+			"id": "entrenchment",
+			"branch": "defense",
+			"tier": 4,
+			"cost": 270,
+			"requires": [
+				"defense_in_depth"
+			],
+			"name": {
+				"ru": "Окопы",
+				"en": "Entrenchment"
+			},
+			"desc": {
+				"ru": "Наступление на вашу землю медленнее на 10%.",
+				"en": "Attacks on your land are 10% slower."
+			},
+			"modifiers": {
+				"defense_speed_mult": 0.1
+			}
+		},
+		{
+			"id": "logistics",
+			"branch": "logistics",
+			"tier": 1,
+			"cost": 70,
+			"requires": [],
+			"name": {
+				"ru": "Логистика",
+				"en": "Logistics"
+			},
+			"desc": {
+				"ru": "Открывает логистический узел; рост войск +3%.",
+				"en": "Unlocks the logistics hub; troop growth +3%."
+			},
+			"modifiers": {
+				"growth_mult": 0.03
+			},
+			"unlocks": [
+				"logistics_hub"
+			]
+		},
+		{
+			"id": "naval_doctrine",
+			"branch": "logistics",
+			"tier": 2,
+			"cost": 130,
+			"requires": [
+				"logistics"
+			],
+			"name": {
+				"ru": "Морская доктрина",
+				"en": "Naval doctrine"
+			},
+			"desc": {
+				"ru": "Открывает военно-морскую базу; транспорты быстрее на 10%.",
+				"en": "Unlocks the naval base; transports 10% faster."
+			},
+			"modifiers": {
+				"boat_speed_mult": 0.1
+			},
+			"unlocks": [
+				"naval_base"
+			]
+		},
+		{
+			"id": "rail_network",
+			"branch": "logistics",
+			"tier": 3,
+			"cost": 210,
+			"requires": [
+				"logistics"
+			],
+			"name": {
+				"ru": "Железные дороги",
+				"en": "Rail network"
+			},
+			"desc": {
+				"ru": "Наступление быстрее на 5%, рост войск +4%.",
+				"en": "Attacks 5% faster, troop growth +4%."
+			},
+			"modifiers": {
+				"attack_speed_mult": 0.05,
+				"growth_mult": 0.04
+			}
+		},
+		{
+			"id": "deep_reserves",
+			"branch": "logistics",
+			"tier": 4,
+			"cost": 290,
+			"requires": [
+				"rail_network"
+			],
+			"name": {
+				"ru": "Глубокие резервы",
+				"en": "Deep reserves"
+			},
+			"desc": {
+				"ru": "Предел армии +8%.",
+				"en": "Army cap +8%."
+			},
+			"modifiers": {
+				"cap_mult": 0.08
+			}
+		},
+		{
+			"id": "intelligence",
+			"branch": "strategic",
+			"tier": 1,
+			"cost": 120,
+			"requires": [],
+			"name": {
+				"ru": "Разведка",
+				"en": "Intelligence"
+			},
+			"desc": {
+				"ru": "Исследования быстрее на 15%.",
+				"en": "Research 15% faster."
+			},
+			"modifiers": {
+				"research_mult": 0.15
+			}
+		},
+		{
+			"id": "command",
+			"branch": "strategic",
+			"tier": 2,
+			"cost": 160,
+			"requires": [
+				"intelligence"
+			],
+			"name": {
+				"ru": "Единое командование",
+				"en": "Unified command"
+			},
+			"desc": {
+				"ru": "Открывает командный центр.",
+				"en": "Unlocks the command centre."
+			},
+			"unlocks": [
+				"command_center"
+			]
+		},
+		{
+			"id": "war_economy",
+			"branch": "strategic",
+			"tier": 3,
+			"cost": 250,
+			"requires": [
+				"command"
+			],
+			"name": {
+				"ru": "Военная экономика",
+				"en": "War economy"
+			},
+			"desc": {
+				"ru": "Снаряжение +10%, атакующие потери −2%.",
+				"en": "Supplies +10%, attack losses −2%."
+			},
+			"modifiers": {
+				"supply_mult": 0.1,
+				"attack_loss_mult": -0.02
+			}
+		},
+		{
+			"id": "grand_strategy",
+			"branch": "strategic",
+			"tier": 4,
+			"cost": 420,
+			"requires": [
+				"war_economy",
+				"combined_arms"
+			],
+			"name": {
+				"ru": "Большая стратегия",
+				"en": "Grand strategy"
+			},
+			"desc": {
+				"ru": "Доход +4%, рост войск +4%, атакующие потери −3%.",
+				"en": "Income +4%, troop growth +4%, attack losses −3%."
+			},
+			"modifiers": {
+				"gold_mult": 0.04,
+				"growth_mult": 0.04,
+				"attack_loss_mult": -0.03
+			}
+		},
+		{
+			"id": "rocketry",
+			"branch": "weapons",
+			"tier": 1,
+			"cost": 220,
+			"requires": [
+				"combined_arms"
+			],
+			"name": {
+				"ru": "Ракетостроение",
+				"en": "Rocketry"
+			},
+			"desc": {
+				"ru": "Открывает ракетную шахту, ракету и тяжёлую ракету.",
+				"en": "Unlocks the missile silo, the missile and the heavy missile."
+			},
+			"unlocks": [
+				"silo"
+			],
+			"weapons": [
+				"missile",
+				"heavy_missile"
+			]
+		},
+		{
+			"id": "guided_munitions",
+			"branch": "weapons",
+			"tier": 2,
+			"cost": 260,
+			"requires": [
+				"rocketry"
+			],
+			"name": {
+				"ru": "Высокоточные боеприпасы",
+				"en": "Guided munitions"
+			},
+			"desc": {
+				"ru": "Открывает кассетную ракету.",
+				"en": "Unlocks the cluster missile."
+			},
+			"weapons": [
+				"cluster"
+			]
+		},
+		{
+			"id": "electronic_warfare",
+			"branch": "weapons",
+			"tier": 3,
+			"cost": 300,
+			"requires": [
+				"guided_munitions",
+				"radar"
+			],
+			"name": {
+				"ru": "Радиоэлектронная борьба",
+				"en": "Electronic warfare"
+			},
+			"desc": {
+				"ru": "Открывает ЭМИ-удар: постройки в зоне отключаются на 30 с.",
+				"en": "Unlocks the EMP strike: buildings in its zone switch off for 30 s."
+			},
+			"weapons": [
+				"emp"
+			]
+		},
+		{
+			"id": "nuclear_program",
+			"branch": "weapons",
+			"tier": 3,
+			"cost": 380,
+			"requires": [
+				"guided_munitions",
+				"war_economy"
+			],
+			"name": {
+				"ru": "Ядерная программа",
+				"en": "Nuclear programme"
+			},
+			"desc": {
+				"ru": "Открывает тактический ядерный заряд.",
+				"en": "Unlocks the tactical nuke."
+			},
+			"weapons": [
+				"tactical_nuke"
+			]
+		},
+		{
+			"id": "thermonuclear",
+			"branch": "weapons",
+			"tier": 4,
+			"cost": 520,
+			"requires": [
+				"nuclear_program"
+			],
+			"name": {
+				"ru": "Термоядерное оружие",
+				"en": "Thermonuclear weapons"
+			},
+			"desc": {
+				"ru": "Открывает стратегический заряд и РГЧ (MIRV).",
+				"en": "Unlocks the strategic nuke and the MIRV."
+			},
+			"weapons": [
+				"strategic_nuke",
+				"mirv"
+			]
+		},
+		{
+			"id": "air_defence",
+			"branch": "defense",
+			"tier": 3,
+			"cost": 200,
+			"requires": [
+				"radar"
+			],
+			"name": {
+				"ru": "Противовоздушная оборона",
+				"en": "Air defence"
+			},
+			"desc": {
+				"ru": "Открывает ЗРК: перехват ракет и авиаударов над вашей землёй.",
+				"en": "Unlocks the SAM site: intercepts missiles and air strikes over your land."
+			},
+			"unlocks": [
+				"sam"
+			]
+		}
+	]
+}

@@ -1,0 +1,60 @@
+{
+	"_comment": "Player level curve: XP needed from level L to L+1 = base + step * (L-1)^power (rounded to 10). Milestones every 5 levels grant rewards through RewardManager.",
+	"max_level": 100,
+	"base": 500,
+	"step": 120,
+	"power": 1.3,
+	"milestone_every": 5,
+	"milestone_rewards": {
+		"default": {
+			"credits": 300,
+			"cases": {
+				"starter": 1
+			},
+			"skill_points": 1
+		},
+		"10": {
+			"credits": 600,
+			"cases": {
+				"military": 1
+			},
+			"skill_points": 1
+		},
+		"20": {
+			"credits": 900,
+			"cases": {
+				"elite": 1
+			},
+			"skill_points": 1
+		},
+		"30": {
+			"credits": 1200,
+			"cases": {
+				"national": 1
+			},
+			"skill_points": 1
+		},
+		"50": {
+			"credits": 2500,
+			"cases": {
+				"legendary": 1
+			},
+			"skill_points": 2
+		},
+		"75": {
+			"credits": 3500,
+			"cases": {
+				"legendary": 1
+			},
+			"skill_points": 2
+		},
+		"100": {
+			"credits": 6000,
+			"cases": {
+				"legendary": 2
+			},
+			"skill_points": 3
+		}
+	},
+	"level_skill_points": 1
+}

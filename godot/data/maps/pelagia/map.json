@@ -1,0 +1,320 @@
+{
+	"balance": {
+		"tribes_default": 40
+	},
+	"category": "fictional",
+	"description": {
+		"en": "A great archipelago: three small continents, dozens of islands, straits and sea lanes. Navies decide the war.",
+		"ru": "Большой архипелаг: три малых материка, десятки островов, проливы и морские пути. Без флота не победить."
+	},
+	"features": [
+		"archipelago",
+		"straits",
+		"naval",
+		"island_states"
+	],
+	"height": 900,
+	"id": "pelagia",
+	"k_lin": 1.0,
+	"license": "AGPL-3.0",
+	"max_bots": 28,
+	"name": {
+		"en": "Pelagia",
+		"ru": "Пелагия"
+	},
+	"nations": [
+		{
+			"flag": "",
+			"id": "pelagia_0",
+			"name": {
+				"en": "Hekodor",
+				"ru": "Хекодор"
+			},
+			"x": 237,
+			"y": 209
+		},
+		{
+			"flag": "",
+			"id": "pelagia_1",
+			"name": {
+				"en": "Orvalia",
+				"ru": "Орвалия"
+			},
+			"x": 388,
+			"y": 411
+		},
+		{
+			"flag": "",
+			"id": "pelagia_2",
+			"name": {
+				"en": "Elor",
+				"ru": "Элор"
+			},
+			"x": 1115,
+			"y": 716
+		},
+		{
+			"flag": "",
+			"id": "pelagia_3",
+			"name": {
+				"en": "Pesaora",
+				"ru": "Песаора"
+			},
+			"x": 1150,
+			"y": 280
+		},
+		{
+			"flag": "",
+			"id": "pelagia_4",
+			"name": {
+				"en": "Sereis",
+				"ru": "Сереис"
+			},
+			"x": 110,
+			"y": 678
+		},
+		{
+			"flag": "",
+			"id": "pelagia_5",
+			"name": {
+				"en": "Peeta",
+				"ru": "Пеета"
+			},
+			"x": 1235,
+			"y": 303
+		},
+		{
+			"flag": "",
+			"id": "pelagia_6",
+			"name": {
+				"en": "Kalimar",
+				"ru": "Калимар"
+			},
+			"x": 297,
+			"y": 648
+		},
+		{
+			"flag": "",
+			"id": "pelagia_7",
+			"name": {
+				"en": "Molia",
+				"ru": "Молия"
+			},
+			"x": 1340,
+			"y": 203
+		},
+		{
+			"flag": "",
+			"id": "pelagia_8",
+			"name": {
+				"en": "Motagrad",
+				"ru": "Мотаград"
+			},
+			"x": 1042,
+			"y": 425
+		},
+		{
+			"flag": "",
+			"id": "pelagia_9",
+			"name": {
+				"en": "Akoen",
+				"ru": "Акоен"
+			},
+			"x": 720,
+			"y": 219
+		},
+		{
+			"flag": "",
+			"id": "pelagia_10",
+			"name": {
+				"en": "Karidor",
+				"ru": "Каридор"
+			},
+			"x": 437,
+			"y": 331
+		},
+		{
+			"flag": "",
+			"id": "pelagia_11",
+			"name": {
+				"en": "Marriin",
+				"ru": "Марриин"
+			},
+			"x": 822,
+			"y": 458
+		},
+		{
+			"flag": "",
+			"id": "pelagia_12",
+			"name": {
+				"en": "Miria",
+				"ru": "Мирия"
+			},
+			"x": 1380,
+			"y": 286
+		},
+		{
+			"flag": "",
+			"id": "pelagia_13",
+			"name": {
+				"en": "Risaeta",
+				"ru": "Рисаета"
+			},
+			"x": 1434,
+			"y": 452
+		},
+		{
+			"flag": "",
+			"id": "pelagia_14",
+			"name": {
+				"en": "Eren",
+				"ru": "Ерен"
+			},
+			"x": 887,
+			"y": 525
+		},
+		{
+			"flag": "",
+			"id": "pelagia_15",
+			"name": {
+				"en": "Noriea",
+				"ru": "Нориея"
+			},
+			"x": 1516,
+			"y": 515
+		},
+		{
+			"flag": "",
+			"id": "pelagia_16",
+			"name": {
+				"en": "Kael",
+				"ru": "Каел"
+			},
+			"x": 338,
+			"y": 237
+		},
+		{
+			"flag": "",
+			"id": "pelagia_17",
+			"name": {
+				"en": "Zaora",
+				"ru": "Заора"
+			},
+			"x": 797,
+			"y": 567
+		},
+		{
+			"flag": "",
+			"id": "pelagia_18",
+			"name": {
+				"en": "Pevigrad",
+				"ru": "Певиград"
+			},
+			"x": 1246,
+			"y": 203
+		},
+		{
+			"flag": "",
+			"id": "pelagia_19",
+			"name": {
+				"en": "Lalosk",
+				"ru": "Лалоск"
+			},
+			"x": 1117,
+			"y": 198
+		},
+		{
+			"flag": "",
+			"id": "pelagia_20",
+			"name": {
+				"en": "Kemar",
+				"ru": "Кемар"
+			},
+			"x": 546,
+			"y": 596
+		},
+		{
+			"flag": "",
+			"id": "pelagia_21",
+			"name": {
+				"en": "Takoen",
+				"ru": "Такоен"
+			},
+			"x": 573,
+			"y": 325
+		},
+		{
+			"flag": "",
+			"id": "pelagia_22",
+			"name": {
+				"en": "Soria",
+				"ru": "Сория"
+			},
+			"x": 1305,
+			"y": 565
+		},
+		{
+			"flag": "",
+			"id": "pelagia_23",
+			"name": {
+				"en": "Mian",
+				"ru": "Миан"
+			},
+			"x": 1221,
+			"y": 649
+		},
+		{
+			"flag": "",
+			"id": "pelagia_24",
+			"name": {
+				"en": "Glevigrad",
+				"ru": "Глевиград"
+			},
+			"x": 396,
+			"y": 694
+		},
+		{
+			"flag": "",
+			"id": "pelagia_25",
+			"name": {
+				"en": "Orora",
+				"ru": "Орора"
+			},
+			"x": 719,
+			"y": 711
+		},
+		{
+			"flag": "",
+			"id": "pelagia_26",
+			"name": {
+				"en": "Pevael",
+				"ru": "Певаел"
+			},
+			"x": 1361,
+			"y": 377
+		},
+		{
+			"flag": "",
+			"id": "pelagia_27",
+			"name": {
+				"en": "Arriora",
+				"ru": "Арриора"
+			},
+			"x": 1414,
+			"y": 629
+		}
+	],
+	"recommended_bots": [
+		8.0,
+		24.0
+	],
+	"source": "VolnaLabs original (data/map_specs/pelagia.json, baked by scripts/tools/bake_maps.gd)",
+	"stats": {
+		"continents": 15,
+		"fairness": 0.9325,
+		"islands": 17,
+		"land_tiles": 375787,
+		"ms": 3136
+	},
+	"width": 1600
+}

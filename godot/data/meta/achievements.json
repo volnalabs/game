@@ -1,0 +1,626 @@
+{
+	"_comment": "Conditions: scope match (this result), lifetime (profile stats) or profile (level, items, cases). 'where' filters a match: difficulty, generated, fair, bots_min, minutes_max, posts_min, attacks_max, comeback. Each achievement unlocks once; rewards go through RewardManager.",
+	"categories": [
+		"combat",
+		"conquest",
+		"economy",
+		"exploration",
+		"strategy",
+		"progress",
+		"hidden"
+	],
+	"achievements": [
+		{
+			"id": "first_match",
+			"category": "progress",
+			"icon": "m_new_game",
+			"hidden": false,
+			"name": {
+				"ru": "Первые шаги",
+				"en": "First steps"
+			},
+			"desc": {
+				"ru": "Завершите первую партию.",
+				"en": "Finish your first match."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "matches",
+				"min": 1
+			},
+			"reward": {
+				"credits": 100,
+				"xp": 100
+			}
+		},
+		{
+			"id": "first_win",
+			"category": "combat",
+			"icon": "g_victory",
+			"hidden": false,
+			"name": {
+				"ru": "Первая победа",
+				"en": "First victory"
+			},
+			"desc": {
+				"ru": "Выиграйте партию.",
+				"en": "Win a match."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "wins",
+				"min": 1
+			},
+			"reward": {
+				"credits": 200,
+				"cases": {
+					"starter": 1
+				}
+			}
+		},
+		{
+			"id": "wins_10",
+			"category": "combat",
+			"icon": "g_victory",
+			"hidden": false,
+			"name": {
+				"ru": "Полководец",
+				"en": "Commander"
+			},
+			"desc": {
+				"ru": "Выиграйте 10 партий.",
+				"en": "Win 10 matches."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "wins",
+				"min": 10
+			},
+			"reward": {
+				"credits": 500,
+				"cases": {
+					"military": 1
+				}
+			}
+		},
+		{
+			"id": "wins_50",
+			"category": "combat",
+			"icon": "e_laurel",
+			"hidden": false,
+			"name": {
+				"ru": "Живая легенда",
+				"en": "Living legend"
+			},
+			"desc": {
+				"ru": "Выиграйте 50 партий.",
+				"en": "Win 50 matches."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "wins",
+				"min": 50
+			},
+			"reward": {
+				"credits": 2000,
+				"item": "title_conqueror"
+			}
+		},
+		{
+			"id": "hard_win",
+			"category": "combat",
+			"icon": "g_skull",
+			"hidden": false,
+			"name": {
+				"ru": "Против лучших",
+				"en": "Against the best"
+			},
+			"desc": {
+				"ru": "Выиграйте на сложности «Сложный».",
+				"en": "Win on Hard difficulty."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"difficulty": "hard"
+				}
+			},
+			"reward": {
+				"credits": 400,
+				"cases": {
+					"elite": 1
+				}
+			}
+		},
+		{
+			"id": "big_win",
+			"category": "combat",
+			"icon": "g_war",
+			"hidden": false,
+			"name": {
+				"ru": "Мировая война",
+				"en": "World war"
+			},
+			"desc": {
+				"ru": "Выиграйте партию против 40+ противников.",
+				"en": "Win against 40+ opponents."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"bots_min": 40
+				}
+			},
+			"reward": {
+				"credits": 500
+			}
+		},
+		{
+			"id": "conquer_10k",
+			"category": "conquest",
+			"icon": "g_attack",
+			"hidden": false,
+			"name": {
+				"ru": "Захватчик",
+				"en": "Invader"
+			},
+			"desc": {
+				"ru": "Захватите 10 000 тайлов за одну партию.",
+				"en": "Conquer 10,000 tiles in one match."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "conquered",
+				"min": 10000
+			},
+			"reward": {
+				"credits": 200
+			}
+		},
+		{
+			"id": "conquer_100k",
+			"category": "conquest",
+			"icon": "g_attack",
+			"hidden": false,
+			"name": {
+				"ru": "Пожиратель карт",
+				"en": "Map eater"
+			},
+			"desc": {
+				"ru": "Захватите 100 000 тайлов за одну партию.",
+				"en": "Conquer 100,000 tiles in one match."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "conquered",
+				"min": 100000
+			},
+			"reward": {
+				"credits": 600,
+				"item": "capture_rings"
+			}
+		},
+		{
+			"id": "lifetime_1m",
+			"category": "conquest",
+			"icon": "r_land",
+			"hidden": false,
+			"name": {
+				"ru": "Миллион тайлов",
+				"en": "A million tiles"
+			},
+			"desc": {
+				"ru": "Захватите в сумме 1 000 000 тайлов.",
+				"en": "Conquer 1,000,000 tiles in total."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "conquered",
+				"min": 1000000
+			},
+			"reward": {
+				"credits": 1500
+			}
+		},
+		{
+			"id": "eliminate_5",
+			"category": "conquest",
+			"icon": "g_skull",
+			"hidden": false,
+			"name": {
+				"ru": "Сокрушитель",
+				"en": "Crusher"
+			},
+			"desc": {
+				"ru": "Уничтожьте 5 государств за партию.",
+				"en": "Eliminate 5 states in one match."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "eliminations",
+				"min": 5
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "builder_10",
+			"category": "economy",
+			"icon": "b_city",
+			"hidden": false,
+			"name": {
+				"ru": "Строитель",
+				"en": "Builder"
+			},
+			"desc": {
+				"ru": "Постройте 10 зданий за партию.",
+				"en": "Build 10 buildings in one match."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "built",
+				"min": 10
+			},
+			"reward": {
+				"credits": 200
+			}
+		},
+		{
+			"id": "rich_10m",
+			"category": "economy",
+			"icon": "r_gold",
+			"hidden": false,
+			"name": {
+				"ru": "Казна империи",
+				"en": "Imperial treasury"
+			},
+			"desc": {
+				"ru": "Заработайте 10 млн золота за партию.",
+				"en": "Earn 10M gold in one match."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "gold_earned",
+				"min": 10000000
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "rich_lifetime",
+			"category": "economy",
+			"icon": "r_gold",
+			"hidden": false,
+			"name": {
+				"ru": "Магнат",
+				"en": "Tycoon"
+			},
+			"desc": {
+				"ru": "Заработайте в сумме 500 млн золота.",
+				"en": "Earn 500M gold in total."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "gold_earned",
+				"min": 500000000
+			},
+			"reward": {
+				"credits": 1000,
+				"item": "theme_gilded"
+			}
+		},
+		{
+			"id": "maps_3",
+			"category": "exploration",
+			"icon": "ui_map",
+			"hidden": false,
+			"name": {
+				"ru": "Путешественник",
+				"en": "Traveller"
+			},
+			"desc": {
+				"ru": "Сыграйте на 3 разных картах.",
+				"en": "Play on 3 different maps."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "maps_played",
+				"min": 3
+			},
+			"reward": {
+				"credits": 200
+			}
+		},
+		{
+			"id": "maps_all",
+			"category": "exploration",
+			"icon": "ui_world",
+			"hidden": false,
+			"name": {
+				"ru": "Картограф",
+				"en": "Cartographer"
+			},
+			"desc": {
+				"ru": "Сыграйте на 9 разных картах.",
+				"en": "Play on 9 different maps."
+			},
+			"condition": {
+				"scope": "lifetime",
+				"key": "maps_played",
+				"min": 9
+			},
+			"reward": {
+				"credits": 800,
+				"item": "map_atlas"
+			}
+		},
+		{
+			"id": "generated_win",
+			"category": "exploration",
+			"icon": "ui_sparkles",
+			"hidden": false,
+			"name": {
+				"ru": "Новый мир",
+				"en": "New world"
+			},
+			"desc": {
+				"ru": "Выиграйте на сгенерированной карте.",
+				"en": "Win on a generated map."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"generated": true
+				}
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "level_10",
+			"category": "progress",
+			"icon": "r_xp",
+			"hidden": false,
+			"name": {
+				"ru": "Ветеран",
+				"en": "Veteran"
+			},
+			"desc": {
+				"ru": "Достигните 10 уровня.",
+				"en": "Reach level 10."
+			},
+			"condition": {
+				"scope": "profile",
+				"key": "level",
+				"min": 10
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "level_25",
+			"category": "progress",
+			"icon": "r_xp",
+			"hidden": false,
+			"name": {
+				"ru": "Генерал",
+				"en": "General"
+			},
+			"desc": {
+				"ru": "Достигните 25 уровня.",
+				"en": "Reach level 25."
+			},
+			"condition": {
+				"scope": "profile",
+				"key": "level",
+				"min": 25
+			},
+			"reward": {
+				"credits": 800,
+				"item": "frame_gold"
+			}
+		},
+		{
+			"id": "collector_20",
+			"category": "progress",
+			"icon": "m_inventory",
+			"hidden": false,
+			"name": {
+				"ru": "Коллекционер",
+				"en": "Collector"
+			},
+			"desc": {
+				"ru": "Соберите 20 предметов.",
+				"en": "Own 20 items."
+			},
+			"condition": {
+				"scope": "profile",
+				"key": "items_owned",
+				"min": 20
+			},
+			"reward": {
+				"credits": 400
+			}
+		},
+		{
+			"id": "cases_10",
+			"category": "progress",
+			"icon": "m_case_open",
+			"hidden": false,
+			"name": {
+				"ru": "Азарт",
+				"en": "Thrill"
+			},
+			"desc": {
+				"ru": "Откройте 10 кейсов.",
+				"en": "Open 10 cases."
+			},
+			"condition": {
+				"scope": "profile",
+				"key": "cases_opened",
+				"min": 10
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "quick_win",
+			"category": "strategy",
+			"icon": "ui_clock",
+			"hidden": false,
+			"name": {
+				"ru": "Блицкриг",
+				"en": "Blitzkrieg"
+			},
+			"desc": {
+				"ru": "Выиграйте быстрее чем за 15 минут.",
+				"en": "Win in under 15 minutes."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"minutes_max": 15
+				}
+			},
+			"reward": {
+				"credits": 400
+			}
+		},
+		{
+			"id": "defender",
+			"category": "strategy",
+			"icon": "b_defense",
+			"hidden": false,
+			"name": {
+				"ru": "Неприступный",
+				"en": "Impregnable"
+			},
+			"desc": {
+				"ru": "Выиграйте, построив 5+ оборонных постов.",
+				"en": "Win with 5+ defence posts built."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"posts_min": 5
+				}
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "fair_win",
+			"category": "strategy",
+			"icon": "g_peace",
+			"hidden": false,
+			"name": {
+				"ru": "Честная игра",
+				"en": "Fair play"
+			},
+			"desc": {
+				"ru": "Выиграйте в честном режиме (без перков).",
+				"en": "Win in Fair mode (no perks)."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"fair": true
+				}
+			},
+			"reward": {
+				"credits": 300
+			}
+		},
+		{
+			"id": "comeback",
+			"category": "hidden",
+			"icon": "e_flame",
+			"hidden": true,
+			"name": {
+				"ru": "Феникс",
+				"en": "Phoenix"
+			},
+			"desc": {
+				"ru": "Выиграйте, побывав ниже 0,5% карты после 10-й минуты.",
+				"en": "Win after dropping below 0.5% of the map after minute 10."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"comeback": true
+				}
+			},
+			"reward": {
+				"credits": 800,
+				"item": "avatar_dragon"
+			}
+		},
+		{
+			"id": "pacifist",
+			"category": "hidden",
+			"icon": "g_peace",
+			"hidden": true,
+			"name": {
+				"ru": "Миролюбец",
+				"en": "Peacemaker"
+			},
+			"desc": {
+				"ru": "Выиграйте, начав не больше 5 атак на государства.",
+				"en": "Win starting no more than 5 attacks on states."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "won",
+				"min": 1,
+				"where": {
+					"attacks_max": 5
+				}
+			},
+			"reward": {
+				"credits": 600
+			}
+		},
+		{
+			"id": "marathon",
+			"category": "hidden",
+			"icon": "ui_clock",
+			"hidden": true,
+			"name": {
+				"ru": "Марафон",
+				"en": "Marathon"
+			},
+			"desc": {
+				"ru": "Сыграйте партию длиннее 2 часов.",
+				"en": "Play a match longer than 2 hours."
+			},
+			"condition": {
+				"scope": "match",
+				"key": "minutes",
+				"min": 120
+			},
+			"reward": {
+				"credits": 500
+			}
+		}
+	]
+}

@@ -1,0 +1,44 @@
+; Engine configuration file.
+; TerraFront (by VolnaLabs) — AGPL-3.0 (see ../LICENSE). Godot Engine is MIT licensed.
+
+config_version=5
+
+[application]
+
+config/name="TerraFront"
+config/description="Singleplayer offline territory strategy with real, fictional and generated worlds."
+config/version="0.2.0"
+config/icon="res://icon.png"
+run/main_scene="res://scenes/main/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+Settings="*res://scripts/core/settings.gd"
+MapRegistry="*res://scripts/maps/map_registry.gd"
+App="*res://scripts/core/app.gd"
+Profile="*res://scripts/meta/profile.gd"
+HintLayer="*res://scripts/ui/components/hint_layer.gd"
+Audio="*res://scripts/audio/audio_manager.gd"
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom_font="res://assets/fonts/Rubik-Regular.ttf"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://data/i18n/strings.ru.translation", "res://data/i18n/strings.en.translation")
+locale/fallback="ru"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.07, 0.09, 0.12, 1)

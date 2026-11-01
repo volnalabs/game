@@ -1,0 +1,85 @@
+name: Release
+
+# Builds TerraFront for Windows and Linux and publishes a GitHub Release for a version tag (v*).
+# Start it either way:
+#   - push a tag:                git tag v0.2.0 && git push origin v0.2.0
+#   - or in the GitHub interface: Releases -> Draft a new release -> tag v0.2.0 -> Publish
+#     (the archives are then attached to that release).
+# The notes come from the tag's section of CHANGELOG.md. Also runnable by hand (workflow_dispatch).
+
+on:
+  push:
+    tags: ["v*"]
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and publish, e.g. v0.2.0"
+        required: true
+
+permissions:
+  contents: write
+
+# A release made in the interface also creates its tag: both runs build the same files, one after the
+# other (the second only re-uploads them).
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.event.release.tag_name || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      TAG: ${{ github.event.inputs.tag || github.event.release.tag_name || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.event.release.tag_name || github.ref }}
+      - name: Cache Godot and export templates
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/godot
+            ~/.local/share/godot/export_templates
+          key: godot-4.7.2-templates-win-linux
+      - name: Install Godot and the two export templates
+        run: |
+          echo "GODOT=$(tools/get_godot.sh)" >> "$GITHUB_ENV"
+          python3 tools/get_templates.py
+      - name: Import project and smoke-run
+        run: |
+          $GODOT --headless --path godot --import
+          $GODOT --headless --path godot --quit-after 300 2>&1 | tee smoke.log
+          ! grep -E "SCRIPT ERROR|Parse Error" smoke.log
+      - name: Tests
+        run: $GODOT --headless --path godot -s res://tests/run_tests.gd
+      - name: Check the tag matches the game version
+        run: |
+          v=$(sed -n 's/^config\/version="\(.*\)"/\1/p' godot/project.godot)
+          test "v$v" = "$TAG" || { echo "project version $v does not match tag $TAG"; exit 1; }
+      - name: Build archives
+        run: tools/release/package.sh "${TAG#v}"
+      - name: Release notes from CHANGELOG.md
+        run: |
+          awk -v ver="${TAG#v}" '
+            $0 ~ "^## \\[" ver "\\]" {on=1; next}
+            on && /^## \[/ {exit}
+            on {print}' CHANGELOG.md > notes.md
+          test -s notes.md
+          cat notes.md
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          files="build/release/TerraFront-windows-x64.zip build/release/TerraFront-linux-x64.tar.gz build/release/SHA256SUMS.txt"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            # A release made in the interface (or a rerun): attach the archives, keep its notes if any.
+            gh release upload "$TAG" $files --clobber
+            if [ -z "$(gh release view "$TAG" --json body --jq .body)" ]; then
+              gh release edit "$TAG" --title "TerraFront ${TAG#v}" --notes-file notes.md
+            fi
+          else
+            gh release create "$TAG" $files --title "TerraFront ${TAG#v}" --notes-file notes.md --verify-tag
+          fi

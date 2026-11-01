@@ -1,0 +1,10 @@
+Game-icons.net icons used by VolnaLabs: World Strategy (godot/data/ui/icons.json, ids b_*, w_*, r_*, m_*, g_*)
+
+Source: https://game-icons.net, packaged by Iconify as the npm package @iconify-json/game-icons 1.2.4
+Authors: Lorc, Delapouite and the other game-icons.net contributors (per-icon authors are listed on
+https://game-icons.net; the icon name is stored with every icon in icons.json).
+
+Licence: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/  (legal code: https://creativecommons.org/licenses/by/3.0/legalcode)
+
+Changes: the fill colour is set to white so the game can tint the icons; shapes are unchanged.

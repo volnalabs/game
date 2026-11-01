@@ -1,0 +1,239 @@
+{
+	"_comment": "Building kinds. cost: gold = min(cost_cap, cost_base * cost_growth^min(n, cost_growth_max_n)) for 'exp', or min(cost_cap, cost_base * (n + 1)) for 'linear'; n = levels already owned. Placement rules from RoWorld (src/shared/Core/SimStructures.luau). Up to Rules.MAX_BUILDING_KINDS kinds; 'requires' names the research that unlocks a kind; 'effect' holds the numbers its effect uses (scripts/simulation/modifiers.gd and the systems it names).",
+	"min_distance": 15.0,
+	"search_radius": 15.0,
+	"port_search_manhattan": 20.0,
+	"kinds": [
+		{
+			"id": "city",
+			"cost_mode": "exp",
+			"cost_base": 125000,
+			"cost_growth": 2.0,
+			"cost_growth_max_n": 4,
+			"cost_cap": 1000000,
+			"supplies": 0,
+			"build_ticks": 50,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "city"
+		},
+		{
+			"id": "port",
+			"cost_mode": "exp",
+			"cost_base": 125000,
+			"cost_growth": 2.0,
+			"cost_growth_max_n": 4,
+			"cost_cap": 1000000,
+			"supplies": 0,
+			"build_ticks": 50,
+			"upgradable": true,
+			"coastal": true,
+			"icon": "port"
+		},
+		{
+			"id": "factory",
+			"cost_mode": "exp",
+			"cost_base": 125000,
+			"cost_growth": 2.0,
+			"cost_growth_max_n": 4,
+			"cost_cap": 1000000,
+			"supplies": 0,
+			"build_ticks": 50,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "factory"
+		},
+		{
+			"id": "defense",
+			"cost_mode": "linear",
+			"cost_base": 50000,
+			"cost_cap": 250000,
+			"supplies": 300,
+			"build_ticks": 50,
+			"upgradable": false,
+			"coastal": false,
+			"icon": "defense",
+			"radius": 30.0,
+			"mag_mult": 5.0,
+			"cost_mult": 3.0
+		},
+		{
+			"id": "sam",
+			"cost_mode": "linear",
+			"cost_base": 1500000,
+			"cost_cap": 3000000,
+			"supplies": 1500,
+			"build_ticks": 300,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "sam",
+			"radius": 70.0,
+			"requires": "air_defence"
+		},
+		{
+			"id": "silo",
+			"cost_mode": "linear",
+			"cost_base": 1000000,
+			"cost_cap": 1000000,
+			"supplies": 2000,
+			"build_ticks": 100,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "silo",
+			"requires": "rocketry"
+		},
+		{
+			"id": "research_center",
+			"cost_mode": "exp",
+			"cost_base": 150000,
+			"cost_growth": 1.8,
+			"cost_growth_max_n": 4,
+			"cost_cap": 900000,
+			"supplies": 100,
+			"build_ticks": 80,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "research_center",
+			"effect": {
+				"research_per_level": 2.0
+			}
+		},
+		{
+			"id": "radar",
+			"cost_mode": "linear",
+			"cost_base": 200000,
+			"cost_cap": 600000,
+			"supplies": 400,
+			"build_ticks": 80,
+			"upgradable": false,
+			"coastal": false,
+			"icon": "radar",
+			"radius": 60.0,
+			"requires": "radar",
+			"effect": {
+				"landing_loss": 0.3
+			}
+		},
+		{
+			"id": "airbase",
+			"cost_mode": "linear",
+			"cost_base": 400000,
+			"cost_cap": 1200000,
+			"supplies": 800,
+			"build_ticks": 120,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "airbase",
+			"radius": 45.0,
+			"requires": "aviation",
+			"effect": {
+				"attack_loss_mult": 0.75
+			}
+		},
+		{
+			"id": "military_academy",
+			"cost_mode": "exp",
+			"cost_base": 300000,
+			"cost_growth": 2.0,
+			"cost_growth_max_n": 3,
+			"cost_cap": 1200000,
+			"supplies": 300,
+			"build_ticks": 100,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "military_academy",
+			"requires": "doctrine",
+			"effect": {
+				"attack_loss_per_level": 0.07,
+				"max_levels": 3
+			}
+		},
+		{
+			"id": "logistics_hub",
+			"cost_mode": "exp",
+			"cost_base": 200000,
+			"cost_growth": 2.0,
+			"cost_growth_max_n": 3,
+			"cost_cap": 800000,
+			"supplies": 200,
+			"build_ticks": 80,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "logistics_hub",
+			"requires": "logistics",
+			"effect": {
+				"growth_per_level": 0.08,
+				"max_levels": 4
+			}
+		},
+		{
+			"id": "command_center",
+			"cost_mode": "linear",
+			"cost_base": 500000,
+			"cost_cap": 1500000,
+			"supplies": 500,
+			"build_ticks": 120,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "command_center",
+			"requires": "command",
+			"effect": {
+				"retreat_keep_per_level": 0.1,
+				"attack_speed_per_level": 0.06,
+				"max_levels": 3
+			}
+		},
+		{
+			"id": "bunker",
+			"cost_mode": "linear",
+			"cost_base": 80000,
+			"cost_cap": 400000,
+			"supplies": 400,
+			"build_ticks": 60,
+			"upgradable": false,
+			"coastal": false,
+			"icon": "bunker",
+			"radius": 16.0,
+			"requires": "fortification",
+			"effect": {
+				"defended": true,
+				"survives_capture": true
+			}
+		},
+		{
+			"id": "power_plant",
+			"cost_mode": "exp",
+			"cost_base": 250000,
+			"cost_growth": 2.0,
+			"cost_growth_max_n": 3,
+			"cost_cap": 1000000,
+			"supplies": 200,
+			"build_ticks": 100,
+			"upgradable": true,
+			"coastal": false,
+			"icon": "power_plant",
+			"requires": "electrification",
+			"effect": {
+				"factory_output_per_level": 0.3,
+				"max_levels": 3
+			}
+		},
+		{
+			"id": "naval_base",
+			"cost_mode": "linear",
+			"cost_base": 300000,
+			"cost_cap": 900000,
+			"supplies": 400,
+			"build_ticks": 100,
+			"upgradable": true,
+			"coastal": true,
+			"icon": "port",
+			"requires": "naval_doctrine",
+			"effect": {
+				"boat_speed_per_level": 0.15,
+				"boat_limit_per_level": 1,
+				"max_levels": 3
+			}
+		}
+	]
+}

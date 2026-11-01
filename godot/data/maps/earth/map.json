@@ -1,0 +1,748 @@
+{
+ "id": "earth",
+ "category": "real",
+ "name": {
+  "ru": "Земля",
+  "en": "Earth"
+ },
+ "description": {
+  "ru": "Узнаваемая карта мира: шесть континентов, океаны, проливы и острова. 71 государство на выбор.",
+  "en": "A recognisable world map: six continents, oceans, straits and islands. 71 nations to choose from."
+ },
+ "features": [
+  "continents",
+  "oceans",
+  "straits",
+  "islands"
+ ],
+ "width": 2000,
+ "height": 1000,
+ "k_lin": 1.0,
+ "recommended_bots": [
+  15,
+  50
+ ],
+ "max_bots": 71,
+ "nations": [
+  {
+   "id": "earth_0",
+   "name": {
+    "ru": "Аляска",
+    "en": "Alaska"
+   },
+   "flag": "us",
+   "x": 90,
+   "y": 131
+  },
+  {
+   "id": "earth_1",
+   "name": {
+    "ru": "Юкон",
+    "en": "Yukon"
+   },
+   "flag": "ca",
+   "x": 190,
+   "y": 140
+  },
+  {
+   "id": "earth_2",
+   "name": {
+    "ru": "Нунавут",
+    "en": "Nunavut"
+   },
+   "flag": "ca",
+   "x": 401,
+   "y": 128
+  },
+  {
+   "id": "earth_3",
+   "name": {
+    "ru": "Квебек",
+    "en": "Quebec"
+   },
+   "flag": "ca",
+   "x": 535,
+   "y": 201
+  },
+  {
+   "id": "earth_4",
+   "name": {
+    "ru": "Калифорния",
+    "en": "California"
+   },
+   "flag": "california",
+   "x": 271,
+   "y": 284
+  },
+  {
+   "id": "earth_5",
+   "name": {
+    "ru": "Техас",
+    "en": "Texas"
+   },
+   "flag": "us",
+   "x": 385,
+   "y": 315
+  },
+  {
+   "id": "earth_6",
+   "name": {
+    "ru": "Гренландия",
+    "en": "Greenland"
+   },
+   "flag": "gl",
+   "x": 712,
+   "y": 90
+  },
+  {
+   "id": "earth_7",
+   "name": {
+    "ru": "Сибирь",
+    "en": "Siberia"
+   },
+   "flag": "ru",
+   "x": 1479,
+   "y": 140
+  },
+  {
+   "id": "earth_8",
+   "name": {
+    "ru": "Якутия",
+    "en": "Yakutia"
+   },
+   "flag": "ru",
+   "x": 1646,
+   "y": 134
+  },
+  {
+   "id": "earth_9",
+   "name": {
+    "ru": "Камчатка",
+    "en": "Kamchatka"
+   },
+   "flag": "ru",
+   "x": 1818,
+   "y": 176
+  },
+  {
+   "id": "earth_10",
+   "name": {
+    "ru": "Монголия",
+    "en": "Mongolia"
+   },
+   "flag": "mn",
+   "x": 1507,
+   "y": 230
+  },
+  {
+   "id": "earth_11",
+   "name": {
+    "ru": "Западная Австралия",
+    "en": "Western Australia"
+   },
+   "flag": "au",
+   "x": 1607,
+   "y": 631
+  },
+  {
+   "id": "earth_12",
+   "name": {
+    "ru": "Патагония",
+    "en": "Patagonia"
+   },
+   "flag": "ar",
+   "x": 551,
+   "y": 742
+  },
+  {
+   "id": "earth_13",
+   "name": {
+    "ru": "Западная Антарктида",
+    "en": "West Antarctica"
+   },
+   "flag": "aq",
+   "x": 323,
+   "y": 923
+  },
+  {
+   "id": "earth_14",
+   "name": {
+    "ru": "Антарктида",
+    "en": "Antarctica"
+   },
+   "flag": "aq",
+   "x": 990,
+   "y": 912
+  },
+  {
+   "id": "earth_15",
+   "name": {
+    "ru": "Восточная Антарктида",
+    "en": "East Antarctica"
+   },
+   "flag": "aq",
+   "x": 1601,
+   "y": 901
+  },
+  {
+   "id": "earth_16",
+   "name": {
+    "ru": "Китай",
+    "en": "China"
+   },
+   "flag": "cn",
+   "x": 1525,
+   "y": 309
+  },
+  {
+   "id": "earth_17",
+   "name": {
+    "ru": "Индия",
+    "en": "India"
+   },
+   "flag": "in",
+   "x": 1375,
+   "y": 363
+  },
+  {
+   "id": "earth_18",
+   "name": {
+    "ru": "США",
+    "en": "United States"
+   },
+   "flag": "us",
+   "x": 393,
+   "y": 270
+  },
+  {
+   "id": "earth_19",
+   "name": {
+    "ru": "Индонезия",
+    "en": "Indonesia"
+   },
+   "flag": "id",
+   "x": 1501,
+   "y": 495
+  },
+  {
+   "id": "earth_20",
+   "name": {
+    "ru": "Пакистан",
+    "en": "Pakistan"
+   },
+   "flag": "pk",
+   "x": 1315,
+   "y": 327
+  },
+  {
+   "id": "earth_21",
+   "name": {
+    "ru": "Бразилия",
+    "en": "Brazil"
+   },
+   "flag": "br",
+   "x": 659,
+   "y": 557
+  },
+  {
+   "id": "earth_22",
+   "name": {
+    "ru": "Нигерия",
+    "en": "Nigeria"
+   },
+   "flag": "ng",
+   "x": 976,
+   "y": 437
+  },
+  {
+   "id": "earth_23",
+   "name": {
+    "ru": "Бангладеш",
+    "en": "Bangladesh"
+   },
+   "flag": "bd",
+   "x": 1433,
+   "y": 355
+  },
+  {
+   "id": "earth_24",
+   "name": {
+    "ru": "Россия",
+    "en": "Russia"
+   },
+   "flag": "ru",
+   "x": 1183,
+   "y": 166
+  },
+  {
+   "id": "earth_25",
+   "name": {
+    "ru": "Мексика",
+    "en": "Mexico"
+   },
+   "flag": "mx",
+   "x": 366,
+   "y": 357
+  },
+  {
+   "id": "earth_26",
+   "name": {
+    "ru": "Япония",
+    "en": "Japan"
+   },
+   "flag": "jp",
+   "x": 1704,
+   "y": 289
+  },
+  {
+   "id": "earth_27",
+   "name": {
+    "ru": "Эфиопия",
+    "en": "Ethiopia"
+   },
+   "flag": "et",
+   "x": 1152,
+   "y": 445
+  },
+  {
+   "id": "earth_28",
+   "name": {
+    "ru": "Филиппины",
+    "en": "Philippines"
+   },
+   "flag": "ph",
+   "x": 1615,
+   "y": 427
+  },
+  {
+   "id": "earth_29",
+   "name": {
+    "ru": "Египет",
+    "en": "Egypt"
+   },
+   "flag": "eg",
+   "x": 1098,
+   "y": 344
+  },
+  {
+   "id": "earth_30",
+   "name": {
+    "ru": "Вьетнам",
+    "en": "Vietnam"
+   },
+   "flag": "vn",
+   "x": 1520,
+   "y": 369
+  },
+  {
+   "id": "earth_31",
+   "name": {
+    "ru": "ДР Конго",
+    "en": "DR Congo"
+   },
+   "flag": "cd",
+   "x": 1065,
+   "y": 500
+  },
+  {
+   "id": "earth_32",
+   "name": {
+    "ru": "Турция",
+    "en": "Türkiye"
+   },
+   "flag": "tr",
+   "x": 1126,
+   "y": 271
+  },
+  {
+   "id": "earth_33",
+   "name": {
+    "ru": "Германия",
+    "en": "Germany"
+   },
+   "flag": "de",
+   "x": 988,
+   "y": 206
+  },
+  {
+   "id": "earth_34",
+   "name": {
+    "ru": "Иран",
+    "en": "Iran"
+   },
+   "flag": "ir",
+   "x": 1240,
+   "y": 311
+  },
+  {
+   "id": "earth_35",
+   "name": {
+    "ru": "Таиланд",
+    "en": "Thailand"
+   },
+   "flag": "th",
+   "x": 1496,
+   "y": 404
+  },
+  {
+   "id": "earth_36",
+   "name": {
+    "ru": "Франция",
+    "en": "France"
+   },
+   "flag": "fr",
+   "x": 949,
+   "y": 230
+  },
+  {
+   "id": "earth_37",
+   "name": {
+    "ru": "Великобритания",
+    "en": "United Kingdom"
+   },
+   "flag": "gb",
+   "x": 923,
+   "y": 187
+  },
+  {
+   "id": "earth_38",
+   "name": {
+    "ru": "Италия",
+    "en": "Italy"
+   },
+   "flag": "it",
+   "x": 996,
+   "y": 241
+  },
+  {
+   "id": "earth_39",
+   "name": {
+    "ru": "ЮАР",
+    "en": "South Africa"
+   },
+   "flag": "za",
+   "x": 1066,
+   "y": 655
+  },
+  {
+   "id": "earth_40",
+   "name": {
+    "ru": "Танзания",
+    "en": "Tanzania"
+   },
+   "flag": "tz",
+   "x": 1129,
+   "y": 523
+  },
+  {
+   "id": "earth_41",
+   "name": {
+    "ru": "Мьянма",
+    "en": "Myanmar"
+   },
+   "flag": "mm",
+   "x": 1467,
+   "y": 370
+  },
+  {
+   "id": "earth_42",
+   "name": {
+    "ru": "Кения",
+    "en": "Kenya"
+   },
+   "flag": "ke",
+   "x": 1145,
+   "y": 486
+  },
+  {
+   "id": "earth_43",
+   "name": {
+    "ru": "Южная Корея",
+    "en": "South Korea"
+   },
+   "flag": "kr",
+   "x": 1646,
+   "y": 287
+  },
+  {
+   "id": "earth_44",
+   "name": {
+    "ru": "Колумбия",
+    "en": "Colombia"
+   },
+   "flag": "co",
+   "x": 528,
+   "y": 471
+  },
+  {
+   "id": "earth_45",
+   "name": {
+    "ru": "Испания",
+    "en": "Spain"
+   },
+   "flag": "es",
+   "x": 915,
+   "y": 267
+  },
+  {
+   "id": "earth_46",
+   "name": {
+    "ru": "Аргентина",
+    "en": "Argentina"
+   },
+   "flag": "ar",
+   "x": 578,
+   "y": 676
+  },
+  {
+   "id": "earth_47",
+   "name": {
+    "ru": "Украина",
+    "en": "Ukraine"
+   },
+   "flag": "ua",
+   "x": 1113,
+   "y": 213
+  },
+  {
+   "id": "earth_48",
+   "name": {
+    "ru": "Алжир",
+    "en": "Algeria"
+   },
+   "flag": "dz",
+   "x": 950,
+   "y": 337
+  },
+  {
+   "id": "earth_49",
+   "name": {
+    "ru": "Судан",
+    "en": "Sudan"
+   },
+   "flag": "sd",
+   "x": 1097,
+   "y": 399
+  },
+  {
+   "id": "earth_50",
+   "name": {
+    "ru": "Ирак",
+    "en": "Iraq"
+   },
+   "flag": "iq",
+   "x": 1175,
+   "y": 306
+  },
+  {
+   "id": "earth_51",
+   "name": {
+    "ru": "Польша",
+    "en": "Poland"
+   },
+   "flag": "pl",
+   "x": 1043,
+   "y": 201
+  },
+  {
+   "id": "earth_52",
+   "name": {
+    "ru": "Канада",
+    "en": "Canada"
+   },
+   "flag": "ca",
+   "x": 368,
+   "y": 154
+  },
+  {
+   "id": "earth_53",
+   "name": {
+    "ru": "Марокко",
+    "en": "Morocco"
+   },
+   "flag": "ma",
+   "x": 895,
+   "y": 314
+  },
+  {
+   "id": "earth_54",
+   "name": {
+    "ru": "Саудовская Аравия",
+    "en": "Saudi Arabia"
+   },
+   "flag": "sa",
+   "x": 1183,
+   "y": 357
+  },
+  {
+   "id": "earth_55",
+   "name": {
+    "ru": "Узбекистан",
+    "en": "Uzbekistan"
+   },
+   "flag": "uz",
+   "x": 1290,
+   "y": 258
+  },
+  {
+   "id": "earth_56",
+   "name": {
+    "ru": "Перу",
+    "en": "Peru"
+   },
+   "flag": "pe",
+   "x": 529,
+   "y": 562
+  },
+  {
+   "id": "earth_57",
+   "name": {
+    "ru": "Малайзия",
+    "en": "Malaysia"
+   },
+   "flag": "my",
+   "x": 1567,
+   "y": 475
+  },
+  {
+   "id": "earth_58",
+   "name": {
+    "ru": "Ангола",
+    "en": "Angola"
+   },
+   "flag": "ao",
+   "x": 1034,
+   "y": 557
+  },
+  {
+   "id": "earth_59",
+   "name": {
+    "ru": "Гана",
+    "en": "Ghana"
+   },
+   "flag": "gh",
+   "x": 929,
+   "y": 447
+  },
+  {
+   "id": "earth_60",
+   "name": {
+    "ru": "Мозамбик",
+    "en": "Mozambique"
+   },
+   "flag": "mz",
+   "x": 1145,
+   "y": 567
+  },
+  {
+   "id": "earth_61",
+   "name": {
+    "ru": "Йемен",
+    "en": "Yemen"
+   },
+   "flag": "ye",
+   "x": 1189,
+   "y": 404
+  },
+  {
+   "id": "earth_62",
+   "name": {
+    "ru": "Непал",
+    "en": "Nepal"
+   },
+   "flag": "np",
+   "x": 1399,
+   "y": 332
+  },
+  {
+   "id": "earth_63",
+   "name": {
+    "ru": "Венесуэла",
+    "en": "Venezuela"
+   },
+   "flag": "ve",
+   "x": 576,
+   "y": 450
+  },
+  {
+   "id": "earth_64",
+   "name": {
+    "ru": "Мадагаскар",
+    "en": "Madagascar"
+   },
+   "flag": "mg",
+   "x": 1194,
+   "y": 593
+  },
+  {
+   "id": "earth_65",
+   "name": {
+    "ru": "Камерун",
+    "en": "Cameroon"
+   },
+   "flag": "cm",
+   "x": 1004,
+   "y": 464
+  },
+  {
+   "id": "earth_66",
+   "name": {
+    "ru": "Австралия",
+    "en": "Australia"
+   },
+   "flag": "au",
+   "x": 1679,
+   "y": 624
+  },
+  {
+   "id": "earth_67",
+   "name": {
+    "ru": "Тайвань",
+    "en": "Taiwan"
+   },
+   "flag": "tw",
+   "x": 1606,
+   "y": 358
+  },
+  {
+   "id": "earth_68",
+   "name": {
+    "ru": "Шри-Ланка",
+    "en": "Sri Lanka"
+   },
+   "flag": "lk",
+   "x": 1383,
+   "y": 447
+  },
+  {
+   "id": "earth_69",
+   "name": {
+    "ru": "Мали",
+    "en": "Mali"
+   },
+   "flag": "ml",
+   "x": 923,
+   "y": 386
+  },
+  {
+   "id": "earth_70",
+   "name": {
+    "ru": "Румыния",
+    "en": "Romania"
+   },
+   "flag": "ro",
+   "x": 1073,
+   "y": 235
+  }
+ ],
+ "balance": {
+  "tribes_default": 60
+ },
+ "stats": {
+  "land_tiles": 689018,
+  "continents": 5,
+  "islands": 96
+ },
+ "source": "Natural Earth + NOAA ETOPO1 via tools/maps/make_maps.py (exported by tools/export_luau_maps.py)",
+ "license": "Public domain (map data)"
+}

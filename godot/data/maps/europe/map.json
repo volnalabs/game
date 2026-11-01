@@ -1,0 +1,517 @@
+{
+ "id": "europe",
+ "category": "regional",
+ "name": {
+  "ru": "Европа",
+  "en": "Europe"
+ },
+ "description": {
+  "ru": "Плотная Европа с Средиземноморьем, Скандинавией и западом России.",
+  "en": "Crowded Europe with the Mediterranean, Scandinavia and western Russia."
+ },
+ "features": [
+  "dense",
+  "peninsulas",
+  "inland_seas"
+ ],
+ "width": 1422,
+ "height": 1254,
+ "k_lin": 1.0,
+ "recommended_bots": [
+  15,
+  40
+ ],
+ "max_bots": 48,
+ "nations": [
+  {
+   "id": "europe_0",
+   "name": {
+    "ru": "Турция",
+    "en": "Türkiye"
+   },
+   "flag": "tr",
+   "x": 1209,
+   "y": 1077
+  },
+  {
+   "id": "europe_1",
+   "name": {
+    "ru": "Германия",
+    "en": "Germany"
+   },
+   "flag": "de",
+   "x": 704,
+   "y": 694
+  },
+  {
+   "id": "europe_2",
+   "name": {
+    "ru": "Франция",
+    "en": "France"
+   },
+   "flag": "fr",
+   "x": 559,
+   "y": 835
+  },
+  {
+   "id": "europe_3",
+   "name": {
+    "ru": "Великобритания",
+    "en": "United Kingdom"
+   },
+   "flag": "gb",
+   "x": 464,
+   "y": 580
+  },
+  {
+   "id": "europe_4",
+   "name": {
+    "ru": "Италия",
+    "en": "Italy"
+   },
+   "flag": "it",
+   "x": 732,
+   "y": 899
+  },
+  {
+   "id": "europe_5",
+   "name": {
+    "ru": "Испания",
+    "en": "Spain"
+   },
+   "flag": "es",
+   "x": 437,
+   "y": 1052
+  },
+  {
+   "id": "europe_6",
+   "name": {
+    "ru": "Украина",
+    "en": "Ukraine"
+   },
+   "flag": "ua",
+   "x": 1160,
+   "y": 735
+  },
+  {
+   "id": "europe_7",
+   "name": {
+    "ru": "Польша",
+    "en": "Poland"
+   },
+   "flag": "pl",
+   "x": 903,
+   "y": 660
+  },
+  {
+   "id": "europe_8",
+   "name": {
+    "ru": "Румыния",
+    "en": "Romania"
+   },
+   "flag": "ro",
+   "x": 1015,
+   "y": 866
+  },
+  {
+   "id": "europe_9",
+   "name": {
+    "ru": "Нидерланды",
+    "en": "Netherlands"
+   },
+   "flag": "nl",
+   "x": 621,
+   "y": 646
+  },
+  {
+   "id": "europe_10",
+   "name": {
+    "ru": "Сирия",
+    "en": "Syria"
+   },
+   "flag": "sy",
+   "x": 1285,
+   "y": 1220
+  },
+  {
+   "id": "europe_11",
+   "name": {
+    "ru": "Бельгия",
+    "en": "Belgium"
+   },
+   "flag": "be",
+   "x": 605,
+   "y": 700
+  },
+  {
+   "id": "europe_12",
+   "name": {
+    "ru": "Греция",
+    "en": "Greece"
+   },
+   "flag": "gr",
+   "x": 949,
+   "y": 1072
+  },
+  {
+   "id": "europe_13",
+   "name": {
+    "ru": "Чехия",
+    "en": "Czechia"
+   },
+   "flag": "cz",
+   "x": 820,
+   "y": 729
+  },
+  {
+   "id": "europe_14",
+   "name": {
+    "ru": "Швеция",
+    "en": "Sweden"
+   },
+   "flag": "se",
+   "x": 894,
+   "y": 202
+  },
+  {
+   "id": "europe_15",
+   "name": {
+    "ru": "Португалия",
+    "en": "Portugal"
+   },
+   "flag": "pt",
+   "x": 339,
+   "y": 1068
+  },
+  {
+   "id": "europe_16",
+   "name": {
+    "ru": "Венгрия",
+    "en": "Hungary"
+   },
+   "flag": "hu",
+   "x": 903,
+   "y": 822
+  },
+  {
+   "id": "europe_17",
+   "name": {
+    "ru": "Беларусь",
+    "en": "Belarus"
+   },
+   "flag": "by",
+   "x": 1085,
+   "y": 599
+  },
+  {
+   "id": "europe_18",
+   "name": {
+    "ru": "Австрия",
+    "en": "Austria"
+   },
+   "flag": "at",
+   "x": 795,
+   "y": 807
+  },
+  {
+   "id": "europe_19",
+   "name": {
+    "ru": "Швейцария",
+    "en": "Switzerland"
+   },
+   "flag": "ch",
+   "x": 659,
+   "y": 834
+  },
+  {
+   "id": "europe_20",
+   "name": {
+    "ru": "Болгария",
+    "en": "Bulgaria"
+   },
+   "flag": "bg",
+   "x": 1019,
+   "y": 973
+  },
+  {
+   "id": "europe_21",
+   "name": {
+    "ru": "Сербия",
+    "en": "Serbia"
+   },
+   "flag": "rs",
+   "x": 930,
+   "y": 917
+  },
+  {
+   "id": "europe_22",
+   "name": {
+    "ru": "Дания",
+    "en": "Denmark"
+   },
+   "flag": "dk",
+   "x": 691,
+   "y": 529
+  },
+  {
+   "id": "europe_23",
+   "name": {
+    "ru": "Финляндия",
+    "en": "Finland"
+   },
+   "flag": "fi",
+   "x": 1064,
+   "y": 288
+  },
+  {
+   "id": "europe_24",
+   "name": {
+    "ru": "Словакия",
+    "en": "Slovakia"
+   },
+   "flag": "sk",
+   "x": 894,
+   "y": 767
+  },
+  {
+   "id": "europe_25",
+   "name": {
+    "ru": "Норвегия",
+    "en": "Norway"
+   },
+   "flag": "no",
+   "x": 704,
+   "y": 351
+  },
+  {
+   "id": "europe_26",
+   "name": {
+    "ru": "Ирландия",
+    "en": "Ireland"
+   },
+   "flag": "ie",
+   "x": 349,
+   "y": 624
+  },
+  {
+   "id": "europe_27",
+   "name": {
+    "ru": "Хорватия",
+    "en": "Croatia"
+   },
+   "flag": "hr",
+   "x": 840,
+   "y": 864
+  },
+  {
+   "id": "europe_28",
+   "name": {
+    "ru": "Грузия",
+    "en": "Georgia"
+   },
+   "flag": "ge",
+   "x": 1396,
+   "y": 994
+  },
+  {
+   "id": "europe_29",
+   "name": {
+    "ru": "Босния и Герцеговина",
+    "en": "Bosnia and Herzegovina"
+   },
+   "flag": "ba",
+   "x": 875,
+   "y": 920
+  },
+  {
+   "id": "europe_30",
+   "name": {
+    "ru": "Литва",
+    "en": "Lithuania"
+   },
+   "flag": "lt",
+   "x": 997,
+   "y": 557
+  },
+  {
+   "id": "europe_31",
+   "name": {
+    "ru": "Молдова",
+    "en": "Moldova"
+   },
+   "flag": "md",
+   "x": 1086,
+   "y": 810
+  },
+  {
+   "id": "europe_32",
+   "name": {
+    "ru": "Северная Македония",
+    "en": "North Macedonia"
+   },
+   "flag": "mk",
+   "x": 945,
+   "y": 1004
+  },
+  {
+   "id": "europe_33",
+   "name": {
+    "ru": "Латвия",
+    "en": "Latvia"
+   },
+   "flag": "lv",
+   "x": 1025,
+   "y": 492
+  },
+  {
+   "id": "europe_34",
+   "name": {
+    "ru": "Исландия",
+    "en": "Iceland"
+   },
+   "flag": "is",
+   "x": 128,
+   "y": 238
+  },
+  {
+   "id": "europe_35",
+   "name": {
+    "ru": "Кострома",
+    "en": "Kostroma"
+   },
+   "flag": "ru",
+   "x": 1391,
+   "y": 449
+  },
+  {
+   "id": "europe_36",
+   "name": {
+    "ru": "Волгоград",
+    "en": "Volgograd"
+   },
+   "flag": "ru",
+   "x": 1410,
+   "y": 742
+  },
+  {
+   "id": "europe_37",
+   "name": {
+    "ru": "Мурманск",
+    "en": "Murmansk"
+   },
+   "flag": "ru",
+   "x": 1205,
+   "y": 133
+  },
+  {
+   "id": "europe_38",
+   "name": {
+    "ru": "Тула",
+    "en": "Tula"
+   },
+   "flag": "ru",
+   "x": 1268,
+   "y": 591
+  },
+  {
+   "id": "europe_39",
+   "name": {
+    "ru": "Архангельск",
+    "en": "Arkhangelsk"
+   },
+   "flag": "ru",
+   "x": 1361,
+   "y": 286
+  },
+  {
+   "id": "europe_40",
+   "name": {
+    "ru": "Новгород",
+    "en": "Novgorod"
+   },
+   "flag": "ru",
+   "x": 1177,
+   "y": 448
+  },
+  {
+   "id": "europe_41",
+   "name": {
+    "ru": "Кубань",
+    "en": "Krasnodar Krai"
+   },
+   "flag": "ru",
+   "x": 1309,
+   "y": 863
+  },
+  {
+   "id": "europe_42",
+   "name": {
+    "ru": "Мордовия",
+    "en": "Republic of Mordovia"
+   },
+   "flag": "ru",
+   "x": 1411,
+   "y": 590
+  },
+  {
+   "id": "europe_43",
+   "name": {
+    "ru": "Карелия",
+    "en": "Karelia"
+   },
+   "flag": "ru",
+   "x": 1181,
+   "y": 279
+  },
+  {
+   "id": "europe_44",
+   "name": {
+    "ru": "Белгород",
+    "en": "Belgorod"
+   },
+   "flag": "ru",
+   "x": 1265,
+   "y": 697
+  },
+  {
+   "id": "europe_45",
+   "name": {
+    "ru": "Брянск",
+    "en": "Bryansk"
+   },
+   "flag": "ru",
+   "x": 1184,
+   "y": 624
+  },
+  {
+   "id": "europe_46",
+   "name": {
+    "ru": "Ярославль",
+    "en": "Yaroslavl"
+   },
+   "flag": "ru",
+   "x": 1305,
+   "y": 470
+  },
+  {
+   "id": "europe_47",
+   "name": {
+    "ru": "Ставрополье",
+    "en": "Stavropol Krai"
+   },
+   "flag": "ru",
+   "x": 1387,
+   "y": 891
+  }
+ ],
+ "balance": {
+  "tribes_default": 60
+ },
+ "stats": {
+  "land_tiles": 831821,
+  "continents": 3,
+  "islands": 61
+ },
+ "source": "Natural Earth + NOAA ETOPO1 via tools/maps/make_maps.py (exported by tools/export_luau_maps.py)",
+ "license": "Public domain (map data)"
+}

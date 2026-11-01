@@ -1,0 +1,490 @@
+{
+	"_comment": "Profile perks: small sidegrades (every bonus has a cost), bought with skill points from levels, active only in the loadout (slots grow with level) and never in Fair mode, where nobody (player or AI) has perks. Effects are Modifiers stats applied at match start through MatchConfig.",
+	"branches": [
+		"economy",
+		"military",
+		"logistics",
+		"defense",
+		"intelligence",
+		"diplomacy"
+	],
+	"slots": {
+		"base": 2,
+		"per_levels": 10,
+		"max": 5
+	},
+	"perks": [
+		{
+			"id": "eco_tax",
+			"branch": "economy",
+			"tier": 1,
+			"cost": 1,
+			"level": 1,
+			"requires": [],
+			"excludes": [],
+			"name": {
+				"ru": "Налоговая реформа",
+				"en": "Tax reform"
+			},
+			"modifiers": {
+				"gold_mult": 0.05,
+				"growth_mult": -0.02
+			}
+		},
+		{
+			"id": "eco_industry",
+			"branch": "economy",
+			"tier": 2,
+			"cost": 1,
+			"level": 5,
+			"requires": [
+				"eco_tax"
+			],
+			"excludes": [],
+			"name": {
+				"ru": "Промышленный уклон",
+				"en": "Industrial focus"
+			},
+			"modifiers": {
+				"supply_mult": 0.12,
+				"gold_mult": -0.02
+			}
+		},
+		{
+			"id": "eco_merchant",
+			"branch": "economy",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"eco_industry"
+			],
+			"excludes": [
+				"eco_planned"
+			],
+			"name": {
+				"ru": "Купеческая республика",
+				"en": "Merchant republic"
+			},
+			"modifiers": {
+				"gold_mult": 0.08,
+				"cap_mult": -0.04
+			}
+		},
+		{
+			"id": "eco_planned",
+			"branch": "economy",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"eco_industry"
+			],
+			"excludes": [
+				"eco_merchant"
+			],
+			"name": {
+				"ru": "Плановое хозяйство",
+				"en": "Planned economy"
+			},
+			"modifiers": {
+				"build_cost_mult": -0.1,
+				"gold_mult": -0.03
+			}
+		},
+		{
+			"id": "mil_drill",
+			"branch": "military",
+			"tier": 1,
+			"cost": 1,
+			"level": 1,
+			"requires": [],
+			"excludes": [],
+			"name": {
+				"ru": "Строевая подготовка",
+				"en": "Drill"
+			},
+			"modifiers": {
+				"attack_loss_mult": -0.03,
+				"growth_mult": -0.02
+			}
+		},
+		{
+			"id": "mil_blitz",
+			"branch": "military",
+			"tier": 2,
+			"cost": 1,
+			"level": 5,
+			"requires": [
+				"mil_drill"
+			],
+			"excludes": [],
+			"name": {
+				"ru": "Блицкриг",
+				"en": "Blitz"
+			},
+			"modifiers": {
+				"attack_speed_mult": 0.06,
+				"attack_loss_mult": 0.03
+			}
+		},
+		{
+			"id": "mil_veterans",
+			"branch": "military",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"mil_blitz"
+			],
+			"excludes": [
+				"mil_levy"
+			],
+			"name": {
+				"ru": "Ветераны",
+				"en": "Veterans"
+			},
+			"modifiers": {
+				"attack_loss_mult": -0.05,
+				"upkeep_mult": 0.06
+			}
+		},
+		{
+			"id": "mil_levy",
+			"branch": "military",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"mil_blitz"
+			],
+			"excludes": [
+				"mil_veterans"
+			],
+			"name": {
+				"ru": "Всеобщий призыв",
+				"en": "Levy"
+			},
+			"modifiers": {
+				"cap_mult": 0.06,
+				"attack_loss_mult": 0.03
+			}
+		},
+		{
+			"id": "log_roads",
+			"branch": "logistics",
+			"tier": 1,
+			"cost": 1,
+			"level": 1,
+			"requires": [],
+			"excludes": [],
+			"name": {
+				"ru": "Дороги",
+				"en": "Roads"
+			},
+			"modifiers": {
+				"growth_mult": 0.04,
+				"gold_mult": -0.02
+			}
+		},
+		{
+			"id": "log_ports",
+			"branch": "logistics",
+			"tier": 2,
+			"cost": 1,
+			"level": 5,
+			"requires": [
+				"log_roads"
+			],
+			"excludes": [],
+			"name": {
+				"ru": "Портовые склады",
+				"en": "Port depots"
+			},
+			"modifiers": {
+				"boat_speed_mult": 0.12,
+				"supply_mult": -0.03
+			}
+		},
+		{
+			"id": "log_reserves",
+			"branch": "logistics",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"log_ports"
+			],
+			"excludes": [
+				"log_rapid"
+			],
+			"name": {
+				"ru": "Стратегический резерв",
+				"en": "Strategic reserve"
+			},
+			"modifiers": {
+				"cap_mult": 0.06,
+				"growth_mult": -0.03
+			}
+		},
+		{
+			"id": "log_rapid",
+			"branch": "logistics",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"log_ports"
+			],
+			"excludes": [
+				"log_reserves"
+			],
+			"name": {
+				"ru": "Мобильные части",
+				"en": "Rapid deployment"
+			},
+			"modifiers": {
+				"retreat_keep_add": 0.08,
+				"attack_speed_mult": 0.03,
+				"cap_mult": -0.03
+			}
+		},
+		{
+			"id": "def_walls",
+			"branch": "defense",
+			"tier": 1,
+			"cost": 1,
+			"level": 1,
+			"requires": [],
+			"excludes": [],
+			"name": {
+				"ru": "Крепостные стены",
+				"en": "Walls"
+			},
+			"modifiers": {
+				"defense_loss_mult": 0.05,
+				"attack_speed_mult": -0.02
+			}
+		},
+		{
+			"id": "def_militia",
+			"branch": "defense",
+			"tier": 2,
+			"cost": 1,
+			"level": 5,
+			"requires": [
+				"def_walls"
+			],
+			"excludes": [],
+			"name": {
+				"ru": "Ополчение",
+				"en": "Militia"
+			},
+			"modifiers": {
+				"defense_speed_mult": 0.06,
+				"gold_mult": -0.02
+			}
+		},
+		{
+			"id": "def_bastion",
+			"branch": "defense",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"def_militia"
+			],
+			"excludes": [
+				"def_elastic"
+			],
+			"name": {
+				"ru": "Бастион",
+				"en": "Bastion"
+			},
+			"modifiers": {
+				"defense_loss_mult": 0.08,
+				"attack_loss_mult": 0.03
+			}
+		},
+		{
+			"id": "def_elastic",
+			"branch": "defense",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"def_militia"
+			],
+			"excludes": [
+				"def_bastion"
+			],
+			"name": {
+				"ru": "Эластичная оборона",
+				"en": "Elastic defence"
+			},
+			"modifiers": {
+				"retreat_keep_add": 0.06,
+				"defense_speed_mult": 0.05,
+				"defense_loss_mult": -0.02
+			}
+		},
+		{
+			"id": "int_scouts",
+			"branch": "intelligence",
+			"tier": 1,
+			"cost": 1,
+			"level": 1,
+			"requires": [],
+			"excludes": [],
+			"name": {
+				"ru": "Разведчики",
+				"en": "Scouts"
+			},
+			"modifiers": {
+				"research_mult": 0.08,
+				"gold_mult": -0.02
+			}
+		},
+		{
+			"id": "int_analysts",
+			"branch": "intelligence",
+			"tier": 2,
+			"cost": 1,
+			"level": 5,
+			"requires": [
+				"int_scouts"
+			],
+			"excludes": [],
+			"name": {
+				"ru": "Аналитики",
+				"en": "Analysts"
+			},
+			"modifiers": {
+				"research_mult": 0.12,
+				"supply_mult": -0.04
+			}
+		},
+		{
+			"id": "int_cipher",
+			"branch": "intelligence",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"int_analysts"
+			],
+			"excludes": [
+				"int_spies"
+			],
+			"name": {
+				"ru": "Шифровальщики",
+				"en": "Cryptographers"
+			},
+			"modifiers": {
+				"defense_speed_mult": 0.05,
+				"research_mult": 0.05,
+				"growth_mult": -0.03
+			}
+		},
+		{
+			"id": "int_spies",
+			"branch": "intelligence",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"int_analysts"
+			],
+			"excludes": [
+				"int_cipher"
+			],
+			"name": {
+				"ru": "Агентура",
+				"en": "Spy network"
+			},
+			"modifiers": {
+				"attack_speed_mult": 0.04,
+				"research_mult": 0.05,
+				"upkeep_mult": 0.04
+			}
+		},
+		{
+			"id": "dip_envoys",
+			"branch": "diplomacy",
+			"tier": 1,
+			"cost": 1,
+			"level": 1,
+			"requires": [],
+			"excludes": [],
+			"name": {
+				"ru": "Посланники",
+				"en": "Envoys"
+			},
+			"modifiers": {
+				"gold_mult": 0.03,
+				"attack_speed_mult": -0.02
+			}
+		},
+		{
+			"id": "dip_treaties",
+			"branch": "diplomacy",
+			"tier": 2,
+			"cost": 1,
+			"level": 5,
+			"requires": [
+				"dip_envoys"
+			],
+			"excludes": [],
+			"name": {
+				"ru": "Договоры",
+				"en": "Treaties"
+			},
+			"modifiers": {
+				"upkeep_mult": -0.06,
+				"attack_loss_mult": 0.02
+			}
+		},
+		{
+			"id": "dip_federation",
+			"branch": "diplomacy",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"dip_treaties"
+			],
+			"excludes": [
+				"dip_hegemony"
+			],
+			"name": {
+				"ru": "Федерация",
+				"en": "Federation"
+			},
+			"modifiers": {
+				"growth_mult": 0.05,
+				"attack_speed_mult": -0.03
+			}
+		},
+		{
+			"id": "dip_hegemony",
+			"branch": "diplomacy",
+			"tier": 3,
+			"cost": 2,
+			"level": 10,
+			"requires": [
+				"dip_treaties"
+			],
+			"excludes": [
+				"dip_federation"
+			],
+			"name": {
+				"ru": "Гегемония",
+				"en": "Hegemony"
+			},
+			"modifiers": {
+				"attack_loss_mult": -0.03,
+				"upkeep_mult": 0.05
+			}
+		}
+	]
+}

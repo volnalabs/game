@@ -1,0 +1,42 @@
+{
+	"_comment": "Drop odds in percent; must sum to 100 (validated at load and in tests). Duplicates convert to fragments + credits; fragments craft a chosen item of that rarity.",
+	"order": [
+		"common",
+		"uncommon",
+		"rare",
+		"epic",
+		"legendary"
+	],
+	"odds": {
+		"common": 60,
+		"uncommon": 25,
+		"rare": 10,
+		"epic": 4,
+		"legendary": 1
+	},
+	"duplicate_fragments": {
+		"common": 5,
+		"uncommon": 15,
+		"rare": 40,
+		"epic": 100,
+		"legendary": 250
+	},
+	"duplicate_credits": {
+		"common": 15,
+		"uncommon": 40,
+		"rare": 100,
+		"epic": 250,
+		"legendary": 600
+	},
+	"craft_cost": {
+		"common": 40,
+		"uncommon": 120,
+		"rare": 320,
+		"epic": 800,
+		"legendary": 2000
+	},
+	"pity": {
+		"epic_or_better_after": 25,
+		"legendary_after": 80
+	}
+}

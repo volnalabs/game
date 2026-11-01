@@ -1,0 +1,195 @@
+{
+	"_comment": "Cases are earned (levels, achievements, challenges) or bought with Credits earned in play — never with real money. Odds are shown before opening; odds per case override rarity.json and must sum to 100. The result is rolled before the opening animation starts.",
+	"cases": [
+		{
+			"id": "starter",
+			"icon": "m_cases",
+			"color": "#8a96a3",
+			"price": 250,
+			"categories": [
+				"avatar",
+				"emblem",
+				"frame",
+				"title",
+				"ui_theme",
+				"player_color",
+				"map_style",
+				"building_skin",
+				"capture_effect",
+				"victory_effect"
+			],
+			"odds": {
+				"common": 60,
+				"uncommon": 25,
+				"rare": 10,
+				"epic": 4,
+				"legendary": 1
+			},
+			"name": {
+				"ru": "Стартовый кейс",
+				"en": "Starter case"
+			},
+			"desc": {
+				"ru": "Всё понемногу: аватары, эмблемы, рамки, цвета и эффекты.",
+				"en": "A bit of everything: avatars, emblems, frames, colours and effects."
+			}
+		},
+		{
+			"id": "military",
+			"icon": "g_attack",
+			"color": "#e0705a",
+			"price": 500,
+			"categories": [
+				"emblem",
+				"building_skin",
+				"capture_effect",
+				"avatar"
+			],
+			"odds": {
+				"common": 55,
+				"uncommon": 28,
+				"rare": 12,
+				"epic": 4,
+				"legendary": 1
+			},
+			"name": {
+				"ru": "Военный кейс",
+				"en": "Military case"
+			},
+			"desc": {
+				"ru": "Эмблемы, облик построек и эффекты захвата.",
+				"en": "Emblems, building plates and capture effects."
+			}
+		},
+		{
+			"id": "national",
+			"icon": "ui_flag",
+			"color": "#4c8dff",
+			"price": 500,
+			"categories": [
+				"player_color",
+				"title",
+				"frame",
+				"map_style"
+			],
+			"odds": {
+				"common": 55,
+				"uncommon": 28,
+				"rare": 12,
+				"epic": 4,
+				"legendary": 1
+			},
+			"name": {
+				"ru": "Национальный кейс",
+				"en": "National case"
+			},
+			"desc": {
+				"ru": "Цвета государства, титулы, рамки и стили карты.",
+				"en": "State colours, titles, frames and map styles."
+			}
+		},
+		{
+			"id": "elite",
+			"icon": "fx_medal",
+			"color": "#a070ff",
+			"price": 1200,
+			"categories": [
+				"avatar",
+				"emblem",
+				"frame",
+				"title",
+				"ui_theme",
+				"player_color",
+				"map_style",
+				"building_skin",
+				"capture_effect",
+				"victory_effect"
+			],
+			"odds": {
+				"common": 0,
+				"uncommon": 55,
+				"rare": 30,
+				"epic": 12,
+				"legendary": 3
+			},
+			"name": {
+				"ru": "Элитный кейс",
+				"en": "Elite case"
+			},
+			"desc": {
+				"ru": "Без обычных предметов.",
+				"en": "No common items."
+			}
+		},
+		{
+			"id": "legendary",
+			"icon": "e_crown",
+			"color": "#ff9a3c",
+			"price": 3000,
+			"categories": [
+				"avatar",
+				"emblem",
+				"frame",
+				"title",
+				"ui_theme",
+				"player_color",
+				"map_style",
+				"building_skin",
+				"capture_effect",
+				"victory_effect"
+			],
+			"odds": {
+				"common": 0,
+				"uncommon": 0,
+				"rare": 60,
+				"epic": 30,
+				"legendary": 10
+			},
+			"name": {
+				"ru": "Легендарный кейс",
+				"en": "Legendary case"
+			},
+			"desc": {
+				"ru": "Только редкие и выше.",
+				"en": "Rare or better only."
+			}
+		},
+		{
+			"id": "event_winter",
+			"icon": "e_snow",
+			"color": "#bfe8ff",
+			"price": 800,
+			"categories": [
+				"avatar",
+				"emblem",
+				"frame",
+				"title",
+				"ui_theme",
+				"player_color",
+				"map_style",
+				"building_skin",
+				"capture_effect",
+				"victory_effect"
+			],
+			"event": {
+				"from": "12-01",
+				"to": "02-28"
+			},
+			"odds": {
+				"common": 50,
+				"uncommon": 30,
+				"rare": 13,
+				"epic": 5,
+				"legendary": 2
+			},
+			"name": {
+				"ru": "Зимний кейс",
+				"en": "Winter case"
+			},
+			"desc": {
+				"ru": "Сезонный: доступен с 1 декабря по 28 февраля (по часам компьютера).",
+				"en": "Seasonal: 1 December to 28 February (computer clock)."
+			}
+		}
+	]
+}

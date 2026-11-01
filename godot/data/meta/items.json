@@ -1,0 +1,877 @@
+{
+	"_comment": "Cosmetic items only — none changes the simulation. Every category is read by scripts/meta/cosmetics.gd and applied: avatar/emblem/frame/title (profile, top bar, map label), ui_theme (UITheme.apply_theme), player_color (own territory colour), map_style (terrain palette), building_skin (own building plates), capture_effect (own capture sparks), victory_effect (end screen).",
+	"categories": [
+		"avatar",
+		"emblem",
+		"frame",
+		"title",
+		"ui_theme",
+		"player_color",
+		"map_style",
+		"building_skin",
+		"capture_effect",
+		"victory_effect"
+	],
+	"default_owned": [
+		"avatar_recruit",
+		"emblem_tower",
+		"frame_iron",
+		"title_strategist"
+	],
+	"default_equipped": {
+		"avatar": "avatar_recruit",
+		"emblem": "emblem_tower",
+		"frame": "frame_iron",
+		"title": "title_strategist"
+	},
+	"items": [
+		{
+			"id": "avatar_recruit",
+			"category": "avatar",
+			"rarity": "common",
+			"name": {
+				"ru": "Новобранец",
+				"en": "Recruit"
+			},
+			"icon": "a_recruit"
+		},
+		{
+			"id": "avatar_soldier",
+			"category": "avatar",
+			"rarity": "common",
+			"name": {
+				"ru": "Пехотинец",
+				"en": "Infantryman"
+			},
+			"icon": "a_soldier"
+		},
+		{
+			"id": "avatar_fox",
+			"category": "avatar",
+			"rarity": "common",
+			"name": {
+				"ru": "Лис",
+				"en": "Fox"
+			},
+			"icon": "a_fox"
+		},
+		{
+			"id": "avatar_owl",
+			"category": "avatar",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Сова",
+				"en": "Owl"
+			},
+			"icon": "a_owl"
+		},
+		{
+			"id": "avatar_bear",
+			"category": "avatar",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Медведь",
+				"en": "Bear"
+			},
+			"icon": "a_bear"
+		},
+		{
+			"id": "avatar_knight",
+			"category": "avatar",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Рыцарь",
+				"en": "Knight"
+			},
+			"icon": "a_knight"
+		},
+		{
+			"id": "avatar_wolf",
+			"category": "avatar",
+			"rarity": "rare",
+			"name": {
+				"ru": "Волк",
+				"en": "Wolf"
+			},
+			"icon": "a_wolf"
+		},
+		{
+			"id": "avatar_spartan",
+			"category": "avatar",
+			"rarity": "rare",
+			"name": {
+				"ru": "Спартанец",
+				"en": "Spartan"
+			},
+			"icon": "a_spartan"
+		},
+		{
+			"id": "avatar_eagle",
+			"category": "avatar",
+			"rarity": "rare",
+			"name": {
+				"ru": "Орёл",
+				"en": "Eagle"
+			},
+			"icon": "a_eagle"
+		},
+		{
+			"id": "avatar_lion",
+			"category": "avatar",
+			"rarity": "epic",
+			"name": {
+				"ru": "Лев",
+				"en": "Lion"
+			},
+			"icon": "a_lion"
+		},
+		{
+			"id": "avatar_astronaut",
+			"category": "avatar",
+			"rarity": "epic",
+			"name": {
+				"ru": "Астронавт",
+				"en": "Astronaut"
+			},
+			"icon": "a_astronaut"
+		},
+		{
+			"id": "avatar_overlord",
+			"category": "avatar",
+			"rarity": "epic",
+			"name": {
+				"ru": "Владыка",
+				"en": "Overlord"
+			},
+			"icon": "a_overlord"
+		},
+		{
+			"id": "avatar_dragon",
+			"category": "avatar",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Дракон",
+				"en": "Dragon"
+			},
+			"icon": "a_dragon"
+		},
+		{
+			"id": "avatar_skull",
+			"category": "avatar",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Коронованный череп",
+				"en": "Crowned skull"
+			},
+			"icon": "a_skull"
+		},
+		{
+			"id": "emblem_tower",
+			"category": "emblem",
+			"rarity": "common",
+			"name": {
+				"ru": "Башня",
+				"en": "Tower"
+			},
+			"icon": "e_tower"
+		},
+		{
+			"id": "emblem_anchor",
+			"category": "emblem",
+			"rarity": "common",
+			"name": {
+				"ru": "Якорь",
+				"en": "Anchor"
+			},
+			"icon": "e_anchor"
+		},
+		{
+			"id": "emblem_oak",
+			"category": "emblem",
+			"rarity": "common",
+			"name": {
+				"ru": "Дуб",
+				"en": "Oak"
+			},
+			"icon": "e_oak"
+		},
+		{
+			"id": "emblem_compass",
+			"category": "emblem",
+			"rarity": "common",
+			"name": {
+				"ru": "Компас",
+				"en": "Compass"
+			},
+			"icon": "e_compass"
+		},
+		{
+			"id": "emblem_rook",
+			"category": "emblem",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Ладья",
+				"en": "Rook"
+			},
+			"icon": "e_rook"
+		},
+		{
+			"id": "emblem_banner",
+			"category": "emblem",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Знамя",
+				"en": "Banner"
+			},
+			"icon": "e_banner"
+		},
+		{
+			"id": "emblem_snow",
+			"category": "emblem",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Снежинка",
+				"en": "Snowflake"
+			},
+			"icon": "e_snow"
+		},
+		{
+			"id": "emblem_sun",
+			"category": "emblem",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Солнце",
+				"en": "Sun"
+			},
+			"icon": "e_sun"
+		},
+		{
+			"id": "emblem_castle",
+			"category": "emblem",
+			"rarity": "rare",
+			"name": {
+				"ru": "Крепость",
+				"en": "Fortress"
+			},
+			"icon": "e_castle"
+		},
+		{
+			"id": "emblem_swords",
+			"category": "emblem",
+			"rarity": "rare",
+			"name": {
+				"ru": "Скрещённые мечи",
+				"en": "Crossed swords"
+			},
+			"icon": "e_swords"
+		},
+		{
+			"id": "emblem_trident",
+			"category": "emblem",
+			"rarity": "rare",
+			"name": {
+				"ru": "Трезубец",
+				"en": "Trident"
+			},
+			"icon": "e_trident"
+		},
+		{
+			"id": "emblem_hawk",
+			"category": "emblem",
+			"rarity": "rare",
+			"name": {
+				"ru": "Ястреб",
+				"en": "Hawk"
+			},
+			"icon": "e_hawk"
+		},
+		{
+			"id": "emblem_lightning",
+			"category": "emblem",
+			"rarity": "epic",
+			"name": {
+				"ru": "Молнии",
+				"en": "Lightning"
+			},
+			"icon": "e_lightning"
+		},
+		{
+			"id": "emblem_wings",
+			"category": "emblem",
+			"rarity": "epic",
+			"name": {
+				"ru": "Крылья",
+				"en": "Wings"
+			},
+			"icon": "e_wings"
+		},
+		{
+			"id": "emblem_eagle",
+			"category": "emblem",
+			"rarity": "epic",
+			"name": {
+				"ru": "Имперский орёл",
+				"en": "Imperial eagle"
+			},
+			"icon": "e_eagle"
+		},
+		{
+			"id": "emblem_condor",
+			"category": "emblem",
+			"rarity": "epic",
+			"name": {
+				"ru": "Кондор",
+				"en": "Condor"
+			},
+			"icon": "e_condor"
+		},
+		{
+			"id": "emblem_dragon",
+			"category": "emblem",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Драконья спираль",
+				"en": "Dragon spiral"
+			},
+			"icon": "e_dragon"
+		},
+		{
+			"id": "emblem_crown",
+			"category": "emblem",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Корона",
+				"en": "Crown"
+			},
+			"icon": "e_crown"
+		},
+		{
+			"id": "emblem_steelwing",
+			"category": "emblem",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Стальное крыло",
+				"en": "Steelwing"
+			},
+			"icon": "e_steelwing"
+		},
+		{
+			"id": "frame_iron",
+			"category": "frame",
+			"rarity": "common",
+			"name": {
+				"ru": "Железная рамка",
+				"en": "Iron frame"
+			},
+			"color": "#8a96a3",
+			"width": 2
+		},
+		{
+			"id": "frame_bronze",
+			"category": "frame",
+			"rarity": "common",
+			"name": {
+				"ru": "Бронзовая рамка",
+				"en": "Bronze frame"
+			},
+			"color": "#b8804a",
+			"width": 2
+		},
+		{
+			"id": "frame_silver",
+			"category": "frame",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Серебряная рамка",
+				"en": "Silver frame"
+			},
+			"color": "#c8d2dc",
+			"width": 3
+		},
+		{
+			"id": "frame_jade",
+			"category": "frame",
+			"rarity": "rare",
+			"name": {
+				"ru": "Нефритовая рамка",
+				"en": "Jade frame"
+			},
+			"color": "#46c79a",
+			"width": 3
+		},
+		{
+			"id": "frame_sapphire",
+			"category": "frame",
+			"rarity": "rare",
+			"name": {
+				"ru": "Сапфировая рамка",
+				"en": "Sapphire frame"
+			},
+			"color": "#4c8dff",
+			"width": 3
+		},
+		{
+			"id": "frame_gold",
+			"category": "frame",
+			"rarity": "epic",
+			"name": {
+				"ru": "Золотая рамка",
+				"en": "Gold frame"
+			},
+			"color": "#f2c14e",
+			"width": 4
+		},
+		{
+			"id": "frame_obsidian",
+			"category": "frame",
+			"rarity": "epic",
+			"name": {
+				"ru": "Обсидиановая рамка",
+				"en": "Obsidian frame"
+			},
+			"color": "#a070ff",
+			"width": 4
+		},
+		{
+			"id": "frame_sovereign",
+			"category": "frame",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Рамка суверена",
+				"en": "Sovereign frame"
+			},
+			"color": "#ff9a3c",
+			"width": 5
+		},
+		{
+			"id": "title_strategist",
+			"category": "title",
+			"rarity": "common",
+			"name": {
+				"ru": "Стратег",
+				"en": "Strategist"
+			}
+		},
+		{
+			"id": "title_pioneer",
+			"category": "title",
+			"rarity": "common",
+			"name": {
+				"ru": "Первопроходец",
+				"en": "Pioneer"
+			}
+		},
+		{
+			"id": "title_governor",
+			"category": "title",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Губернатор",
+				"en": "Governor"
+			}
+		},
+		{
+			"id": "title_admiral",
+			"category": "title",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Адмирал",
+				"en": "Admiral"
+			}
+		},
+		{
+			"id": "title_marshal",
+			"category": "title",
+			"rarity": "rare",
+			"name": {
+				"ru": "Маршал",
+				"en": "Marshal"
+			}
+		},
+		{
+			"id": "title_architect",
+			"category": "title",
+			"rarity": "rare",
+			"name": {
+				"ru": "Архитектор империи",
+				"en": "Empire architect"
+			}
+		},
+		{
+			"id": "title_conqueror",
+			"category": "title",
+			"rarity": "epic",
+			"name": {
+				"ru": "Завоеватель",
+				"en": "Conqueror"
+			}
+		},
+		{
+			"id": "title_unbroken",
+			"category": "title",
+			"rarity": "epic",
+			"name": {
+				"ru": "Несокрушимый",
+				"en": "Unbroken"
+			}
+		},
+		{
+			"id": "title_hegemon",
+			"category": "title",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Гегемон",
+				"en": "Hegemon"
+			}
+		},
+		{
+			"id": "theme_ember",
+			"category": "ui_theme",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Тема «Угли»",
+				"en": "Ember theme"
+			},
+			"theme": "ember"
+		},
+		{
+			"id": "theme_verdant",
+			"category": "ui_theme",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Тема «Зелень»",
+				"en": "Verdant theme"
+			},
+			"theme": "verdant"
+		},
+		{
+			"id": "theme_glacier",
+			"category": "ui_theme",
+			"rarity": "rare",
+			"name": {
+				"ru": "Тема «Ледник»",
+				"en": "Glacier theme"
+			},
+			"theme": "glacier"
+		},
+		{
+			"id": "theme_royal",
+			"category": "ui_theme",
+			"rarity": "rare",
+			"name": {
+				"ru": "Тема «Пурпур»",
+				"en": "Royal theme"
+			},
+			"theme": "royal"
+		},
+		{
+			"id": "theme_crimson",
+			"category": "ui_theme",
+			"rarity": "epic",
+			"name": {
+				"ru": "Тема «Багрянец»",
+				"en": "Crimson theme"
+			},
+			"theme": "crimson"
+		},
+		{
+			"id": "theme_gilded",
+			"category": "ui_theme",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Тема «Позолота»",
+				"en": "Gilded theme"
+			},
+			"theme": "gilded"
+		},
+		{
+			"id": "color_azure",
+			"category": "player_color",
+			"rarity": "common",
+			"name": {
+				"ru": "Лазурный",
+				"en": "Azure"
+			},
+			"color": "#3d8bfd"
+		},
+		{
+			"id": "color_moss",
+			"category": "player_color",
+			"rarity": "common",
+			"name": {
+				"ru": "Мох",
+				"en": "Moss"
+			},
+			"color": "#5c9e4a"
+		},
+		{
+			"id": "color_brick",
+			"category": "player_color",
+			"rarity": "common",
+			"name": {
+				"ru": "Кирпичный",
+				"en": "Brick"
+			},
+			"color": "#b8573c"
+		},
+		{
+			"id": "color_teal",
+			"category": "player_color",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Бирюзовый",
+				"en": "Teal"
+			},
+			"color": "#1fb3a5"
+		},
+		{
+			"id": "color_violet",
+			"category": "player_color",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Фиалковый",
+				"en": "Violet"
+			},
+			"color": "#8c5ad8"
+		},
+		{
+			"id": "color_amber",
+			"category": "player_color",
+			"rarity": "rare",
+			"name": {
+				"ru": "Янтарный",
+				"en": "Amber"
+			},
+			"color": "#f0a020"
+		},
+		{
+			"id": "color_rose",
+			"category": "player_color",
+			"rarity": "rare",
+			"name": {
+				"ru": "Розовый кварц",
+				"en": "Rose quartz"
+			},
+			"color": "#e0709a"
+		},
+		{
+			"id": "color_ivory",
+			"category": "player_color",
+			"rarity": "epic",
+			"name": {
+				"ru": "Слоновая кость",
+				"en": "Ivory"
+			},
+			"color": "#e8e0c8"
+		},
+		{
+			"id": "color_obsidian",
+			"category": "player_color",
+			"rarity": "epic",
+			"name": {
+				"ru": "Обсидиан",
+				"en": "Obsidian"
+			},
+			"color": "#2c2f3a"
+		},
+		{
+			"id": "color_aurora",
+			"category": "player_color",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Полярное сияние",
+				"en": "Aurora"
+			},
+			"color": "#4cf0c0"
+		},
+		{
+			"id": "map_parchment",
+			"category": "map_style",
+			"rarity": "rare",
+			"name": {
+				"ru": "Карта «Пергамент»",
+				"en": "Parchment map"
+			},
+			"style": "parchment"
+		},
+		{
+			"id": "map_night",
+			"category": "map_style",
+			"rarity": "rare",
+			"name": {
+				"ru": "Карта «Ночь»",
+				"en": "Night map"
+			},
+			"style": "night"
+		},
+		{
+			"id": "map_arctic",
+			"category": "map_style",
+			"rarity": "epic",
+			"name": {
+				"ru": "Карта «Арктика»",
+				"en": "Arctic map"
+			},
+			"style": "arctic"
+		},
+		{
+			"id": "map_atlas",
+			"category": "map_style",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Карта «Атлас»",
+				"en": "Atlas map"
+			},
+			"style": "atlas"
+		},
+		{
+			"id": "plate_square",
+			"category": "building_skin",
+			"rarity": "common",
+			"name": {
+				"ru": "Квадратные плашки",
+				"en": "Square plates"
+			},
+			"shape": "square"
+		},
+		{
+			"id": "plate_diamond",
+			"category": "building_skin",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Ромбовидные плашки",
+				"en": "Diamond plates"
+			},
+			"shape": "diamond"
+		},
+		{
+			"id": "plate_hex",
+			"category": "building_skin",
+			"rarity": "rare",
+			"name": {
+				"ru": "Шестигранные плашки",
+				"en": "Hex plates"
+			},
+			"shape": "hex"
+		},
+		{
+			"id": "plate_shield",
+			"category": "building_skin",
+			"rarity": "epic",
+			"name": {
+				"ru": "Плашки-щиты",
+				"en": "Shield plates"
+			},
+			"shape": "shield"
+		},
+		{
+			"id": "plate_star",
+			"category": "building_skin",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Звёздные плашки",
+				"en": "Star plates"
+			},
+			"shape": "star"
+		},
+		{
+			"id": "capture_embers",
+			"category": "capture_effect",
+			"rarity": "common",
+			"name": {
+				"ru": "Тлеющие искры",
+				"en": "Embers"
+			},
+			"color": "#ffb060",
+			"style": "sparks"
+		},
+		{
+			"id": "capture_frost",
+			"category": "capture_effect",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Иней",
+				"en": "Frost"
+			},
+			"color": "#bfe8ff",
+			"style": "sparks"
+		},
+		{
+			"id": "capture_rings",
+			"category": "capture_effect",
+			"rarity": "rare",
+			"name": {
+				"ru": "Кольца",
+				"en": "Rings"
+			},
+			"color": "#7ad7ff",
+			"style": "rings"
+		},
+		{
+			"id": "capture_gold",
+			"category": "capture_effect",
+			"rarity": "epic",
+			"name": {
+				"ru": "Золотая пыль",
+				"en": "Gold dust"
+			},
+			"color": "#ffd76a",
+			"style": "sparks"
+		},
+		{
+			"id": "capture_prism",
+			"category": "capture_effect",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Призма",
+				"en": "Prism"
+			},
+			"color": "rainbow",
+			"style": "rings"
+		},
+		{
+			"id": "victory_laurels",
+			"category": "victory_effect",
+			"rarity": "uncommon",
+			"name": {
+				"ru": "Лавры",
+				"en": "Laurels"
+			},
+			"icon": "e_laurel",
+			"color": "#9ad17a"
+		},
+		{
+			"id": "victory_medals",
+			"category": "victory_effect",
+			"rarity": "rare",
+			"name": {
+				"ru": "Медали",
+				"en": "Medals"
+			},
+			"icon": "fx_medal",
+			"color": "#f2c14e"
+		},
+		{
+			"id": "victory_fireworks",
+			"category": "victory_effect",
+			"rarity": "epic",
+			"name": {
+				"ru": "Салют",
+				"en": "Fireworks"
+			},
+			"icon": "fx_firework",
+			"color": "#ff7aa8"
+		},
+		{
+			"id": "victory_crown",
+			"category": "victory_effect",
+			"rarity": "legendary",
+			"name": {
+				"ru": "Коронация",
+				"en": "Coronation"
+			},
+			"icon": "e_crown",
+			"color": "#ffcf4a"
+		}
+	]
+}
