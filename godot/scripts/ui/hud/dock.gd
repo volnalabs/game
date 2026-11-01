@@ -47,10 +47,13 @@ func register(id: String, icon: String, title_key: String, builder: Callable) ->
 		open(id if current != id else ""), 72, true)
 	Hints.attach(b, {"title": tr(title_key), "text": tr(title_key + "_HINT")})
 	_buttons[id] = b
+	b.set_meta("silent", true)  # the panel's own open/close sound plays instead of a click
 	rail.add_child(b)
 
 
 func open(id: String) -> void:
+	if id != current:
+		Audio.play("ui_open" if id != "" else "ui_close")
 	current = id
 	for k: String in _buttons:
 		(_buttons[k] as Button).button_pressed = k == id

@@ -1,0 +1,560 @@
+{
+	"_comment": "Sounds are synthesized at runtime by scripts/audio/sound_synth.gd (no audio files). Layers: wave sine|triangle|square|saw|noise, freq -> freq_end glide (Hz), delay/attack/decay (s), amp, lowpass (Hz), vibrato_rate/vibrato_depth, curve (decay shape), seed (noise). bus: ui|sfx|alerts|ambience. min_interval: seconds between two plays of the same sound.",
+	"buses": [
+		"ui",
+		"sfx",
+		"alerts",
+		"ambience"
+	],
+	"sounds": {
+		"ui_click": {
+			"bus": "ui",
+			"gain": 0.45,
+			"min_interval": 0.03,
+			"layers": [
+				{
+					"wave": "triangle",
+					"freq": 880,
+					"freq_end": 660,
+					"attack": 0.002,
+					"decay": 0.05,
+					"lowpass": 4000
+				}
+			]
+		},
+		"ui_open": {
+			"bus": "ui",
+			"gain": 0.4,
+			"min_interval": 0.05,
+			"layers": [
+				{
+					"wave": "sine",
+					"freq": 520,
+					"freq_end": 780,
+					"attack": 0.004,
+					"decay": 0.09
+				},
+				{
+					"wave": "triangle",
+					"freq": 1040,
+					"freq_end": 1560,
+					"attack": 0.004,
+					"decay": 0.06,
+					"amp": 0.3
+				}
+			]
+		},
+		"ui_close": {
+			"bus": "ui",
+			"gain": 0.35,
+			"min_interval": 0.05,
+			"layers": [
+				{
+					"wave": "sine",
+					"freq": 700,
+					"freq_end": 470,
+					"attack": 0.004,
+					"decay": 0.08
+				}
+			]
+		},
+		"ui_error": {
+			"bus": "ui",
+			"gain": 0.4,
+			"min_interval": 0.25,
+			"layers": [
+				{
+					"wave": "square",
+					"freq": 220,
+					"attack": 0.003,
+					"decay": 0.07,
+					"lowpass": 1200
+				},
+				{
+					"wave": "square",
+					"freq": 180,
+					"delay": 0.08,
+					"attack": 0.003,
+					"decay": 0.09,
+					"lowpass": 1200
+				}
+			]
+		},
+		"ui_toast": {
+			"bus": "ui",
+			"gain": 0.35,
+			"min_interval": 0.3,
+			"layers": [
+				{
+					"wave": "sine",
+					"freq": 990,
+					"attack": 0.003,
+					"decay": 0.12,
+					"amp": 0.8
+				},
+				{
+					"wave": "sine",
+					"freq": 1320,
+					"delay": 0.05,
+					"attack": 0.003,
+					"decay": 0.14,
+					"amp": 0.6
+				}
+			]
+		},
+		"attack_start": {
+			"bus": "sfx",
+			"gain": 0.55,
+			"min_interval": 0.2,
+			"layers": [
+				{
+					"wave": "noise",
+					"freq": 3000,
+					"freq_end": 800,
+					"attack": 0.01,
+					"decay": 0.25,
+					"lowpass": 2500,
+					"seed": 3
+				},
+				{
+					"wave": "sine",
+					"freq": 110,
+					"freq_end": 70,
+					"attack": 0.005,
+					"decay": 0.2,
+					"amp": 0.9
+				}
+			]
+		},
+		"build_done": {
+			"bus": "sfx",
+			"gain": 0.45,
+			"min_interval": 0.3,
+			"layers": [
+				{
+					"wave": "triangle",
+					"freq": 523,
+					"attack": 0.004,
+					"decay": 0.15
+				},
+				{
+					"wave": "triangle",
+					"freq": 784,
+					"delay": 0.09,
+					"attack": 0.004,
+					"decay": 0.22
+				}
+			]
+		},
+		"research_done": {
+			"bus": "sfx",
+			"gain": 0.5,
+			"min_interval": 0.5,
+			"layers": [
+				{
+					"wave": "sine",
+					"freq": 523,
+					"attack": 0.005,
+					"decay": 0.18
+				},
+				{
+					"wave": "sine",
+					"freq": 659,
+					"delay": 0.08,
+					"attack": 0.005,
+					"decay": 0.2
+				},
+				{
+					"wave": "sine",
+					"freq": 784,
+					"delay": 0.16,
+					"attack": 0.005,
+					"decay": 0.3
+				},
+				{
+					"wave": "sine",
+					"freq": 1047,
+					"delay": 0.24,
+					"attack": 0.005,
+					"decay": 0.4,
+					"amp": 0.7
+				}
+			]
+		},
+		"boat_launch": {
+			"bus": "sfx",
+			"gain": 0.45,
+			"min_interval": 0.4,
+			"layers": [
+				{
+					"wave": "saw",
+					"freq": 98,
+					"attack": 0.05,
+					"decay": 0.5,
+					"lowpass": 600,
+					"vibrato_rate": 5,
+					"vibrato_depth": 0.01
+				},
+				{
+					"wave": "saw",
+					"freq": 147,
+					"attack": 0.05,
+					"decay": 0.45,
+					"lowpass": 600,
+					"amp": 0.6
+				}
+			]
+		},
+		"landing": {
+			"bus": "sfx",
+			"gain": 0.5,
+			"min_interval": 0.3,
+			"layers": [
+				{
+					"wave": "noise",
+					"freq": 6000,
+					"attack": 0.01,
+					"decay": 0.5,
+					"lowpass": 1800,
+					"seed": 11,
+					"curve": 3
+				},
+				{
+					"wave": "sine",
+					"freq": 80,
+					"freq_end": 55,
+					"attack": 0.005,
+					"decay": 0.25,
+					"amp": 0.7
+				}
+			]
+		},
+		"missile_launch": {
+			"bus": "sfx",
+			"gain": 0.55,
+			"min_interval": 0.15,
+			"layers": [
+				{
+					"wave": "noise",
+					"freq": 8000,
+					"attack": 0.08,
+					"decay": 0.9,
+					"lowpass": 3000,
+					"seed": 5,
+					"curve": 1.5
+				},
+				{
+					"wave": "saw",
+					"freq": 120,
+					"freq_end": 380,
+					"attack": 0.05,
+					"decay": 0.8,
+					"lowpass": 900,
+					"amp": 0.4
+				}
+			]
+		},
+		"impact": {
+			"bus": "sfx",
+			"gain": 0.7,
+			"min_interval": 0.08,
+			"layers": [
+				{
+					"wave": "noise",
+					"freq": 5000,
+					"attack": 0.003,
+					"decay": 0.6,
+					"lowpass": 1400,
+					"seed": 7,
+					"curve": 3
+				},
+				{
+					"wave": "sine",
+					"freq": 90,
+					"freq_end": 40,
+					"attack": 0.002,
+					"decay": 0.45
+				}
+			]
+		},
+		"nuke": {
+			"bus": "sfx",
+			"gain": 0.9,
+			"min_interval": 1.0,
+			"layers": [
+				{
+					"wave": "noise",
+					"freq": 4000,
+					"attack": 0.01,
+					"decay": 2.8,
+					"lowpass": 600,
+					"seed": 13,
+					"curve": 2.5
+				},
+				{
+					"wave": "sine",
+					"freq": 55,
+					"freq_end": 28,
+					"attack": 0.01,
+					"decay": 2.4
+				},
+				{
+					"wave": "noise",
+					"freq": 9000,
+					"delay": 0.4,
+					"attack": 0.3,
+					"decay": 2.0,
+					"lowpass": 300,
+					"seed": 17,
+					"amp": 0.6
+				}
+			]
+		},
+		"intercept": {
+			"bus": "sfx",
+			"gain": 0.45,
+			"min_interval": 0.08,
+			"layers": [
+				{
+					"wave": "noise",
+					"freq": 9000,
+					"attack": 0.002,
+					"decay": 0.18,
+					"lowpass": 5000,
+					"seed": 19,
+					"curve": 3
+				},
+				{
+					"wave": "sine",
+					"freq": 1400,
+					"freq_end": 700,
+					"attack": 0.002,
+					"decay": 0.12,
+					"amp": 0.5
+				}
+			]
+		},
+		"convoy": {
+			"bus": "sfx",
+			"gain": 0.35,
+			"min_interval": 0.5,
+			"layers": [
+				{
+					"wave": "triangle",
+					"freq": 660,
+					"attack": 0.004,
+					"decay": 0.2
+				},
+				{
+					"wave": "triangle",
+					"freq": 880,
+					"delay": 0.12,
+					"attack": 0.004,
+					"decay": 0.25
+				}
+			]
+		},
+		"alert_attack": {
+			"bus": "alerts",
+			"gain": 0.45,
+			"min_interval": 1.5,
+			"layers": [
+				{
+					"wave": "square",
+					"freq": 440,
+					"attack": 0.005,
+					"decay": 0.16,
+					"lowpass": 1800
+				},
+				{
+					"wave": "square",
+					"freq": 349,
+					"delay": 0.18,
+					"attack": 0.005,
+					"decay": 0.22,
+					"lowpass": 1800
+				}
+			]
+		},
+		"alert_missile": {
+			"bus": "alerts",
+			"gain": 0.45,
+			"min_interval": 1.5,
+			"layers": [
+				{
+					"wave": "saw",
+					"freq": 600,
+					"freq_end": 900,
+					"attack": 0.02,
+					"decay": 0.35,
+					"lowpass": 2200,
+					"amp": 0.8
+				},
+				{
+					"wave": "saw",
+					"freq": 600,
+					"freq_end": 900,
+					"delay": 0.38,
+					"attack": 0.02,
+					"decay": 0.35,
+					"lowpass": 2200,
+					"amp": 0.8
+				}
+			]
+		},
+		"diplo_offer": {
+			"bus": "alerts",
+			"gain": 0.45,
+			"min_interval": 1.0,
+			"layers": [
+				{
+					"wave": "sine",
+					"freq": 784,
+					"attack": 0.005,
+					"decay": 0.3
+				},
+				{
+					"wave": "sine",
+					"freq": 1175,
+					"delay": 0.12,
+					"attack": 0.005,
+					"decay": 0.45,
+					"amp": 0.8
+				}
+			]
+		},
+		"betrayal": {
+			"bus": "alerts",
+			"gain": 0.45,
+			"min_interval": 1.0,
+			"layers": [
+				{
+					"wave": "saw",
+					"freq": 233,
+					"attack": 0.01,
+					"decay": 0.5,
+					"lowpass": 1500
+				},
+				{
+					"wave": "saw",
+					"freq": 247,
+					"attack": 0.01,
+					"decay": 0.5,
+					"lowpass": 1500
+				}
+			]
+		},
+		"victory": {
+			"bus": "alerts",
+			"gain": 0.6,
+			"min_interval": 2.0,
+			"layers": [
+				{
+					"wave": "triangle",
+					"freq": 523,
+					"attack": 0.01,
+					"decay": 0.25
+				},
+				{
+					"wave": "triangle",
+					"freq": 659,
+					"delay": 0.18,
+					"attack": 0.01,
+					"decay": 0.25
+				},
+				{
+					"wave": "triangle",
+					"freq": 784,
+					"delay": 0.36,
+					"attack": 0.01,
+					"decay": 0.3
+				},
+				{
+					"wave": "triangle",
+					"freq": 1047,
+					"delay": 0.54,
+					"attack": 0.01,
+					"decay": 1.2
+				},
+				{
+					"wave": "sine",
+					"freq": 262,
+					"delay": 0.54,
+					"attack": 0.02,
+					"decay": 1.2,
+					"amp": 0.6
+				}
+			]
+		},
+		"defeat": {
+			"bus": "alerts",
+			"gain": 0.55,
+			"min_interval": 2.0,
+			"layers": [
+				{
+					"wave": "triangle",
+					"freq": 392,
+					"attack": 0.01,
+					"decay": 0.35
+				},
+				{
+					"wave": "triangle",
+					"freq": 311,
+					"delay": 0.3,
+					"attack": 0.01,
+					"decay": 0.35
+				},
+				{
+					"wave": "triangle",
+					"freq": 262,
+					"delay": 0.6,
+					"attack": 0.01,
+					"decay": 1.3
+				},
+				{
+					"wave": "sine",
+					"freq": 131,
+					"delay": 0.6,
+					"attack": 0.02,
+					"decay": 1.3,
+					"amp": 0.6
+				}
+			]
+		},
+		"ambience": {
+			"bus": "ambience",
+			"gain": 0.35,
+			"min_interval": 0.0,
+			"layers": [
+				{
+					"wave": "sine",
+					"freq": 55,
+					"attack": 0.0005,
+					"decay": 6.0,
+					"curve": 0,
+					"amp": 0.6
+				},
+				{
+					"wave": "sine",
+					"freq": 82.5,
+					"attack": 0.0005,
+					"decay": 6.0,
+					"curve": 0,
+					"amp": 0.35
+				},
+				{
+					"wave": "triangle",
+					"freq": 110,
+					"attack": 0.0005,
+					"decay": 6.0,
+					"curve": 0,
+					"amp": 0.15,
+					"lowpass": 400,
+					"vibrato_rate": 0.5,
+					"vibrato_depth": 0.004
+				}
+			],
+			"loop": true
+		}
+	}
+}

@@ -73,6 +73,7 @@ func _ready() -> void:
 	_apply_cosmetics()
 	_build_world()
 	_loading.queue_free()
+	Audio.start_ambience()
 	speed = Settings.default_speed
 	if sim.phase == Sim.Phase.SPAWN:
 		App.goto(App.State.SPAWN_SELECT)
@@ -277,6 +278,7 @@ func _handle_events() -> void:
 		weapons_fx.on_event(e)
 		_weapon_news(e)
 		_diplo_news(e)
+		Audio.on_event(e, pid)
 		match String(e["type"]):
 			SimEvents.ATTACK_STARTED:
 				if int(e["target"]) == pid and int(e["attacker"]) > 0 and st.o_kind[int(e["attacker"])] != Rules.KIND_TRIBE:
@@ -374,6 +376,7 @@ func _pay(abandoned: bool) -> Dictionary:
 
 func _exit_tree() -> void:
 	RenderingServer.set_default_clear_color(UITheme.BG)
+	Audio.stop_ambience()
 	# Leaving a running match (menu, new game, load, restart) counts as abandoned.
 	if not _paid and sim != null and sim.phase == Sim.Phase.PLAYING:
 		_pay(true)

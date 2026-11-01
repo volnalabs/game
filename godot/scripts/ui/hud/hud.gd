@@ -287,6 +287,7 @@ func show_pause(on: bool) -> void:
 
 func show_end(victory: bool, reason: String) -> void:
 	_end.visible = true
+	Audio.play("victory" if victory else "defeat")
 	Anim.fade_in(_end)
 	_end_title.text = tr("END_VICTORY") if victory else tr("END_DEFEAT")
 	_end_title.add_theme_color_override("font_color", UITheme.GOOD if victory else UITheme.BAD)

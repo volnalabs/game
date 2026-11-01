@@ -18,6 +18,7 @@ MapRegistry="*res://scripts/maps/map_registry.gd"
 App="*res://scripts/core/app.gd"
 Profile="*res://scripts/meta/profile.gd"
 HintLayer="*res://scripts/ui/components/hint_layer.gd"
+Audio="*res://scripts/audio/audio_manager.gd"
 
 [display]
 

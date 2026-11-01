@@ -15,6 +15,13 @@ var show_tips: bool = true
 var seen_tips: Array = []
 var last_difficulty: String = "normal"
 var last_bots: int = 20
+## Volumes (0..1) per audio category; mute while the window is in the background.
+var volume_master: float = 0.8
+var volume_ui: float = 0.7
+var volume_sfx: float = 0.8
+var volume_alerts: float = 0.8
+var volume_ambience: float = 0.35
+var mute_unfocused: bool = true
 
 
 ## The game was called "VolnaLabs: World Strategy" before it became TerraFront; Godot keeps user data
@@ -78,6 +85,12 @@ func load_settings() -> void:
 	show_zones = cfg.get_value("game", "zones", show_zones)
 	show_tips = cfg.get_value("ui", "tips", show_tips)
 	seen_tips = cfg.get_value("ui", "seen_tips", seen_tips)
+	volume_master = cfg.get_value("audio", "master", volume_master)
+	volume_ui = cfg.get_value("audio", "ui", volume_ui)
+	volume_sfx = cfg.get_value("audio", "sfx", volume_sfx)
+	volume_alerts = cfg.get_value("audio", "alerts", volume_alerts)
+	volume_ambience = cfg.get_value("audio", "ambience", volume_ambience)
+	mute_unfocused = cfg.get_value("audio", "mute_unfocused", mute_unfocused)
 
 
 func save_settings() -> void:
@@ -93,10 +106,19 @@ func save_settings() -> void:
 	cfg.set_value("game", "zones", show_zones)
 	cfg.set_value("ui", "tips", show_tips)
 	cfg.set_value("ui", "seen_tips", seen_tips)
+	cfg.set_value("audio", "master", volume_master)
+	cfg.set_value("audio", "ui", volume_ui)
+	cfg.set_value("audio", "sfx", volume_sfx)
+	cfg.set_value("audio", "alerts", volume_alerts)
+	cfg.set_value("audio", "ambience", volume_ambience)
+	cfg.set_value("audio", "mute_unfocused", mute_unfocused)
 	cfg.save(PATH)
 
 
 func apply() -> void:
 	TranslationServer.set_locale(locale)
+	var audio := get_node_or_null("/root/Audio")
+	if audio != null:
+		audio.apply_volumes()
 	if get_tree() != null and get_tree().root != null:
 		get_tree().root.content_scale_factor = ui_scale

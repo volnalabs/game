@@ -363,6 +363,11 @@ S = [
 ("HUD_GOAL_TEAM","Команда %.1f%% из %d%%","Team %.1f%% of %d%%"),("END_TEAM_WON","Победила команда %d","Team %d won"),("END_TEAM_MEMBERS","Состав: %s","Members: %s"),
 ("VICTORY_TEAM","Победа команды","Team victory"),("DEFEAT_TEAM","Победила другая команда","Another team won"),
 ("ENC_CAT_DIPLOMACY","Дипломатия","Diplomacy"),("TRAITOR_SHORT","предатель","traitor"),
+("SETTINGS_TAB_GENERAL","Общие","General"),("SETTINGS_TAB_AUDIO","Звук","Sound"),
+("SETTINGS_AUDIO_NOTE","Все звуки игры синтезируются прямо в ней — без аудиофайлов. Громкость задаётся отдельно для интерфейса, событий партии, тревог и фона.","Every sound is synthesized by the game itself — no audio files. Volume is set separately for the interface, match events, alerts and the background."),
+("SETTINGS_VOL_MASTER","Общая громкость","Master volume"),("SETTINGS_VOL_UI","Интерфейс","Interface"),("SETTINGS_VOL_SFX","События партии","Match events"),
+("SETTINGS_VOL_ALERTS","Тревоги и сообщения","Alerts and messages"),("SETTINGS_VOL_AMBIENCE","Фон","Background"),("SETTINGS_VOL_TEST","Прослушать","Play a sample"),
+("SETTINGS_MUTE_UNFOCUSED","Без звука, когда окно игры не активно","Mute when the game window is in the background"),
 ]
 w = csv.writer(open(sys.argv[1], "w", newline=""), lineterminator="\n")
 w.writerow(["keys", "ru", "en"])
