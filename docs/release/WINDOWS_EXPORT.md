@@ -22,7 +22,9 @@ tools/release/package.sh          # версия берётся из godot/proje
 `tools/branding/make_icon.py`.
 
 ## Публикация
-`.github/workflows/release.yml` запускается при пуше тега `vX.Y.Z`: проверяет, что тег совпадает с
+`.github/workflows/release.yml` запускается при пуше тега `vX.Y.Z` **или** при публикации релиза в
+интерфейсе GitHub (Releases → Draft a new release → тег `vX.Y.Z` → Publish — тогда архивы
+прикрепляются к этому релизу): проверяет, что тег совпадает с
 `config/version`, гоняет тесты, собирает архивы этим же скриптом и создаёт GitHub Release с описанием из
 раздела `[X.Y.Z]` файла `CHANGELOG.md`. Ссылки «Скачать» в README ведут на
 `releases/latest/download/<архив>` и поэтому всегда указывают на последнюю версию.

@@ -1,12 +1,17 @@
 name: Release
 
-# Builds TerraFront for Windows and Linux and publishes a GitHub Release when a version tag (v*) is
-# pushed. The notes come from the tag's section of CHANGELOG.md. Also runnable by hand
-# (workflow_dispatch) with an existing tag.
+# Builds TerraFront for Windows and Linux and publishes a GitHub Release for a version tag (v*).
+# Start it either way:
+#   - push a tag:                git tag v0.2.0 && git push origin v0.2.0
+#   - or in the GitHub interface: Releases -> Draft a new release -> tag v0.2.0 -> Publish
+#     (the archives are then attached to that release).
+# The notes come from the tag's section of CHANGELOG.md. Also runnable by hand (workflow_dispatch).
 
 on:
   push:
     tags: ["v*"]
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       tag:
@@ -16,16 +21,22 @@ on:
 permissions:
   contents: write
 
+# A release made in the interface also creates its tag: both runs build the same files, one after the
+# other (the second only re-uploads them).
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.event.release.tag_name || github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      TAG: ${{ github.event.inputs.tag || github.event.release.tag_name || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ github.event.inputs.tag || github.event.release.tag_name || github.ref }}
       - name: Cache Godot and export templates
         uses: actions/cache@v4
         with:
@@ -62,5 +73,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG" build/release/TerraFront-windows-x64.zip build/release/TerraFront-linux-x64.tar.gz \
-            build/release/SHA256SUMS.txt --title "TerraFront ${TAG#v}" --notes-file notes.md --verify-tag
+          files="build/release/TerraFront-windows-x64.zip build/release/TerraFront-linux-x64.tar.gz build/release/SHA256SUMS.txt"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            # A release made in the interface (or a rerun): attach the archives, keep its notes if any.
+            gh release upload "$TAG" $files --clobber
+            if [ -z "$(gh release view "$TAG" --json body --jq .body)" ]; then
+              gh release edit "$TAG" --title "TerraFront ${TAG#v}" --notes-file notes.md
+            fi
+          else
+            gh release create "$TAG" $files --title "TerraFront ${TAG#v}" --notes-file notes.md --verify-tag
+          fi
