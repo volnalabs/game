@@ -41,15 +41,13 @@
 
 | id | Тип | Размер | Источник |
 |---|---|---|---|
-| `earth` | реальная | 2000×1000, 71 нация | экспорт `src/shared/Data/Maps/World.luau` (Natural Earth + NOAA ETOPO1, public domain) |
-| `europe`, `asia`, `africa`, `north_america`, `south_america` | региональные | ~1200–1650 px | экспорт `src/server/MapData/*.luau` (те же источники) |
+| `earth` | реальная | 2000×1000, 71 нация | экспорт карты RoWorld `World.luau` (Natural Earth + NOAA ETOPO1, public domain) |
+| `europe`, `asia`, `africa`, `north_america`, `south_america` | региональные | ~1200–1650 px | экспорт карт RoWorld `MapData/*.luau` (те же источники) |
 | `pelagia` | вымышленная | архипелаг | авторская спецификация `godot/data/map_specs/pelagia.json` → генератор |
 | `avaris` | вымышленная | суперконтинент | `godot/data/map_specs/avaris.json` → генератор |
 | `shattered_worlds` | вымышленная | 4–5 континентов + острова | `godot/data/map_specs/shattered_worlds.json` → генератор |
 
-Экспорт реальных карт: `python3 tools/export_luau_maps.py` (декодирует `base64(zstd)` из Luau,
-переводит байт-формат оригинала в коды рельефа: высота < 10 → равнина, 10–19 → холмы, ≥ 20 → горы,
-полярные низины → тундра, мелководье по глубине ≤ 2; переносит нации с флагами и русскими названиями).
+Реальные карты экспортированы один раз из Luau-данных RoWorld скриптом `tools/export_luau_maps.py` (Natural Earth → `tools/maps/make_maps.py` → Luau → `godot/data/maps`). Эти скрипты и Luau-данные удалены из рабочей ветки в релизе 0.2.0 и доступны в истории git: коммит `8854e68`.
 
 ## 3. Генератор миров (`scripts/map_generator/`)
 Параметры (`GenParams`): `seed`, `preset`, `width/height` (S 800×400, M 1200×600, L 1600×800, XL 2000×1000),

@@ -4,16 +4,16 @@
 студия-разработчик.
 
 Самостоятельная однопользовательская офлайн-стратегия на Godot 4 (папка `godot/`), выросшая из форка
-RoWorld (Roblox/Luau, исходники в `src/` сохранены как справочная реализация).
+RoWorld (Roblox/Luau). Исходники RoWorld удалены из рабочей ветки по решению владельца (релиз 0.2.0) и
+доступны в истории git: коммит `8854e68` (`git show 8854e68:src/...`).
 
 ## Жёсткие правила
 
-- **Никаких внешних публикаций и деплоев.** Не запускать `tools/publish.sh`, `tools/publish.py`,
-  `tools/restart_servers.sh`, `tools/upload.py`, `tools/studio*.sh`, `services/lobbies/deploy.sh`, любые
-  скрипты Roblox Open Cloud, `snick-announce`, вебхуки Discord. Инструкции прежнего автора лежат в
-  `docs/original-project/CLAUDE_UPSTREAM.md` только для истории — они не действуют.
-- Не удалять и не переписывать оригинальные Luau-файлы (`src/`, `tests/*.luau`, `tools/*`): это справочная
-  реализация.
+- **Никаких сторонних публикаций и деплоев**: Roblox (Open Cloud, Studio), `snick-announce`, вебхуки
+  Discord — скрипты прежнего автора удалены, их инструкции (`docs/original-project/CLAUDE_UPSTREAM.md`)
+  не действуют. Релиз TerraFront публикуется только workflow `.github/workflows/release.yml` по тегу
+  `v*` и только с одобрения владельца.
+- Код RoWorld в ветке больше не хранится; ссылки на `*.luau` в комментариях указывают на коммит `8854e68`.
 - Лицензия: весь проект AGPL-3.0 с дополнительными условиями §7 (`LICENSE`): строка
   «© OpenFront and Contributors» должна оставаться видимой в главном меню/титрах; игра не может
   называться «OpenFront». Перенос кода с Luau на GDScript не снимает требований AGPL.
