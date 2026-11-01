@@ -28,6 +28,8 @@
 | Темы интерфейса | `godot/data/ui/themes.json` | собственная работа | AGPL-3.0 |
 | Процедурные флаги, эффекты | генерируются кодом (`flag_gen.gd`, `_draw()` в слоях рендера) | собственная работа | AGPL-3.0 |
 | Тексты интерфейса | `godot/data/i18n/strings.csv` | собственная работа | AGPL-3.0 |
+| Значок приложения | `godot/icon.png`, `godot/icon.ico`, `docs/media/icon.png`; генератор `tools/branding/make_icon.py` | собственная работа VolnaLabs (знак «глобус и фронт» главного меню) | AGPL-3.0 |
+| Скриншоты для README | `docs/media/*.jpg`; инструмент `godot/scripts/tools/promo_shots_cli.gd` | кадры из самой игры | AGPL-3.0 |
 | Звуки (интерфейс, события, тревоги, фон) | синтезируются в игре кодом `godot/scripts/audio/sound_synth.gd` по описаниям `godot/data/audio/sounds.json`; аудиофайлов нет | собственная работа (Phase 2G) | AGPL-3.0 |
 
 ## 3. Ресурсы оригинала, которые НЕ переносятся

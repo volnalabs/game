@@ -6,23 +6,30 @@
 версия 0.2.0 и строка «© OpenFront and Contributors; TerraFront © VolnaLabs. GNU AGPL v3».
 
 ## Шаги
-1. Godot 4.7.2: `GODOT=$(tools/get_godot.sh)`.
-2. Шаблоны экспорта той же версии (официальные, MIT) — в
-   `~/.local/share/godot/export_templates/4.7.2.stable/` (Windows: `%APPDATA%\Godot\export_templates\4.7.2.stable\`).
-   Полный архив `Godot_v4.7.2-stable_export_templates.tpz` весит ~1,3 ГБ; нужны только
-   `windows_release_x86_64.exe` (и `linux_release.x86_64` для Linux). В редакторе: «Редактор → Управление
-   шаблонами экспорта → Скачать».
-3. Импорт и экспорт:
-   ```bash
-   $GODOT --headless --path godot --import
-   $GODOT --headless --path godot --export-release "Windows" ../build/windows/TerraFront.exe
-   ```
-   Значок и сведения о версии Godot 4.7 записывает в `.exe` сам (`application/modify_resources`),
-   rcedit не нужен. Значок приложения пока не задан (`application/icon` пуст) — используется значок Godot.
-4. Проверено в облаке (Phase 2G): экспорт Windows и Linux проходит; `.exe` — PE32+ x86-64 со
-   сведениями о версии, в пакете данные игры, строки и звуки, тестов нет. Сборка Linux запускается и
-   отрабатывает главное меню без ошибок скриптов. Запустить `.exe` в облаке нельзя (нет Windows) —
-   это нужно проверить на настоящем ПК: запуск, меню, партия, сохранение в `%APPDATA%\Godot\app_userdata\TerraFront\`.
+Всё делает один скрипт:
+```bash
+tools/release/package.sh          # версия берётся из godot/project.godot
+```
+Он скачивает Godot (`tools/get_godot.sh`) и только два нужных шаблона экспорта (`tools/get_templates.py`
+читает из официального архива `Godot_v4.7.2-stable_export_templates.tpz` (~1,3 ГБ) лишь каталог и два
+файла — около 180 МБ — HTTP-запросами по диапазонам), экспортирует обе платформы и собирает в
+`build/release/`:
+- `TerraFront-windows-x64.zip` — `TerraFront.exe`, `LICENSE.txt`, `README.txt`;
+- `TerraFront-linux-x64.tar.gz` — `TerraFront.x86_64`, `LICENSE.txt`, `README.txt`;
+- `SHA256SUMS.txt`.
+
+Значок приложения — `godot/icon.ico` (в `.exe`, все 7 размеров) и `godot/icon.png` (окно), рисует
+`tools/branding/make_icon.py`.
+
+## Публикация
+`.github/workflows/release.yml` запускается при пуше тега `vX.Y.Z`: проверяет, что тег совпадает с
+`config/version`, гоняет тесты, собирает архивы этим же скриптом и создаёт GitHub Release с описанием из
+раздела `[X.Y.Z]` файла `CHANGELOG.md`. Ссылки «Скачать» в README ведут на
+`releases/latest/download/<архив>` и поэтому всегда указывают на последнюю версию.
+
+Проверено в облаке (0.2.0): оба архива собираются; `.exe` — PE32+ x86-64 со значком и сведениями о
+версии; Linux-сборка из архива запускается и отрабатывает меню без ошибок скриптов. Запуск `.exe` на
+настоящей Windows в облаке недоступен.
 
 ## Обязательства при распространении (AGPL-3.0 + §7)
 - Вместе со сборкой — текст `LICENSE` и предложение исходного кода (ссылка на репозиторий с той же

@@ -79,6 +79,6 @@ $GODOT --headless --path godot -s res://scripts/tools/bench_cli.gd -- --map eart
 3. Инкрементальные списки соседей в восприятии AI вместо обхода границы.
 
 Реальная плавность (60 FPS на GPU) в облаке не измеряется — нет видеокарты; визуальная проверка
-сделана под Xvfb + Mesa llvmpipe (скриншоты в `docs/screenshots/`). Для локальной проверки FPS:
+сделана под Xvfb + Mesa llvmpipe (скриншоты для README — `docs/media/`, инструмент `scripts/tools/promo_shots_cli.gd`). Для локальной проверки FPS:
 запустить `godot --path godot`, включить «Отладка → Монитор» в редакторе или параметр
 `--print-fps`.
